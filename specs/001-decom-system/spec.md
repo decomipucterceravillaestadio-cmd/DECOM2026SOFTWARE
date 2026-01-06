@@ -60,7 +60,7 @@ Como administrador de DECOM, quiero ver todas las solicitudes en lista con infor
 
 ### User Story 3 - DECOM visualiza en calendario (Priority: P2)
 
-Como administrador, quiero ver solicitudes en calendario mensual por fecha de evento para visualizar carga de trabajo semanal.
+Como administrador de DECOM, quiero ver solicitudes en calendario mensual por fecha de evento para visualizar carga de trabajo semanal.
 
 **Why this priority**: Mejora la planificación a largo plazo pero no es crítica para MVP.
 
@@ -71,6 +71,26 @@ Como administrador, quiero ver solicitudes en calendario mensual por fecha de ev
 1. **Given** estoy en el panel de gestión, **When** hago clic en "Calendario", **Then** cambio a vista mensual.
 
 2. **Given** un día tiene solicitudes, **When** hago clic, **Then** veo panel inferior con solicitudes de ese día.
+
+---
+
+### User Story 4 - Comité visualiza calendario de solicitudes (Priority: P2)
+
+Como miembro de un comité, quiero ver el calendario de solicitudes ya registradas antes de enviar la mía, para entender la carga de trabajo y planificar mejor mi solicitud.
+
+**Why this priority**: Mejora la cultura organizacional, reduce conflictos, educa sin ser agresivo. Diferencia el sistema de un simple formulario.
+
+**Independent Test**: Sin autenticación, puedo ver botón "Ver calendario de solicitudes" en formulario, ver calendario en modo solo lectura, luego enviar mi solicitud. Después de enviar, recibo confirmación con link al calendario.
+
+**Acceptance Scenarios**:
+
+1. **Given** accedo al formulario de solicitud, **When** veo el calendario de carga, **Then** entiendo qué eventos ya están registrados y cuáles están más cercanos.
+
+2. **Given** veo el calendario, **When** identifico que hay muchas solicitudes para la misma semana, **Then** considero si puedo cambiar mi fecha o soy consciente de la prioridad.
+
+3. **Given** envío mi solicitud, **When** recibo confirmación, **Then** veo link a "Consultar calendario" para seguimiento.
+
+4. **Given** veo el calendario, **When** busco mi solicitud, **Then** la reconozco por fecha evento y tipo de material, pero no veo detalles sensibles.
 
 ---
 
@@ -129,6 +149,20 @@ Como administrador, quiero ver solicitudes en calendario mensual por fecha de ev
 - **FR-019**: Sistema DEBE permitir a comité ver sus solicitudes actuales y pasadas en dashboard personal.
 
 - **FR-020**: Sistema DEBE aplicar paleta de colores: primario #8B0000, secundario #FFD700, con estados diferenciados por color.
+
+- **FR-021**: Sistema DEBE proporcionar vista pública de calendario (solo lectura) accesible a comités sin autenticación.
+
+- **FR-022**: Sistema DEBE mostrar en calendario público: fecha evento, tipo material, estado (Pendiente/En proceso/Entregada), pero SIN nombres de personas, WhatsApp, o citas bíblicas.
+
+- **FR-023**: Sistema DEBE ofrecer botón "Ver calendario de solicitudes" EN EL FORMULARIO ANTES de enviar, para que comité vea carga actual.
+
+- **FR-024**: Sistema DEBE mostrar link a calendario en confirmación DESPUÉS de enviar, con mensaje: "Puedes consultar el calendario para ver el orden de atención".
+
+- **FR-025**: Vista pública de calendario DEBE permitir filtrar por: mes, año, estado (Pendiente/En proceso/Entregada), tipo material.
+
+- **FR-026**: Sistema DEBE permitir a DECOM ver vistas múltiples de calendario: mes, semana, estado.
+
+- **FR-027**: Sistema DEBE permitir a DECOM filtrar calendario por comité, rango de fechas, estado, prioridad.
 
 ### Key Entities
 

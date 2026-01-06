@@ -341,6 +341,27 @@ WHERE r.priority_score >= 5
   AND r.status NOT IN ('Entregada')
 ORDER BY r.priority_score DESC, r.delivery_date ASC;
 
+-- View: Public calendar (visible to non-authenticated users)
+-- Shows only: event date, material type, status, priority (no sensitive info)
+CREATE OR REPLACE VIEW v_requests_public AS
+SELECT
+  r.id,
+  r.event_date,
+  r.material_type,
+  r.status,
+  r.priority_score,
+  (CURRENT_DATE - r.created_at::date) as days_since_created,
+  (r.delivery_date - CURRENT_DATE) as days_until_delivery
+FROM requests r
+WHERE r.status IN ('Pendiente', 'En_planificacion', 'En_diseño', 'Lista_para_entrega', 'Entregada')
+ORDER BY r.event_date ASC;
+
+-- RLS Policy: Allow public (unauthenticated) access to public calendar view
+CREATE POLICY "Public calendar access (no auth required)"
+  ON requests FOR SELECT
+  USING (true)
+  WITH CHECK (true);
+
 ---
 -- ============================================================================
 -- 8. SEED DATA FOR TESTING (Optional, remove in production)

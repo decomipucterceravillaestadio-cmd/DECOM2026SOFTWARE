@@ -560,6 +560,152 @@ Entregada → (no transitions back)
 
 ---
 
+## Public Calendar API
+
+**Purpose**: Read-only calendar view for non-authenticated comité members to see existing solicitations and workload
+
+### GET /api/public/calendar
+
+**Authentication**: NO (Public API)
+
+**Purpose**: Retrieve all requests for public calendar view (no sensitive data)
+
+**Query Parameters**:
+```
+?month=1          // Optional: 1-12 (default: current month)
+&year=2026        // Optional (default: current year)
+&materialType=flyer // Optional: flyer, banner, video, redes, otro
+&status=Pendiente // Optional: Pendiente, En_planificacion, En_diseño, Lista_para_entrega, Entregada
+&limit=50         // Optional: max records (default: 50, max: 100)
+&offset=0         // Optional: pagination offset
+```
+
+**Response** (200 OK):
+```json
+{
+  "data": [
+    {
+      "id": "uuid-1",
+      "eventDate": "2026-02-15",
+      "materialType": "flyer",
+      "status": "En_planificacion",
+      "priorityScore": 8,
+      "daysSinceCreated": 3,
+      "daysUntilDelivery": 4
+    },
+    {
+      "id": "uuid-2",
+      "eventDate": "2026-02-20",
+      "materialType": "banner",
+      "status": "Pendiente",
+      "priorityScore": 6,
+      "daysSinceCreated": 1,
+      "daysUntilDelivery": 9
+    }
+  ],
+  "pagination": {
+    "total": 47,
+    "limit": 50,
+    "offset": 0,
+    "pages": 1
+  },
+  "meta": {
+    "month": 2,
+    "year": 2026,
+    "totalByStatus": {
+      "Pendiente": 15,
+      "En_planificacion": 22,
+      "En_diseño": 8,
+      "Lista_para_entrega": 2,
+      "Entregada": 0
+    },
+    "totalByMaterialType": {
+      "flyer": 25,
+      "banner": 15,
+      "video": 5,
+      "redes": 2,
+      "otro": 0
+    }
+  }
+}
+```
+
+**Response** (200 OK - Empty month):
+```json
+{
+  "data": [],
+  "pagination": {
+    "total": 0,
+    "limit": 50,
+    "offset": 0,
+    "pages": 0
+  },
+  "meta": {
+    "month": 3,
+    "year": 2026,
+    "totalByStatus": {},
+    "totalByMaterialType": {}
+  }
+}
+```
+
+**What IS Visible**:
+- ✅ Event date
+- ✅ Material type (flyer, banner, video, redes, otro)
+- ✅ Status (workflow progress indicator)
+- ✅ Priority score (1-10, indicates urgency)
+- ✅ Days since created (shows workload progression)
+- ✅ Days until delivery (shows timeline)
+
+**What is NOT Visible** (Protected/Encrypted):
+- ❌ Committee name (no user can identify who requested)
+- ❌ Event name / Event info (private details)
+- ❌ Contact WhatsApp (encrypted, never exposed)
+- ❌ Bible verses (private)
+- ❌ User name (private)
+
+**Use Cases**:
+1. **Before submitting form**: Comité views calendar to understand current workload
+   - "Oh, there are 5 flyers already in progress, maybe I should submit a banner instead"
+2. **After submitting form**: Comité receives link to see where their request appears
+   - "I can see my request is Pendiente, 3 others are ahead of me"
+3. **Cultural leadership**: Transparency reduces conflict and improves understanding
+   - "Now I understand we're not being slow, there's just a lot of work"
+
+**Frontend Integration**:
+```typescript
+// components/PublicCalendar.tsx
+async function PublicCalendar({ month, year }: Props) {
+  const response = await fetch(
+    `/api/public/calendar?month=${month}&year=${year}`
+  );
+  const { data, meta } = await response.json();
+  
+  return (
+    <div>
+      <h3>Ver carga de solicitudes</h3>
+      <div className="status-summary">
+        {Object.entries(meta.totalByStatus).map(([status, count]) => (
+          <div key={status}>{status}: {count}</div>
+        ))}
+      </div>
+      <div className="calendar-grid">
+        {data.map(request => (
+          <CalendarDay
+            date={request.eventDate}
+            type={request.materialType}
+            status={request.status}
+            priority={request.priorityScore}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
 ## Real-Time Subscriptions (Optional, Phase 2+)
 
 **Purpose**: Live updates of requests list for DECOM dashboard

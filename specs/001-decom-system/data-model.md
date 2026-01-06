@@ -218,6 +218,21 @@ CREATE INDEX idx_requests_created_by ON requests(created_by);
 | `created_at` | TIMESTAMP | DEFAULT now() | When created |
 | `updated_at` | TIMESTAMP | DEFAULT now() | When last modified |
 
+**Public Visibility** (visible to non-authenticated comités in calendar):
+- ✅ `id` (for identification)
+- ✅ `event_date`
+- ✅ `material_type`
+- ✅ `status`
+- ✅ `priority_score` (optional: color indicator)
+- ❌ `committee_id` (replaced with generic label)
+- ❌ `event_name` / `event_info` (not shown)
+- ❌ `contact_whatsapp` (ENCRYPTED, never visible)
+- ❌ `bible_verse_text` (private)
+- ❌ `created_by` (private)
+
+**Private Fields** (only visible to DECOM and request creator):
+- `committee_id`, `event_name`, `event_info`, `contact_whatsapp`, `bible_verse_text`, `created_by`
+
 **Validation Rules**:
 - `event_date`: Must be future (not today or past)
 - `contact_whatsapp`: Must match regex `^\+?57\d{10}$` (Colombia format)
