@@ -330,6 +330,86 @@ export function RequestForm() {
 }
 ```
 
+### Task 5: Public Calendar (No Auth Required)
+
+```typescript
+'use client';
+
+import { useEffect, useState } from 'react';
+
+export function PublicCalendar({ month = 1, year = 2026 }) {
+  const [requests, setRequests] = useState([]);
+  const [meta, setMeta] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // This endpoint requires NO authentication - anyone can access it
+    async function fetchPublicCalendar() {
+      try {
+        const response = await fetch(
+          `/api/public/calendar?month=${month}&year=${year}`
+        );
+        const json = await response.json();
+        setRequests(json.data || []);
+        setMeta(json.meta || {});
+      } catch (error) {
+        console.error('Error fetching public calendar:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchPublicCalendar();
+  }, [month, year]);
+
+  if (loading) return <div>Cargando calendario...</div>;
+
+  return (
+    <div>
+      <h2>Solicitudes en curso - {month}/{year}</h2>
+      
+      {/* Status Summary */}
+      <div className="summary">
+        {meta?.totalByStatus && Object.entries(meta.totalByStatus).map(
+          ([status, count]) => (
+            <div key={status}>
+              <strong>{status}:</strong> {count}
+            </div>
+          )
+        )}
+      </div>
+
+      {/* Calendar Grid */}
+      <div className="calendar-grid">
+        {requests.length === 0 ? (
+          <p>No hay solicitudes en este mes</p>
+        ) : (
+          requests.map(request => (
+            <div key={request.id} className="calendar-item">
+              <div className="date">{request.eventDate}</div>
+              <div className="type">{request.materialType}</div>
+              <div className="status">{request.status}</div>
+              <div className="priority">Prioridad: {request.priorityScore}/10</div>
+            </div>
+          ))
+        )}
+      </div>
+
+      <p className="note">
+        Ver el calendario te ayuda a entender nuestra carga de trabajo 
+        y a planificar mejor tu solicitud.
+      </p>
+    </div>
+  );
+}
+```
+
+**Key points**:
+- No `Authorization` header needed (public endpoint)
+- Shows: date, type, status, priority (no sensitive data)
+- Helps users understand workload before submitting request
+- Reduces conflicts by promoting transparency
+
 ---
 
 ## Testing Locally
