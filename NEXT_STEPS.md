@@ -1,21 +1,22 @@
-# 🎯 PHASE 1 ✅ COMPLETE → PHASE 2 NEXT STEP
+# 🎯 PHASE 1 ✅ COMPLETE (Enhanced) → PHASE 2 NEXT STEP
 
-**Current Status**: Feature specification, research, design, and API contracts complete  
+**Current Status**: Feature specification with public calendar enhancement, research, design, and API contracts complete  
 **Branch**: `001-decom-system`  
-**Date**: January 6, 2026
+**Date**: January 6, 2026 (Updated with public calendar feature)
 
 ---
 
 ## What Was Completed (Phase 1: Planning & Design)
 
-✅ Feature Specification: 5 user stories, 20 requirements, 10 success criteria  
+✅ Feature Specification: 4 user stories, 27 functional requirements, 10 success criteria  
 ✅ Research & Decisions: 11 technology choices documented  
-✅ Database Design: 4 tables, 20+ validations, RLS policies, triggers  
-✅ API Contracts: 8 endpoints fully specified with JSON schemas  
-✅ Database Schema: Production-ready SQL (copy & paste to Supabase)  
-✅ Developer Quickstart: 7-step setup guide  
+✅ Database Design: 4 tables, 27+ validations, RLS policies, triggers, public view  
+✅ API Contracts: 9+ endpoints fully specified with JSON schemas (including public calendar)  
+✅ Database Schema: Production-ready SQL with public calendar view  
+✅ Developer Quickstart: 7-step setup guide + public calendar React example  
 ✅ Project Structure: Complete directory layout defined  
 ✅ Agent Context: Updated for GitHub Copilot  
+✅ **NEW**: Public Calendar Feature - Read-only transparency view for comités (FR-021 to FR-027)  
 
 ---
 
@@ -23,10 +24,45 @@
 
 - ✅ Feature Branch: `001-decom-system`
 - ✅ All Planning Documents: In `specs/001-decom-system/`
-- ✅ Database Schema: In `specs/001-decom-system/contracts/database-schema.sql`
-- ✅ API Specifications: In `specs/001-decom-system/contracts/api-contracts.md`
-- ✅ Development Guide: In `specs/001-decom-system/quickstart.md`
+- ✅ Database Schema: In `specs/001-decom-system/contracts/database-schema.sql` (with public view)
+- ✅ API Specifications: In `specs/001-decom-system/contracts/api-contracts.md` (with public calendar)
+- ✅ Development Guide: In `specs/001-decom-system/quickstart.md` (with public calendar example)
 - ✅ Technology Stack: Finalized (Next.js + React + Supabase + Tailwind)
+- ✅ Public Calendar Feature: Fully designed (transparency for organizational culture improvement)
+
+---
+
+## Public Calendar Feature (NEW - Phase 1 Enhancement)
+
+**What is it?**
+A read-only calendar view accessible by comités WITHOUT authentication, showing:
+- Event dates
+- Material types (flyer, banner, video, etc.)
+- Request status (Pendiente, En_planificacion, En_diseño, Lista_para_entrega, Entregada)
+- Priority scores (1-10 indicating urgency)
+
+**Why?**
+Strategic design decision to use software as a tool for organizational culture:
+- **Transparency**: Comités understand the actual workload, not assumptions
+- **Education**: Reduces conflicts by showing "we're not being slow, there's just a lot of work"
+- **Empowerment**: Helps committees plan better by understanding existing requests
+
+**What is NOT visible** (protected):
+- Committee names (no identification of who requested)
+- Event details (event name, description)
+- Contact info (WhatsApp, encrypted)
+- Bible verses (private)
+- User names (private)
+
+**Endpoints implemented**:
+- `GET /api/public/calendar` - No auth required
+- Query params: `month`, `year`, `materialType`, `status`
+- Returns: List + status summary + material type summary
+
+**Database support**:
+- New view: `v_requests_public` (shows only safe fields)
+- New RLS policy: "Public calendar access (no auth required)"
+- Ready for Supabase SQL Editor
 
 ---
 
