@@ -1,716 +1,225 @@
-# Phase 2: Implementation Tasks - DECOM System
+# Tasks: Sistema de Gestión de Solicitudes de Comunicación - DECOM
 
-**Generated**: January 6, 2026  
-**Feature**: Sistema de Gestión de Solicitudes de Comunicación - DECOM  
-**Branch**: `001-decom-system`  
-**Status**: Ready for Development  
+**Input**: Design documents from `/specs/001-decom-system/`
+**Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
----
+**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.
 
-## 📋 Overview
+**Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
-This document breaks down the DECOM system specification into **25 granular implementation tasks**, organized by user story and phase. Each task is:
-- **Independently completable** (can be assigned to different developers)
-- **Testable** (includes acceptance criteria)
-- **Trackable** (clear deliverables)
-- **Parallelizable** where indicated with `[P]` flag
+## Format: `[ID] [P?] [Story] Description`
 
-**Total Estimated Effort**: 80-100 hours (4-5 developer weeks)  
-**Recommended Team**: 1 Backend (Supabase) + 1 Frontend (React/Next.js)
+- **[P]**: Can run in parallel (different files, no dependencies)
+- **[Story]**: Which user story this task belongs to (e.g., US1, US2, US3)
+- Include exact file paths in descriptions
 
----
+## Path Conventions
 
-## 🎯 Task Organization Strategy
+- **Single project**: `src/`, `tests/` at repository root
+- **Web app**: `backend/src/`, `frontend/src/`
+- **Mobile**: `api/src/`, `ios/src/` or `android/src/`
+- Paths shown below assume single project - adjust based on plan.md structure
 
-```
-Phase 2A: Infrastructure & Setup (Blocking) - 2 days
-├── Database + Supabase setup
-├── Authentication configuration
-└── Project scaffolding
+## Phase 1: Setup (Shared Infrastructure)
 
-Phase 2B: Backend API (Parallel with Frontend) - 3-4 days
-├── Authentication endpoints
-├── Request management API
-├── Committee & user management
-└── WhatsApp integration
+**Purpose**: Project initialization and basic structure
 
-Phase 2C: Frontend UI (Parallel with Backend) - 3-4 days
-├── Layout & navigation
-├── Forms (2-step process)
-├── Dashboard pages (list + calendar)
-└── Public calendar
-
-Phase 2D: Integration & Polish - 1-2 days
-├── Connect frontend ↔ backend
-├── End-to-end testing
-└── Deployment preparation
-```
+- [ ] T001 Create project structure per implementation plan
+- [ ] T002 Initialize Next.js project with TypeScript dependencies
+- [ ] T003 [P] Configure linting and formatting tools
 
 ---
 
-## 🔄 Dependency Graph
+## Phase 2: Foundational (Blocking Prerequisites)
 
-```
-Database Schema (T001)
-    ↓
-RLS Policies (T002) ──→ Auth API (T005) ──→ Protected Endpoints
-    ↓
-Seed Data (T003)
-    ↓
-Public Calendar View (T004) ──→ GET /public/calendar (T006)
-    ↓
-Requests API (T007-T010)
-    ↓
-Frontend Components (T011-T020) ← depends on API contracts
-    ↓
-Integration Tests (T021-T023)
-    ↓
-Deployment (T024-T025)
-```
+**Purpose**: Core infrastructure that MUST be complete before ANY user story can be implemented
+
+**⚠️ CRITICAL**: No user story work can begin until this phase is complete
+
+- [ ] T004 Setup Supabase database schema and migrations
+- [ ] T005 [P] Implement authentication/authorization framework with Supabase Auth
+- [ ] T006 [P] Setup API routing and middleware structure in app/api/
+- [ ] T007 Create base types/interfaces that all stories depend on in lib/types/
+- [ ] T008 Configure error handling and logging infrastructure
+- [ ] T009 Setup environment configuration management
+
+**Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
 ---
 
-## 📊 Parallel Execution Plan
+## Phase 3: User Story 1 - Comité solicita material publicitario (Priority: P1) 🎯 MVP
 
-**Can work SIMULTANEOUSLY**:
-- Backend team: T001 → T002 → T005-T010 (Database → Auth → API)
-- Frontend team: T011-T020 (Components using mock data initially)
-- They sync on: API contracts (already documented)
+**Goal**: Allow committee members to submit material requests through a structured form instead of WhatsApp
 
-**Must wait for**:
-- T001 (Database) before T002, T003, T005+
-- T005 (Auth API) before protected endpoints work
-- T007-T010 (API) before frontend can integrate
+**Independent Test**: A committee member can complete the multi-step form, see calculated dates, and receive confirmation of submission
 
----
+### Implementation for User Story 1
 
-# 🚀 PHASE 2A: INFRASTRUCTURE & SETUP
+- [ ] T010 [P] [US1] Create committees table and seed data in database-schema.sql
+- [ ] T011 [P] [US1] Create users table with auth integration in database-schema.sql
+- [ ] T012 [P] [US1] Create requests table with validation rules in database-schema.sql
+- [ ] T013 [P] [US1] Create request_history table for audit trail in database-schema.sql
+- [ ] T014 [US1] Implement committees API endpoint in app/api/committees/route.ts
+- [ ] T015 [US1] Implement request creation API endpoint in app/api/requests/route.ts
+- [ ] T016 [US1] Create request form components in components/forms/RequestForm.tsx
+- [ ] T017 [US1] Add form validation using Zod schemas in lib/validation/schemas.ts
+- [ ] T018 [US1] Implement date calculation utilities in lib/utils/dateCalculations.ts
+- [ ] T019 [US1] Create confirmation page after form submission in app/solicitar/confirmacion/page.tsx
 
-## T001: Setup Supabase Project & Database Schema
-
-- [ ] T001 Setup Supabase project and run database-schema.sql in SQL Editor
-
-**File Path**: `specs/001-decom-system/contracts/database-schema.sql`
-
-**Acceptance Criteria**:
-- [ ] Supabase project created (free tier ok for development)
-- [ ] All 4 tables exist: committees, users, requests, request_history
-- [ ] All indexes created (committee_id, status, event_date, priority_score)
-- [ ] All 3 triggers active (updated_at sync, status change logging)
-- [ ] Seed data inserted (5 predefined committees)
-- [ ] Tables visible in Supabase UI
-
-**Testing**: Connect with Supabase CLI: `supabase status`
+**Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
 ---
 
-## T002: Implement Row-Level Security (RLS) Policies
+## Phase 4: User Story 2 - DECOM gestiona solicitudes (Priority: P1)
 
-- [ ] T002 Enable RLS and implement 6 security policies in Supabase
+**Goal**: Allow DECOM admins to view all requests, filter by status, and change request states manually
 
-**File Path**: `specs/001-decom-system/contracts/database-schema.sql` (lines 188-260)
+**Independent Test**: A DECOM admin can view the requests list, filter by status, change a request status, and see the history of changes
 
-**Acceptance Criteria**:
-- [ ] RLS enabled on all 4 tables
-- [ ] Policy "Public read committees" allows all authenticated users
-- [ ] Policy "Users can view own profile" works
-- [ ] Policy "DECOM can view all users" works
-- [ ] Policy "Comité members can view own requests" works
-- [ ] Policy "DECOM admins can view all requests" works
-- [ ] Policy "Public calendar access" allows unauthenticated SELECT on v_requests_public
-- [ ] Test: Query as different auth levels returns correct rows
+### Implementation for User Story 2
 
-**Testing**: Use Supabase UI to test policies with test JWT tokens
+- [ ] T020 [P] [US2] Implement requests list API endpoint in app/api/requests/route.ts
+- [ ] T021 [P] [US2] Implement request detail API endpoint in app/api/requests/[id]/route.ts
+- [ ] T022 [P] [US2] Implement request status update API endpoint in app/api/requests/[id]/route.ts
+- [ ] T023 [US2] Create DECOM dashboard components in components/dashboard/RequestsList.tsx
+- [ ] T024 [US2] Create request detail view in components/admin/RequestDetail.tsx
+- [ ] T025 [US2] Implement status transition logic in lib/utils/requestStates.ts
+- [ ] T026 [US2] Add request history display in components/admin/RequestHistory.tsx
+- [ ] T027 [US2] Create WhatsApp contact button in components/admin/WhatsAppButton.tsx
 
----
-
-## T003: Create Seed Data & Test Accounts
-
-- [ ] T003 Insert test data: committees, users, sample requests
-
-**File Path**: Script to insert in Supabase SQL Editor
-
-**Acceptance Criteria**:
-- [ ] 5 committees exist (Jóvenes, Damas, Alabanza, Adoración, Diaconía)
-- [ ] 2 test users created (1 decom_admin, 1 comite_member)
-- [ ] 5-10 test requests with varied dates and states
-- [ ] Test requests have realistic dates (some past planning date, some upcoming)
-
-**Testing**: Verify via Supabase table editor
+**Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
 ---
 
-## T004: Create Public Calendar View
+## Phase 5: User Story 3 - DECOM visualiza en calendario (Priority: P2)
 
-- [ ] T004 Create v_requests_public view for public calendar access
+**Goal**: Allow DECOM admins to view requests in a monthly calendar format to visualize workload
 
-**File Path**: `specs/001-decom-system/contracts/database-schema.sql`
+**Independent Test**: A DECOM admin can switch between list and calendar views, select a day, and see requests for that day
 
-**Acceptance Criteria**:
-- [ ] View `v_requests_public` created successfully
-- [ ] View shows only: id, event_date, material_type, status, priority_score, days_since_created, days_until_delivery
-- [ ] View DOES NOT show: committee_id, event_name, contact_whatsapp, bible_verse_text, created_by
-- [ ] View ordered by event_date ASC
-- [ ] Test query: `SELECT * FROM v_requests_public` returns results without sensitive data
+### Implementation for User Story 3
 
-**Testing**: Query view and verify data is anonymized
+- [ ] T028 [P] [US3] Implement public calendar API endpoint in app/api/public/calendar/route.ts
+- [ ] T029 [US3] Create calendar view component in components/dashboard/CalendarView.tsx
+- [ ] T030 [US3] Add calendar filtering by status and material type in components/dashboard/FilterBar.tsx
+- [ ] T031 [US3] Implement calendar day selection and detail panel in components/dashboard/CalendarDay.tsx
+
+**Checkpoint**: All user stories should now be independently functional
 
 ---
 
-# 🔐 PHASE 2B: BACKEND API
+## Phase 6: User Story 4 - Comité visualiza calendario de solicitudes (Priority: P2)
 
-## T005: Implement Authentication Endpoints (Auth)
+**Goal**: Allow committee members to view a public calendar of requests before and after submitting their own
 
-- [ ] T005 Create /api/auth endpoints (signup, login, logout)
+**Independent Test**: Without authentication, a committee member can view the calendar, see workload, submit a request, and receive a link to view the calendar again
 
-**File Path**: `app/api/auth/[action]/route.ts`
+### Implementation for User Story 4
 
-**Acceptance Criteria**:
-- [ ] POST /api/auth/signup: Creates Supabase Auth user + profile in users table
-- [ ] POST /api/auth/login: Returns JWT token (stored in httpOnly cookie)
-- [ ] POST /api/auth/logout: Clears session
-- [ ] Email validation working
-- [ ] Password strength enforced (min 8 chars, 1 uppercase, 1 number, 1 special)
-- [ ] Duplicate email prevention
-- [ ] JWT token expires properly
-- [ ] Session persists across page reloads
+- [ ] T032 [P] [US4] Implement public calendar API endpoint in app/api/public/calendar/route.ts (reuse from US3)
+- [ ] T033 [US4] Create public calendar component in components/PublicCalendar.tsx
+- [ ] T034 [US4] Add calendar link in request form in components/forms/RequestForm.tsx
+- [ ] T035 [US4] Add calendar link in confirmation page in app/solicitar/confirmacion/page.tsx
+- [ ] T036 [US4] Implement calendar filtering by month/year in components/PublicCalendar.tsx
 
-**Testing**: Test with curl or Postman
+---
+
+## Phase 7: Polish & Cross-Cutting Concerns
+
+**Purpose**: Improvements that affect multiple user stories
+
+- [ ] T037 [P] Documentation updates in README.md and docs/
+- [ ] T038 Code cleanup and refactoring across all components
+- [ ] T039 Performance optimization for calendar loading
+- [ ] T040 Security hardening with RLS policies
+- [ ] T041 Run quickstart.md validation and update if needed
+
+---
+
+## Dependencies & Execution Order
+
+### Phase Dependencies
+
+- **Setup (Phase 1)**: No dependencies - can start immediately
+- **Foundational (Phase 2)**: Depends on Setup completion - BLOCKS all user stories
+- **User Stories (Phase 3+)**: All depend on Foundational phase completion
+  - User stories can then proceed in parallel (if staffed)
+  - Or sequentially in priority order (P1 → P2 → P3)
+- **Polish (Final Phase)**: Depends on all desired user stories being complete
+
+### User Story Dependencies
+
+- **User Story 1 (P1)**: Can start after Foundational (Phase 2) - No dependencies on other stories
+- **User Story 2 (P1)**: Can start after Foundational (Phase 2) - May integrate with US1 but should be independently testable
+- **User Story 3 (P2)**: Can start after Foundational (Phase 2) - May integrate with US1/US2 but should be independently testable
+- **User Story 4 (P2)**: Can start after Foundational (Phase 2) - Depends on US3 for calendar API but should be independently testable
+
+### Within Each User Story
+
+- Models before services
+- Services before endpoints
+- Core implementation before integration
+- Story complete before moving to next priority
+
+### Parallel Opportunities
+
+- All Setup tasks marked [P] can run in parallel
+- All Foundational tasks marked [P] can run in parallel (within Phase 2)
+- Once Foundational phase completes, all user stories can start in parallel (if team capacity allows)
+- Models within a story marked [P] can run in parallel
+- Different user stories can be worked on in parallel by different team members
+
+---
+
+## Parallel Example: User Story 1
 
 ```bash
-# Signup
-curl -X POST http://localhost:3000/api/auth/signup \
-  -H "Content-Type: application/json" \
-  -d '{"email":"decom@iglesia.com","password":"SecurePass123!"}'
-
-# Login
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"decom@iglesia.com","password":"SecurePass123!"}'
+# Launch all models for User Story 1 together:
+Task: "Create committees table and seed data in database-schema.sql"
+Task: "Create users table with auth integration in database-schema.sql"
+Task: "Create requests table with validation rules in database-schema.sql"
+Task: "Create request_history table for audit trail in database-schema.sql"
 ```
 
 ---
 
-## T006: [P] Implement GET /api/public/calendar Endpoint
+## Implementation Strategy
 
-- [ ] T006 [P] Create public calendar endpoint (no auth required)
+### MVP First (User Story 1 Only)
 
-**File Path**: `app/api/public/calendar/route.ts`
+1. Complete Phase 1: Setup
+2. Complete Phase 2: Foundational (CRITICAL - blocks all stories)
+3. Complete Phase 3: User Story 1
+4. **STOP and VALIDATE**: Test User Story 1 independently
+5. Deploy/demo if ready
 
-**Acceptance Criteria**:
-- [ ] Endpoint accessible WITHOUT authentication
-- [ ] Query params: ?month=1&year=2026&materialType=flyer&status=Pendiente&limit=50&offset=0
-- [ ] Returns: { data: [], pagination: {}, meta: {} }
-- [ ] meta includes totalByStatus and totalByMaterialType counts
-- [ ] Pagination works correctly (limit, offset, total pages)
-- [ ] Filters work (by month, year, material_type, status)
-- [ ] Response includes: id, eventDate, materialType, status, priorityScore, daysSinceCreated, daysUntilDelivery
+### Incremental Delivery
 
-**Testing**: 
-```bash
-curl http://localhost:3000/api/public/calendar?month=1&year=2026
-```
+1. Complete Setup + Foundational → Foundation ready
+2. Add User Story 1 → Test independently → Deploy/Demo (MVP!)
+3. Add User Story 2 → Test independently → Deploy/Demo
+4. Add User Story 3 → Test independently → Deploy/Demo
+5. Add User Story 4 → Test independently → Deploy/Demo
+6. Each story adds value without breaking previous stories
 
----
+### Parallel Team Strategy
 
-## T007: [P] Implement Request Management API - GET
+With multiple developers:
 
-- [ ] T007 [P] Create GET /api/requests (list with filters)
-
-**File Path**: `app/api/requests/route.ts`
-
-**Acceptance Criteria**:
-- [ ] Requires authentication (JWT token)
-- [ ] DECOM sees ALL requests
-- [ ] Comité members see ONLY their own requests
-- [ ] Filters: ?status=Pendiente&priority=5&committee=uuid
-- [ ] Pagination: ?limit=20&offset=0
-- [ ] Returns full request details including committee name, priority, dates
-- [ ] Sorting: by event_date, priority_score, created_at
-
-**Testing**: Test with DECOM token (sees all) vs comité token (sees own only)
+1. Team completes Setup + Foundational together
+2. Once Foundational is done:
+   - Developer A: User Story 1
+   - Developer B: User Story 2
+   - Developer C: User Stories 3 & 4
+3. Stories complete and integrate independently
 
 ---
 
-## T008: [P] Implement Request Management API - POST
-
-- [ ] T008 [P] Create POST /api/requests (create new request)
-
-**File Path**: `app/api/requests/route.ts`
-
-**Acceptance Criteria**:
-- [ ] Validates request body with Zod schema
-- [ ] Creates request with all required fields
-- [ ] Calculates planning_start_date and delivery_date automatically
-- [ ] Calculates priority_score based on event_date
-- [ ] Sets status to "Pendiente"
-- [ ] Returns created request with 201 status
-- [ ] Respects RLS: only creates for authenticated user's committee
-
-**Request Body**:
-```json
-{
-  "committee_id": "uuid",
-  "event_name": "Retiro anual 2026",
-  "event_info": "Descripción del evento...",
-  "event_date": "2026-02-15",
-  "material_type": "flyer",
-  "contact_whatsapp": "+573001234567",
-  "include_bible_verse": false
-}
-```
-
----
-
-## T009: [P] Implement Request Management API - PATCH
-
-- [ ] T009 [P] Create PATCH /api/requests/:id (update request status)
-
-**File Path**: `app/api/requests/[id]/route.ts`
-
-**Acceptance Criteria**:
-- [ ] Only DECOM admins can update status
-- [ ] Comité members can edit own request IF status ≠ "Entregada"
-- [ ] Valid status transitions enforced
-- [ ] Auto-logs change to request_history table
-- [ ] Returns updated request
-- [ ] Timestamp updated automatically
-
-**Request Body**:
-```json
-{
-  "status": "En_planificacion"
-}
-```
-
----
-
-## T010: [P] Implement WhatsApp Link Generation API
-
-- [ ] T010 [P] Create GET /api/whatsapp/link endpoint
-
-**File Path**: `app/api/whatsapp/link/route.ts`
-
-**Acceptance Criteria**:
-- [ ] Query params: ?requestId=uuid&message=optional
-- [ ] Returns: { phoneNumber, message, whatsappUrl, shortCode }
-- [ ] WhatsApp URL format: `https://wa.me/[phone]?text=[encoded message]`
-- [ ] Safe message encoding (URL encoding)
-- [ ] Only DECOM can see phone numbers
-- [ ] Supports custom messages
-
-**Testing**:
-```bash
-curl "http://localhost:3000/api/whatsapp/link?requestId=abc123"
-```
-
----
-
-## T011: [P] Implement User Profile API
-
-- [ ] T011 [P] Create GET /api/user/profile and PATCH /api/user/profile
-
-**File Path**: `app/api/user/profile/route.ts`
-
-**Acceptance Criteria**:
-- [ ] GET returns current user's profile
-- [ ] PATCH updates non-admin fields only
-- [ ] Can't change role to decom_admin
-- [ ] Returns: { id, email, fullName, role, preferredCommitteeId, createdAt }
-
----
-
-# 🎨 PHASE 2C: FRONTEND UI & COMPONENTS
-
-## T012: Project Setup & Layout Components
-
-- [ ] T012 Create Next.js app structure and layout components
-
-**File Path**: `app/layout.tsx`, `app/components/Navigation.tsx`
-
-**Acceptance Criteria**:
-- [ ] Tailwind CSS working (color palette: #16233B, #15539C, #F49E2C)
-- [ ] Navigation component for authenticated users (header + footer)
-- [ ] Logo + IPUC branding
-- [ ] Responsive mobile-first (tested at 375px)
-- [ ] Dark/light mode setup (optional, can skip for MVP)
-
-**Testing**: `npm run dev` → Open http://localhost:3000 → See styled layout
-
----
-
-## T013: [P] Create 2-Step Request Form (Step 1)
-
-- [ ] T013 [P] Build RequestForm Step 1 component (event info)
-
-**File Path**: `app/components/RequestForm/Step1.tsx`
-
-**Acceptance Criteria**:
-- [ ] Committee selector (dropdown)
-- [ ] Event name input (text)
-- [ ] Event info textarea (5-500 chars, counter)
-- [ ] Event date picker (no past dates)
-- [ ] Auto-calculated dates displayed:
-  - Planning start: event_date - 7 days
-  - Delivery date: event_date - 2 days
-- [ ] Progress indicator shows "Step 1 of 2"
-- [ ] Validation errors display inline
-- [ ] "Continue" button navigates to Step 2
-- [ ] Mobile-responsive (375px+)
-
-**Testing**: Fill form, verify dates calculate, click Continue
-
----
-
-## T014: [P] Create 2-Step Request Form (Step 2)
-
-- [ ] T014 [P] Build RequestForm Step 2 component (material & contact)
-
-**File Path**: `app/components/RequestForm/Step2.tsx`
-
-**Acceptance Criteria**:
-- [ ] Material type chips (flyer, banner, video, redes, otro) - selectable
-- [ ] WhatsApp input with +57 format validation
-- [ ] Toggle: "Include Bible Verse?" (yes/no)
-- [ ] Conditional field: Bible verse textarea (appears if toggle ON)
-- [ ] Progress indicator shows "Step 2 of 2" at 100%
-- [ ] "Back" button returns to Step 1 (preserves data)
-- [ ] "Submit Request" button sends to /api/requests
-- [ ] Success: Shows confirmation page
-- [ ] Error handling: Displays error message if submission fails
-
-**Testing**: Fill both steps, submit, see confirmation
-
----
-
-## T015: [P] Request Confirmation Page
-
-- [ ] T015 [P] Create confirmation page after form submission
-
-**File Path**: `app/components/RequestConfirmation.tsx`
-
-**Acceptance Criteria**:
-- [ ] Shows success icon (animated checkmark)
-- [ ] Displays: "Request #SOL-001 submitted successfully"
-- [ ] Summary card with:
-  - Event name
-  - Event date
-  - Delivery date
-  - Request ID
-- [ ] Two buttons:
-  - "View My Requests" → /dashboard
-  - "Create Another" → /new-request (reset form)
-- [ ] Link to public calendar: "Ver carga de trabajo"
-
-**Testing**: Submit form → See confirmation with request ID
-
----
-
-## T016: [P] Dashboard - Request List View
-
-- [ ] T016 [P] Create dashboard with request list (table/cards)
-
-**File Path**: `app/components/Dashboard/RequestList.tsx`
-
-**Acceptance Criteria**:
-- [ ] Display all user's requests in card/table format
-- [ ] Columns/Info per card:
-  - Committee name
-  - Event name
-  - Event date
-  - Status (badge with color)
-  - Material type (icon)
-  - Days remaining
-  - Priority score (1-10 bar or number)
-- [ ] Clickable cards: Opens detail page
-- [ ] Filters (chips): All | Pendiente | En_planificacion | En_diseño | Lista | Entregada
-- [ ] Sort: by event_date, priority, created_at
-- [ ] Empty state: "No requests yet" with button to create
-- [ ] Pagination: Load more / Next page
-- [ ] Mobile responsive
-
-**Testing**: See list of requests, click filters, click a request to see details
-
----
-
-## T017: [P] Dashboard - Calendar View (Month)
-
-- [ ] T017 [P] Create calendar month view for requests
-
-**File Path**: `app/components/Dashboard/CalendarView.tsx`
-
-**Acceptance Criteria**:
-- [ ] Month grid (7 columns = days of week)
-- [ ] Navigation: < Previous | January 2026 | Next >
-- [ ] Color-coded dots/badges on dates with requests
-- [ ] Hover/click date: Shows requests for that day
-- [ ] Legend: Colors by status (Pendiente=orange, En_diseño=blue, Lista=green)
-- [ ] Today highlighted (circle outline)
-- [ ] Multi-events per day: Show count or small dots
-- [ ] Responsive: Stack properly on mobile
-
-**Testing**: Navigate months, click dates, see request details
-
----
-
-## T018: [P] Request Detail Page
-
-- [ ] T018 [P] Create detail page for single request (/requests/:id)
-
-**File Path**: `app/pages/requests/[id]/page.tsx`
-
-**Acceptance Criteria**:
-- [ ] Show full request details:
-  - Event name, description, date
-  - Committee (if DECOM viewing)
-  - Material type, contact name (if DECOM)
-  - Bible verse (if included)
-  - Current status (large badge)
-  - All calculated dates (planning, delivery, days remaining)
-  - Priority score with visual indicator
-  - Change history (timeline of status changes if DECOM)
-- [ ] For DECOM only:
-  - Status dropdown (change status)
-  - "Contact via WhatsApp" button (if status = "Lista")
-  - Save changes button
-- [ ] Back button
-
-**Testing**: Navigate to detail page from list, see full info, try status change (DECOM)
-
----
-
-## T019: [P] Public Calendar Page (No Auth)
-
-- [ ] T019 [P] Create public calendar page (/calendar)
-
-**File Path**: `app/pages/calendar/page.tsx`
-
-**Acceptance Criteria**:
-- [ ] NO authentication required (public)
-- [ ] Month/year selector: < January 2026 >
-- [ ] Status summary: "Pendientes: 15 | En_planificacion: 22 | ..."
-- [ ] Material type summary: "Flyers: 22 | Banners: 15 | ..."
-- [ ] Request cards showing:
-  - Event date (large)
-  - Material type (badge/icon)
-  - Status (badge)
-  - Priority (1-10)
-  - "Hace X días" (how long ago created)
-- [ ] NO sensitive info: No committee name, no event details, no contact info
-- [ ] Educational message: "This shows current workload to help you plan better"
-- [ ] Mobile responsive
-
-**Testing**: Visit /calendar without logging in, see public data
-
----
-
-## T020: [P] DECOM Admin Dashboard (Reports)
-
-- [ ] T020 [P] Create DECOM admin panel for reporting/analytics
-
-**File Path**: `app/components/AdminDashboard/Reports.tsx`
-
-**Acceptance Criteria**:
-- [ ] Key metrics:
-  - Total requests this month
-  - Average time to complete
-  - Backlog (Pendiente + En_planificacion + En_diseño)
-  - Completion rate
-- [ ] Charts/Graphs:
-  - Requests by status (pie or bar)
-  - Requests by committee (bar)
-  - Timeline: requests over time
-- [ ] Filters: By date range, committee
-- [ ] Only accessible to decom_admin role
-
-**Testing**: Login as DECOM, view analytics
-
----
-
-# 🧪 PHASE 2D: INTEGRATION & TESTING
-
-## T021: Frontend ↔ Backend Integration
-
-- [ ] T021 Connect frontend forms & pages to backend API
-
-**Acceptance Criteria**:
-- [ ] Form submission hits /api/requests POST ✅
-- [ ] List fetches from /api/requests GET ✅
-- [ ] Status changes hit /api/requests/:id PATCH ✅
-- [ ] Public calendar fetches from /api/public/calendar ✅
-- [ ] WhatsApp link uses /api/whatsapp/link ✅
-- [ ] Auth flows work end-to-end ✅
-- [ ] Error handling: Display API errors to users ✅
-
-**Testing**: Full user journey: signup → form → list → detail → status change
-
----
-
-## T022: [P] Unit & Component Tests
-
-- [ ] T022 [P] Write Jest tests for components & API routes
-
-**File Path**: `__tests__/` directory
-
-**Acceptance Criteria**:
-- [ ] Component tests: RequestForm, RequestList, Calendar (80%+ coverage)
-- [ ] API route tests: /api/requests, /api/auth, /api/public/calendar
-- [ ] Validation tests: Zod schemas, form validation
-- [ ] Run: `npm test` → All tests pass
-
----
-
-## T023: [P] End-to-End Tests (E2E)
-
-- [ ] T023 [P] Write Playwright tests for critical user flows
-
-**File Path**: `e2e/` directory
-
-**Acceptance Criteria**:
-- [ ] Test: Comité creates request (signup → form → confirmation)
-- [ ] Test: DECOM views requests (login → filter → detail → status change)
-- [ ] Test: Public calendar access (no login required)
-- [ ] Test: WhatsApp link generation
-- [ ] Run: `npx playwright test` → All pass
-
----
-
-## T024: Deployment Preparation
-
-- [ ] T024 Prepare environment setup for Vercel + Supabase
-
-**Acceptance Criteria**:
-- [ ] `.env.local` configured with Supabase keys
-- [ ] `.env.example` created (no secrets)
-- [ ] Vercel project linked
-- [ ] Build: `npm run build` → No errors
-- [ ] Deploy to staging environment
-
-**File Path**: `.env.local`, `vercel.json`
-
----
-
-## T025: Production Deployment
-
-- [ ] T025 Deploy to production (Vercel + Supabase Cloud)
-
-**Acceptance Criteria**:
-- [ ] Frontend deployed to Vercel
-- [ ] Backend (Supabase) in production
-- [ ] Domain configured
-- [ ] SSL certificate active
-- [ ] Monitoring setup (optional)
-- [ ] Database backups enabled
-- [ ] Ready for user testing
-
----
-
-# 📊 Task Summary by Assignee
-
-## 👤 Backend Developer Tasks
-```
-T001: Setup Supabase
-T002: RLS Policies
-T003: Seed Data
-T004: Public Calendar View
-T005: Auth endpoints
-T006: [P] GET /api/public/calendar
-T007: [P] GET /api/requests
-T008: [P] POST /api/requests
-T009: [P] PATCH /api/requests/:id
-T010: [P] WhatsApp Link API
-T011: [P] User Profile API
-T021: Integration (API side)
-T024: Deployment Prep
-```
-
-## 👤 Frontend Developer Tasks
-```
-T012: Layout & Navigation
-T013: [P] Form Step 1
-T014: [P] Form Step 2
-T015: [P] Confirmation Page
-T016: [P] Request List
-T017: [P] Calendar View
-T018: [P] Request Detail
-T019: [P] Public Calendar
-T020: [P] Admin Reports
-T021: Integration (Frontend side)
-T022: [P] Unit Tests
-T023: [P] E2E Tests
-T024: Deployment Prep
-T025: Production Deploy
-```
-
----
-
-# 🔄 Implementation Flow
-
-### Week 1 (Days 1-2): Foundation
-```
-Backend: T001 → T002 → T003 → T004
-Frontend: T012 (parallel)
-```
-
-### Week 1 (Days 3-4): Core APIs
-```
-Backend: T005 → T006 → T007 → T008 → T009 → T010 → T011
-Frontend: T013 → T014 (using mock data)
-```
-
-### Week 2 (Days 1-3): Frontend Components
-```
-Frontend: T015 → T016 → T017 → T018 → T019 → T020
-Backend: T021 (integration)
-```
-
-### Week 2 (Days 4-5): Testing & Deploy
-```
-Both: T021 → T022 → T023
-Backend: T024 → T025
-```
-
----
-
-# ✅ Acceptance Criteria Summary
-
-Each task MUST:
-- [ ] Have code in a feature branch (`001-feature/name`)
-- [ ] Be mergeable without conflicts
-- [ ] Have passing tests (or explicit test plan)
-- [ ] Be documented (README/comments if complex)
-- [ ] Be demoed/tested manually
-- [ ] Get code review before merge
-
----
-
-# 📞 Communication & Coordination
-
-**Daily Sync Points**:
-1. **Morning**: Check blockers (T001 ready? APIs documented?)
-2. **Midday**: Share updates on parallel tasks
-3. **EOD**: Commit code, document what's done
-
-**Integration Points**:
-- After T005 (Auth API): Frontend can start authenticated requests
-- After T007-T010 (CRUD APIs): Frontend can integrate fully
-- Before T021: Agree on API response formats (already documented in contracts)
-
----
-
-# 🎯 Success Metrics
-
-Phase 2 is complete when:
-- ✅ All 25 tasks done
-- ✅ All tests passing
-- ✅ Full user journey working (form → list → detail → calendar)
-- ✅ Public calendar accessible without auth
-- ✅ DECOM admin panel functional
-- ✅ Deployed to production
-- ✅ Ready for user testing
-
----
-
-**Status**: Ready for implementation  
-**Next Step**: Assign tasks to Frontend & Backend teams  
-**Questions**: Refer to specs/001-decom-system/ for detailed requirements
+## Notes
+
+- [P] tasks = different files, no dependencies
+- [Story] label maps task to specific user story for traceability
+- Each user story should be independently completable and testable
+- Commit after each task or logical group
+- Stop at any checkpoint to validate story independently
+- Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence
