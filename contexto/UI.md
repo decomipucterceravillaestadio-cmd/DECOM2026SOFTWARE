@@ -749,3 +749,89 @@ ESTILO:
 - Botón muy destacado y llamativo
 - Espaciado generoso de 24px entre elementos
 - Mobile 375px
+
+---
+
+Prompt 11: Pantalla de Calendario Público (Sin Autenticación) - NEW
+Diseña una pantalla de calendario público para que comités vean solicitudes existentes ANTES de enviar la suya.
+
+CONTEXTO ESTRATÉGICO:
+Esta es una pantalla de "liderazgo silencioso mediante UX". Permite que los comités vean 
+la carga de trabajo real de DECOM, reduciendo conflictos y mejorando la comprensión 
+organizacional. No requiere login.
+
+PALETA DE COLORES IPUC:
+- Primario oscuro: #16233B
+- Primario claro: #15539C
+- Secundario: #F49E2C
+- Fondo: #F5F5F5
+- Cards: #FFFFFF
+- Texto: #16233B
+- Éxito: #4CAF50
+
+ELEMENTOS:
+- Header simple con fondo #16233B:
+  * Logo IPUC pequeño a la izquierda
+  * Título "Ver Carga de Trabajo" en blanco
+  * Icono de cerrar (X) a la derecha si está en modal
+  
+- Selector de mes/año horizontal:
+  * Botones < > para navegar
+  * Mes y año centrados: "Enero 2026"
+  * Fondo #F49E2C con texto #16233B
+  
+- Resumen de estado en chips horizontales:
+  * "Pendientes: 15"
+  * "En planificación: 22"
+  * "En diseño: 8"
+  * "Lista: 2"
+  * "Entregada: 0"
+  * Chips con borde #15539C, números en negrita
+  
+- Resumen por tipo de material:
+  * Iconos pequeños + conteos
+  * Flyer (22), Banner (15), Video (5), Redes (2), Otro (3)
+  * Colores distintivos o iconografía
+  
+- Grid de solicitudes (o lista si mobile):
+  * Cards compactas con:
+    - Fecha del evento (grande, #15539C)
+    - Tipo de material (badge con icono)
+    - Estado (badge con color según status)
+    - Prioridad (1-10 en barra visual o número)
+    - "Hace X días" (gris claro)
+    - "Faltan X días" (naranja si < 2 días)
+  * Espaciado entre cards: 12px
+  * Sin información sensible (no comité, no event name, no WhatsApp)
+  
+- Información educativa en card destacada:
+  * Icono de información en #15539C
+  * Texto: "Este calendario muestra todas las solicitudes en proceso. 
+    Entender la carga de trabajo nos ayuda como comunidad a ser más empáticos 
+    y organizados. ¡Gracias por tu paciencia!"
+  * Fondo #F49E2C con opacidad 15%
+  * Borde izquierdo #F49E2C de 4px
+
+- Botón flotante (si está integrado en formulario):
+  * "Crear Mi Solicitud" (fondo #15539C)
+  * Posición: abajo centro
+  * Sombra pronunciada
+
+ESTILO:
+- Diseño abierto y transparente
+- Paleta corporativa IPUC consistente
+- Información clara sin abrumar
+- Mobile-first 375px
+- Scroll vertical
+- No requiere autenticación
+- Tabla responsive o cards stacked en mobile
+- Colores consistentes con el resto del sistema
+
+CASOS DE USO:
+1. ANTES de llenar formulario: Botón "Ver calendario" en landing
+2. DESPUÉS de enviar: Link en pantalla de confirmación
+3. EN CUALQUIER MOMENTO: Acceso directo sin login
+
+---
+
+NOTA IMPORTANTE: Todos estos prompts han sido actualizados con la nueva paleta de colores corporativa de IPUC VILLA ESTADIO - DECOM 2023. El calendario público (Prompt 11) es una adición estratégica para mejorar la comunicación y la transparencia organizacional.
