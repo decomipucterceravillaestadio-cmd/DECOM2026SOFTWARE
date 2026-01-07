@@ -8,6 +8,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
 import { loginSchema } from '../../../lib/validations'
 import type { Database } from '../../../types/database'
+import { createAdminClient } from '../../../lib/supabase/admin'
 
 export async function POST(request: NextRequest) {
   try {
@@ -79,17 +80,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Crear cliente admin para operaciones en public.users (bypasea RLS)
+    const supabaseAdmin = createAdminClient()
+
     // Verificar que el usuario existe en tabla `users` y tiene rol decom_admin
-    let { data: userData, error: userError } = await supabase
+    // Buscar por auth_user_id, no por id (id es el UUID de public.users, auth_user_id es el de auth.users)
+    let { data: userData, error: userError } = await supabaseAdmin
       .from('users')
       .select('*')
-      .eq('id', authData.user.id)
+      .eq('auth_user_id', authData.user.id)
       .single()
 
     // Si no existe, crear el usuario en public.users (para desarrollo/testing)
     if (userError || !userData) {
       const userEmail = authData.user.email || validatedData.email;
-      const { data: newUser, error: createError } = await supabase
+      const { data: newUser, error: createError } = await supabaseAdmin
         .from('users')
         .insert({
           auth_user_id: authData.user.id,
