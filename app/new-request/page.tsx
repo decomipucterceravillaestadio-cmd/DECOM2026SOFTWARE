@@ -29,6 +29,21 @@ export default function NewRequestPage() {
     setError(null)
 
     try {
+      // Normalizar el número de WhatsApp
+      let whatsappNumber = data.contact_whatsapp.trim()
+      // Eliminar espacios, paréntesis, guiones
+      whatsappNumber = whatsappNumber.replace(/[\s\-\(\)]/g, '')
+      // Si ya tiene +57, no agregar
+      if (!whatsappNumber.startsWith('+57')) {
+        // Si solo tiene 10 dígitos (comienza con 3), agregar +57
+        if (whatsappNumber.length === 10 && whatsappNumber.startsWith('3')) {
+          whatsappNumber = `+57${whatsappNumber}`
+        } else if (whatsappNumber.length === 12 && whatsappNumber.startsWith('573')) {
+          // Si tiene 12 dígitos sin +, agregar +
+          whatsappNumber = `+${whatsappNumber}`
+        }
+      }
+
       // Preparar los datos para el API
       const requestData = {
         committee_id: data.committee_id,
@@ -36,7 +51,7 @@ export default function NewRequestPage() {
         event_info: data.event_info,
         event_date: data.event_date,
         material_type: data.material_type,
-        contact_whatsapp: `+57${data.contact_whatsapp}`,
+        contact_whatsapp: whatsappNumber,
         include_bible_verse: data.include_bible_verse,
         bible_verse_text: data.bible_verse_text || null,
       }
