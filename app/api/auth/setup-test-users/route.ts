@@ -10,6 +10,12 @@ import type { Database } from '../../../types/database'
 
 const TEST_USERS = [
   {
+    email: 'juan@gmail.com',
+    password: 'QWERTYUIOP',
+    name: 'Juan',
+    role: 'decom_admin',
+  },
+  {
     email: 'admin@decom.test',
     password: 'DecomAdmin123!',
     name: 'Admin DECOM',

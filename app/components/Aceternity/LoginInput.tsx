@@ -42,6 +42,7 @@ export function LoginInput({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
+          autoComplete={isPassword ? 'current-password' : 'off'}
           className={`w-full px-4 py-3 rounded-lg bg-white border-2 transition-all duration-200 focus:outline-none ${
             error
               ? 'border-red-500 focus:border-red-600 focus:ring-2 focus:ring-red-200'
