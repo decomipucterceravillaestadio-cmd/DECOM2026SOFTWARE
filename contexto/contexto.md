@@ -30,7 +30,7 @@ Sistema web responsivo para centralizar y gestionar solicitudes de material publ
 ## 3. Actores del Sistema
 
 ### 3.1 Comités Solicitantes
-- Jóvenes, Damas, Alabanza, Adoración, Diaconía (+ personalizables)
+- Jóvenes, Damas, Alabanza, Adoración, CABALLEROS (+ personalizables)
 - **Sin autenticación**: Envían solicitudes via formulario público
 - **Con acceso público**: Pueden ver calendario sin login (nueva funcionalidad)
 

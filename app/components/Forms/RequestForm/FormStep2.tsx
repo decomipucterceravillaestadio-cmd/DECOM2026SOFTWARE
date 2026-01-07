@@ -1,0 +1,317 @@
+'use client'
+
+import { useState } from 'react'
+import { useForm, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Button } from '../../UI/Button'
+import type { Step1Data } from './FormStep1'
+import {
+  ProgressIndicator,
+  FormField,
+  FormSection,
+  SelectButtonGroup,
+  EnhancedInput,
+  EnhancedTextarea,
+} from '../FormComponents'
+
+// Esquema de validación para Step 2
+const step2Schema = z
+  .object({
+    material_type: z.enum(['flyer', 'banner', 'video', 'redes_sociales', 'otro']),
+    contact_whatsapp: z
+      .string()
+      .regex(/^\+?57\d{10}$/, 'Número de WhatsApp inválido (Ej: 3001234567)'),
+    include_bible_verse: z.boolean(),
+    bible_verse_text: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.include_bible_verse) {
+        return data.bible_verse_text && data.bible_verse_text.length > 0
+      }
+      return true
+    },
+    {
+      message: 'La cita bíblica es requerida cuando está activada',
+      path: ['bible_verse_text'],
+    }
+  )
+
+export type Step2Data = z.infer<typeof step2Schema>
+
+interface FormStep2Props {
+  step1Data: Step1Data
+  onBack: () => void
+  onSubmit: (data: Step1Data & Step2Data) => void
+  isLoading?: boolean
+  error?: string
+}
+
+const MATERIAL_TYPES = [
+  { id: 'flyer', label: 'Flyer', icon: '📄', description: 'Volante impreso' },
+  { id: 'banner', label: 'Banner', icon: '🖼️', description: 'Banner digital' },
+  { id: 'video', label: 'Video', icon: '🎥', description: 'Contenido video' },
+  { id: 'redes_sociales', label: 'Redes', icon: '📱', description: 'Social media' },
+  { id: 'otro', label: 'Otro', icon: '📦', description: 'Especificar' },
+]
+
+export function FormStep2({
+  step1Data,
+  onBack,
+  onSubmit,
+  isLoading = false,
+  error,
+}: FormStep2Props) {
+  const [isLoadingRequest, setIsLoadingRequest] = useState(false)
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    control,
+    formState: { errors },
+  } = useForm<Step2Data>({
+    resolver: zodResolver(step2Schema),
+    defaultValues: {
+      material_type: 'flyer',
+      include_bible_verse: false,
+    },
+  })
+
+  const includeBibleVerse = watch('include_bible_verse')
+  const selectedMaterialType = watch('material_type')
+
+  const handleFormSubmit = async (data: Step2Data) => {
+    setIsLoadingRequest(true)
+    try {
+      await onSubmit({ ...step1Data, ...data })
+    } finally {
+      setIsLoadingRequest(false)
+    }
+  }
+
+  return (
+    <motion.div
+      className="space-y-8 w-full max-w-2xl mx-auto px-4 py-8"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* Progress Indicator */}
+      <ProgressIndicator
+        currentStep={2}
+        totalSteps={2}
+        stepTitle="Detalles del Material"
+      />
+
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
+        {/* Material Type Section */}
+        <FormSection
+          title="Tipo de Material"
+          description="Selecciona qué tipo de material necesitas para tu evento"
+          icon="🎨"
+        >
+          <SelectButtonGroup
+            options={MATERIAL_TYPES}
+            value={selectedMaterialType}
+            onChange={(value) => {
+              watch('material_type')
+              const form = document.querySelector('form')
+              if (form) {
+                const radioInput = form.querySelector(
+                  `input[value="${value}"]`
+                ) as HTMLInputElement
+                if (radioInput) radioInput.checked = true
+              }
+            }}
+            error={errors.material_type?.message}
+          />
+          {/* Render the hidden input */}
+          <input
+            type="hidden"
+            value={selectedMaterialType}
+            {...register('material_type')}
+          />
+        </FormSection>
+
+        {/* Contact Section */}
+        <FormSection
+          title="Información de Contacto"
+          description="Cómo podemos notificarte sobre el progreso de tu solicitud"
+          icon="📞"
+        >
+          <FormField
+            label="Número de WhatsApp"
+            required
+            error={errors.contact_whatsapp?.message}
+            hint="+57 3XX XXX XXXX"
+          >
+            <div className="flex gap-0 rounded-xl overflow-hidden border-2 border-gray-200 focus-within:border-[#15539C] focus-within:ring-2 focus-within:ring-[#15539C]/20 transition-all">
+              <div className="flex items-center px-4 bg-gradient-to-r from-gray-50 to-gray-100 border-r border-gray-200">
+                <span className="font-bold text-gray-700">🇨🇴 +57</span>
+              </div>
+              <input
+                type="tel"
+                placeholder="300 123 4567"
+                maxLength={10}
+                {...register('contact_whatsapp')}
+                className="flex-1 px-4 py-3 border-0 focus:outline-none text-gray-800 placeholder-gray-400 w-full font-medium"
+              />
+            </div>
+            <p className="text-xs text-gray-500 font-medium mt-2">
+              Te notificaremos el estado de tu solicitud por WhatsApp
+            </p>
+          </FormField>
+        </FormSection>
+
+        {/* Bible Verse Optional Section */}
+        <motion.div
+          layout
+          className={`border-2 rounded-xl p-6 transition-all duration-300 ${
+            includeBibleVerse
+              ? 'border-[#15539C] bg-gradient-to-br from-[#15539C]/5 to-transparent'
+              : 'border-dashed border-gray-300 bg-white hover:border-[#15539C]/40'
+          }`}
+        >
+          <div className="space-y-5">
+            {/* Toggle */}
+            <label className="flex items-center justify-between cursor-pointer group select-none">
+              <div className="flex items-center gap-3">
+                <motion.div
+                  className="relative"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <input
+                    type="checkbox"
+                    {...register('include_bible_verse')}
+                    className="peer sr-only"
+                  />
+                  <div className="w-12 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#15539C]/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all after:duration-300 peer-checked:bg-[#15539C] shadow-inner"></div>
+                </motion.div>
+                <div>
+                  <span className="font-bold text-[#16233B] flex items-center gap-2">
+                    <span className="text-xl">📖</span> Incluir Cita Bíblica
+                  </span>
+                  <p className="text-xs text-gray-500 font-medium mt-0.5">
+                    Opcional • Agrega un toque espiritual a tu material
+                  </p>
+                </div>
+              </div>
+            </label>
+
+            {/* Bible Verse Input - Animated */}
+            <AnimatePresence>
+              {includeBibleVerse && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  className="space-y-3 pt-4 border-t border-[#15539C]/20"
+                >
+                  <FormField
+                    label="Texto de la Cita Bíblica"
+                    required={includeBibleVerse}
+                    error={errors.bible_verse_text?.message}
+                  >
+                    <EnhancedTextarea
+                      id="bible_verse_text"
+                      placeholder="Ej: 'Todo lo puedo en Cristo que me fortalece' - Filipenses 4:13"
+                      rows={2}
+                      icon="❝"
+                      {...register('bible_verse_text')}
+                    />
+                  </FormField>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+
+        {/* Global Error */}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              className="p-4 bg-red-50 border-l-4 border-red-500 rounded-lg text-red-700 text-sm font-medium flex items-start gap-3"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+            >
+              <svg
+                className="w-5 h-5 flex-shrink-0 mt-0.5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              {error}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Action Buttons */}
+        <motion.div
+          className="flex gap-3 pt-8 flex-col sm:flex-row"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+        >
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBack}
+            disabled={isLoadingRequest}
+            className="flex-1 border-2 border-[#15539C] text-[#15539C] hover:bg-[#15539C] hover:text-white font-bold py-3.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            ← Atrás
+          </Button>
+          <Button
+            type="submit"
+            className="flex-1 bg-gradient-to-r from-[#15539C] to-[#16233B] hover:shadow-lg text-white font-bold py-3.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+            fullWidth
+            disabled={isLoadingRequest}
+          >
+            {isLoadingRequest ? (
+              <motion.span
+                className="flex items-center justify-center gap-2"
+                animate={{ opacity: [1, 0.6, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                <svg
+                  className="w-5 h-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Enviando solicitud...
+              </motion.span>
+            ) : (
+              <>✓ Enviar Solicitud</>
+            )}
+          </Button>
+        </motion.div>
+      </form>
+    </motion.div>
+  )
+}

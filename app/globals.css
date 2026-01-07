@@ -1,15 +1,95 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* DECOM Color Palette (IPUC Villa Estadio 2023) */
+  --color-decom-primary: #16233B; /* Navy Dark */
+  --color-decom-primary-light: #15539C; /* Corporate Blue */
+  --color-decom-secondary: #F49E2C; /* Orange/Gold */
+  --color-decom-accent: #FFFFFF;
+  --color-decom-text-dark: #16233B;
+  --color-decom-text-light: #FFFFFF;
+  --color-decom-background: #F5F5F5;
+  --color-decom-success: #4CAF50;
+  --color-decom-warning: #F49E2C;
+  --color-decom-error: #D32F2F;
+  --color-decom-info: #2196F3;
+  
+  /* Status colors for badges */
+  --color-decom-status-pending: #F49E2C;
+  --color-decom-status-planning: #2196F3;
+  --color-decom-status-design: #15539C;
+  --color-decom-status-ready: #4CAF50;
+  --color-decom-status-delivered: #999999;
+  
+  /* Background colors */
+  --color-decom-bg-light: #F5F5F5;
+  --color-decom-bg-card: #FFFFFF;
+  --color-decom-bg-hover: #E0E0E0;
+  
+  /* Border colors */
+  --color-decom-border: #E5E7EB;
+  --color-decom-border-light: #F3F4F6;
+  
+  /* Shadows */
+  --shadow-card: 0 4px 6px -1px rgba(22, 35, 59, 0.1), 0 2px 4px -1px rgba(22, 35, 59, 0.06);
+  --shadow-card-hover: 0 10px 15px -3px rgba(22, 35, 59, 0.15), 0 4px 6px -2px rgba(22, 35, 59, 0.1);
+  --shadow-lg: 0 20px 25px -5px rgba(22, 35, 59, 0.1), 0 10px 10px -5px rgba(22, 35, 59, 0.04);
+  
+  /* Border radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem; /* 8px */
+  --radius-lg: 0.75rem; /* 12px */
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+  
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  
+  /* Typography */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@theme {
+  --color-decom-primary: var(--color-decom-primary);
+  --color-decom-primary-light: var(--color-decom-primary-light);
+  --color-decom-secondary: var(--color-decom-secondary);
+  --color-decom-accent: var(--color-decom-accent);
+  --color-decom-text-dark: var(--color-decom-text-dark);
+  --color-decom-text-light: var(--color-decom-text-light);
+  --color-decom-background: var(--color-decom-background);
+  --color-decom-success: var(--color-decom-success);
+  --color-decom-warning: var(--color-decom-warning);
+  --color-decom-error: var(--color-decom-error);
+  --color-decom-info: var(--color-decom-info);
+  
+  --color-decom-status-pending: var(--color-decom-status-pending);
+  --color-decom-status-planning: var(--color-decom-status-planning);
+  --color-decom-status-design: var(--color-decom-status-design);
+  --color-decom-status-ready: var(--color-decom-status-ready);
+  --color-decom-status-delivered: var(--color-decom-status-delivered);
+  
+  --color-decom-bg-light: var(--color-decom-bg-light);
+  --color-decom-bg-card: var(--color-decom-bg-card);
+  --color-decom-bg-hover: var(--color-decom-bg-hover);
+  
+  --color-decom-border: var(--color-decom-border);
+  --color-decom-border-light: var(--color-decom-border-light);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,7 +100,187 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-decom-bg-light);
+  color: var(--color-decom-text-dark);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Color Classes */
+.text-decom-primary { color: var(--color-decom-primary); }
+.text-decom-primary-light { color: var(--color-decom-primary-light); }
+.text-decom-secondary { color: var(--color-decom-secondary); }
+.text-decom-accent { color: var(--color-decom-accent); }
+.text-decom-text-dark { color: var(--color-decom-text-dark); }
+.text-decom-text-light { color: var(--color-decom-text-light); }
+.text-decom-background { color: var(--color-decom-background); }
+.text-decom-success { color: var(--color-decom-success); }
+.text-decom-warning { color: var(--color-decom-warning); }
+.text-decom-error { color: var(--color-decom-error); }
+.text-decom-info { color: var(--color-decom-info); }
+
+.bg-decom-primary { background-color: var(--color-decom-primary); }
+.bg-decom-primary-light { background-color: var(--color-decom-primary-light); }
+.bg-decom-secondary { background-color: var(--color-decom-secondary); }
+.bg-decom-accent { background-color: var(--color-decom-accent); }
+.bg-decom-text-dark { background-color: var(--color-decom-text-dark); }
+.bg-decom-text-light { background-color: var(--color-decom-text-light); }
+.bg-decom-background { background-color: var(--color-decom-background); }
+.bg-decom-success { background-color: var(--color-decom-success); }
+.bg-decom-warning { background-color: var(--color-decom-warning); }
+.bg-decom-error { background-color: var(--color-decom-error); }
+.bg-decom-info { background-color: var(--color-decom-info); }
+
+.bg-decom-bg-light { background-color: var(--color-decom-bg-light); }
+.bg-decom-bg-card { background-color: var(--color-decom-bg-card); }
+.bg-decom-bg-hover { background-color: var(--color-decom-bg-hover); }
+
+.border-decom-border { border-color: var(--color-decom-border); }
+.border-decom-border-light { border-color: var(--color-decom-border-light); }
+
+.text-decom-status-pending { color: var(--color-decom-status-pending); }
+.text-decom-status-planning { color: var(--color-decom-status-planning); }
+.text-decom-status-design { color: var(--color-decom-status-design); }
+.text-decom-status-ready { color: var(--color-decom-status-ready); }
+.text-decom-status-delivered { color: var(--color-decom-status-delivered); }
+
+.bg-decom-status-pending { background-color: var(--color-decom-status-pending); }
+.bg-decom-status-planning { background-color: var(--color-decom-status-planning); }
+.bg-decom-status-design { background-color: var(--color-decom-status-design); }
+.bg-decom-status-ready { background-color: var(--color-decom-status-ready); }
+.bg-decom-status-delivered { background-color: var(--color-decom-status-delivered); }
+
+.border-decom-status-pending { border-color: var(--color-decom-status-pending); }
+.border-decom-status-planning { border-color: var(--color-decom-status-planning); }
+.border-decom-status-design { border-color: var(--color-decom-status-design); }
+.border-decom-status-ready { border-color: var(--color-decom-status-ready); }
+.border-decom-status-delivered { border-color: var(--color-decom-status-delivered); }
+
+/* Utility Classes */
+.decom-gradient-primary {
+  background: linear-gradient(135deg, var(--color-decom-primary) 0%, var(--color-decom-primary-light) 100%);
+}
+
+.decom-gradient-secondary {
+  background: linear-gradient(135deg, var(--color-decom-secondary) 0%, #FFB74D 100%);
+}
+
+.decom-shadow-card {
+  box-shadow: var(--shadow-card);
+}
+
+.decom-shadow-card-hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.decom-border {
+  border-color: var(--color-decom-border);
+}
+
+.decom-text-primary {
+  color: var(--color-decom-primary);
+}
+
+.decom-text-secondary {
+  color: var(--color-decom-secondary);
+}
+
+.decom-bg-light {
+  background-color: var(--color-decom-bg-light);
+}
+
+.decom-bg-card {
+  background-color: var(--color-decom-bg-card);
+}
+
+/* Form Styles */
+.decom-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background-color: white;
+  color: var(--color-decom-text-dark);
+  border: 1px solid var(--color-decom-primary-light);
+  outline: none;
+  transition: all 0.2s;
+}
+
+.decom-input:focus {
+  border-color: var(--color-decom-secondary);
+  box-shadow: 0 0 0 3px rgba(244, 158, 44, 0.1);
+}
+
+.decom-input-error {
+  border-color: var(--color-decom-error);
+}
+
+.decom-input-error:focus {
+  border-color: var(--color-decom-error);
+  box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+}
+
+.decom-input-success {
+  border-color: var(--color-decom-success);
+}
+
+.decom-input-success:focus {
+  border-color: var(--color-decom-success);
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.decom-label {
+  display: block;
+  color: var(--color-decom-text-dark);
+  font-weight: 500;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.decom-error-text {
+  color: var(--color-decom-error);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.decom-help-text {
+  color: #6B7280;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Animation Classes */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Focus Styles */
+.focus-ring {
+  outline: none;
+}
+
+.focus-ring:focus {
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.5);
+}
+
+/* Loading States */
+.loading-dots::after {
+  content: '';
+  animation: loading-dots 1.4s infinite ease-in-out both;
+}
+
+@keyframes loading-dots {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
 }
