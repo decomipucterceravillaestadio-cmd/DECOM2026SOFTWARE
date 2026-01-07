@@ -5,7 +5,8 @@ import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { Badge } from '@/app/components/UI/Badge'
 import { Button } from '@/app/components/UI/Button'
-import { IconX, IconClock } from '@tabler/icons-react'
+import { IconX, IconClock, IconBrandWhatsapp } from '@tabler/icons-react'
+import { generateWhatsAppLink } from '@/app/lib/utils/whatsapp'
 
 interface RequestDetail {
   id: string
@@ -290,13 +291,26 @@ export default function RequestDetailModal({
                     placeholder="Describe el motivo del cambio..."
                   />
                 </div>
-                <Button
-                  onClick={handleUpdateStatus}
-                  disabled={updating || newStatus === request.status}
-                  className="w-full"
-                >
-                  {updating ? 'Actualizando...' : 'Actualizar Estado'}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleUpdateStatus}
+                    disabled={updating || newStatus === request.status}
+                    className="flex-1"
+                  >
+                    {updating ? 'Actualizando...' : 'Actualizar Estado'}
+                  </Button>
+                  
+                  {/* Botón WhatsApp - visible cuando está listo para entrega */}
+                  {(request.status === 'completed' || request.status === 'approved') && (
+                    <Button
+                      onClick={() => window.open(generateWhatsAppLink(request.contact_whatsapp, request.event_name), '_blank')}
+                      className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      <IconBrandWhatsapp className="w-5 h-5" />
+                      Contactar
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
 

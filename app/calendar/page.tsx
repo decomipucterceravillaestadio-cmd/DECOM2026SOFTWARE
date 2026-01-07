@@ -267,7 +267,7 @@ export default function PublicCalendarPage() {
               </p>
               <Button
                 onClick={() => window.location.href = '/new-request'}
-                variant="default"
+                variant="primary"
                 className="bg-white text-violet-600 hover:bg-neutral-100"
               >
                 Crear Nueva Solicitud
