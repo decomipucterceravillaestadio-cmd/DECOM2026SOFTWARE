@@ -35,3 +35,7 @@ export const createRequestSchema = z
   )
 
 export type CreateRequestInput = z.infer<typeof createRequestSchema>
+
+// Alias para compatibilidad con API
+export const requestSchema = createRequestSchema
+export type RequestInput = CreateRequestInput
