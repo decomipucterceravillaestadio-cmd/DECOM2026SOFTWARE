@@ -1,5 +1,5 @@
 /**
- * Middleware de Autenticación
+ * Proxy de Autenticación (anteriormente middleware)
  * - Refresca la sesión en cada request
  * - Protege rutas que requieren autenticación
  * - Redirige según rol del usuario
@@ -9,7 +9,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import type { Database } from './app/types/database'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   })
@@ -38,13 +38,10 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // CRITICAL: No code between createServerClient and getUser()
-  const { data: { user }, error } = await supabase.auth.getUser()
-
   // Rutas públicas (sin autenticación requerida)
-  const publicRoutes = ['/login', '/new-request', '/calendar']
+  const publicRoutes = ['/login', '/new-request', '/calendar', '/setup', '/confirmation', '/']
   const isPublicRoute = publicRoutes.some(route =>
-    request.nextUrl.pathname.startsWith(route)
+    request.nextUrl.pathname === route || request.nextUrl.pathname.startsWith(route)
   )
 
   // Rutas protegidas (requieren autenticación)
@@ -53,18 +50,29 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith(route)
   )
 
-  // Si no hay usuario y intenta acceder a ruta protegida
-  if (!user && isProtectedRoute) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    return NextResponse.redirect(url)
+  // Si es ruta pública, dejar pasar sin verificar autenticación
+  if (isPublicRoute) {
+    return supabaseResponse
   }
 
-  // Si hay usuario y está en login, redirigir al dashboard
-  if (user && request.nextUrl.pathname === '/login') {
-    const url = request.nextUrl.clone()
-    url.pathname = '/admin/dashboard'
-    return NextResponse.redirect(url)
+  // Solo verificar autenticación en rutas protegidas
+  if (isProtectedRoute) {
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser()
+      
+      // Si no hay usuario, redirigir al login
+      if (!user || error) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/login'
+        return NextResponse.redirect(url)
+      }
+    } catch (error) {
+      // Si hay error al verificar, redirigir a login
+      console.error('Middleware auth error:', error)
+      const url = request.nextUrl.clone()
+      url.pathname = '/login'
+      return NextResponse.redirect(url)
+    }
   }
 
   return supabaseResponse
