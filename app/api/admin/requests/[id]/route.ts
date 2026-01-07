@@ -60,12 +60,10 @@ export async function GET(
       console.error('Error fetching history:', historyError)
     }
 
-    const response: RequestDetail = {
+    return NextResponse.json({
       ...requestData,
       history: historyData || []
-    } as RequestDetail
-
-    return NextResponse.json(response)
+    })
 
   } catch (error) {
     console.error('Error in GET /api/admin/requests/[id]:', error)

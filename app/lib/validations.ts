@@ -17,7 +17,21 @@ export const createRequestSchema = z
       'La fecha debe ser futura'
     ),
     material_type: z.enum(['flyer', 'banner', 'video', 'redes_sociales', 'otro']),
-    contact_whatsapp: z.string().regex(/^\+?57\d{10}$/, 'Número WhatsApp inválido'),
+    contact_whatsapp: z
+      .string()
+      .min(10, 'Número muy corto')
+      .refine(
+        (val) => {
+          // Normalizar: eliminar espacios, guiones, paréntesis
+          const cleaned = val.replace(/[\s\-\(\)]/g, '')
+          // Debe contener solo dígitos y opcionalmente +
+          const digits = cleaned.replace(/^\+/, '')
+          // Validar: +57XXXXXXXXXX (12 dígitos) o XXXXXXXXXX (10 dígitos)
+          // para números colombianos que empiezan con 3
+          return /^3\d{9}$/.test(digits) || /^573\d{9}$/.test(digits)
+        },
+        'Número WhatsApp inválido (Ej: 3001234567 o +573001234567)'
+      ),
     include_bible_verse: z.boolean().default(false),
     bible_verse_text: z.string().optional(),
   })
