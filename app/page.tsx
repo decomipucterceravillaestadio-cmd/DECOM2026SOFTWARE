@@ -73,7 +73,7 @@ export default function HomePage() {
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#15539C] to-[#16233B] border border-[#F49E2C] flex items-center justify-center">
               <Image
-                src="/IPUC_COLOR para fondo oscuro (2).png"
+                src="/favicon.png"
                 alt="Logo"
                 width={32}
                 height={32}

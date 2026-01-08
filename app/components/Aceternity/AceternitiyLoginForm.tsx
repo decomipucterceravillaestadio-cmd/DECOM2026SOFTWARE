@@ -134,7 +134,7 @@ export function AceternitiyLoginForm({
                 className="relative w-24 h-24 bg-gradient-to-br from-[#15539C] to-[#16233B] rounded-2xl flex items-center justify-center shadow-2xl border-2 border-[#F49E2C] overflow-hidden"
               >
                 <Image
-                  src="/IPUC_COLOR para fondo oscuro (2).png"
+                  src="/favicon.png"
                   alt="Logo IPUC Villa Estadio"
                   width={80}
                   height={80}
