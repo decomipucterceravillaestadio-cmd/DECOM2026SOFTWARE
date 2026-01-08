@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'accent';
   size?: 'sm' | 'md' | 'lg';
   fullWidth?: boolean;
   isLoading?: boolean;
@@ -24,11 +24,18 @@ export const Button: React.FC<ButtonProps> = ({
 }) => {
   const baseStyles = 'font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 inline-flex items-center justify-center gap-2';
 
+  // Colores IPUC corporativos
   const variantStyles = {
-    primary: 'bg-gradient-to-r from-decom-primary to-decom-primary/80 text-white hover:from-decom-primary/90 hover:to-decom-primary/70 shadow-md hover:shadow-lg focus:ring-decom-primary',
-    secondary: 'bg-gradient-to-r from-decom-secondary to-decom-secondary/90 text-decom-text-dark hover:from-decom-secondary/90 hover:to-decom-secondary/80 shadow-md hover:shadow-lg focus:ring-decom-secondary',
-    outline: 'border-2 border-decom-primary text-decom-primary bg-transparent hover:bg-decom-primary hover:text-white focus:ring-decom-primary',
-    ghost: 'text-decom-primary hover:bg-decom-primary/10 focus:ring-decom-primary'
+    // Primario: Navy azul corporativo
+    primary: 'bg-gradient-to-r from-[#15539C] to-[#16233B] text-white hover:shadow-lg active:scale-95 focus:ring-[#15539C]/20',
+    // Secundario: Naranja corporativo
+    secondary: 'bg-gradient-to-r from-[#F49E2C] to-[#E88D1B] text-white hover:shadow-lg active:scale-95 focus:ring-[#F49E2C]/20',
+    // Outline: Borde azul corporativo
+    outline: 'border-2 border-[#15539C] text-[#15539C] bg-transparent hover:bg-[#15539C] hover:text-white active:scale-95 focus:ring-[#15539C]/20',
+    // Ghost: Sin fondo
+    ghost: 'text-[#15539C] hover:bg-[#15539C]/10 active:bg-[#15539C]/20 focus:ring-[#15539C]/20',
+    // Accent: Naranja para acciones importantes
+    accent: 'bg-gradient-to-r from-[#F49E2C] to-[#E88D1B] text-white hover:shadow-lg active:scale-95 focus:ring-[#F49E2C]/20'
   };
 
   const sizeStyles = {
