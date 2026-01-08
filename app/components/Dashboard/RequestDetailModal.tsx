@@ -327,10 +327,10 @@ export default function RequestDetailModal({
                 </div>
 
                 {/* Sidebar Column */}
-                <div className="space-y-6 md:space-y-8">
+                <div className="space-y-6 md:space-y-8 lg:sticky lg:top-6 h-fit">
 
                   {/* Actions Card */}
-                  <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 shadow-sm sticky top-0">
+                  <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 shadow-sm">
                     <h3 className="font-bold text-neutral-900 dark:text-neutral-100 mb-4 flex items-center gap-2">
                       <IconSend className="w-5 h-5 text-indigo-600" />
                       Gestionar Estado

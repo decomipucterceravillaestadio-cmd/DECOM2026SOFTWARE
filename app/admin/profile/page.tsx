@@ -147,7 +147,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="flex items-center p-4 pb-4 justify-between bg-gradient-to-r from-primary-dark to-primary-light shadow-sm sticky top-0 z-10">
+      <div className="flex items-center p-4 pb-4 justify-between bg-gradient-to-r from-primary to-primary-light shadow-sm sticky top-0 z-10">
         <button
           onClick={() => router.back()}
           className="text-white flex size-12 shrink-0 items-center justify-center cursor-pointer hover:bg-white/10 rounded-full transition-colors"
