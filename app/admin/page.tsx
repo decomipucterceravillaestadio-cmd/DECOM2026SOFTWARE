@@ -1,25 +1,32 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import {
   IconLayoutDashboard,
   IconClipboardList,
   IconUser,
   IconLogout,
-  IconPlus
+  IconPlus,
+  IconBell
 } from '@tabler/icons-react'
 import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar'
 import StatsGrid from '@/app/components/Dashboard/StatsGrid'
 import RequestsTable from '@/app/components/Dashboard/RequestsTable'
 import RequestDetailModal from '@/app/components/Dashboard/RequestDetailModal'
+import { format } from 'date-fns'
+import { es } from 'date-fns/locale'
 
 export default function AdminDashboard() {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const links = [
     {
@@ -53,16 +60,27 @@ export default function AdminDashboard() {
     setRefreshKey(prev => prev + 1)
   }
 
+  const getGreeting = () => {
+    const hour = new Date().getHours()
+    if (hour < 12) return 'Buenos días'
+    if (hour < 18) return 'Buenas tardes'
+    return 'Buenas noches'
+  }
+
+  if (!mounted) return null
+
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-neutral-100 dark:bg-neutral-950 flex-col md:flex-row">
+    <div className="flex h-screen w-full overflow-hidden bg-white dark:bg-neutral-950 flex-col md:flex-row">
       <Sidebar open={open} setOpen={setOpen}>
-        <SidebarBody className="justify-between gap-10">
+        <SidebarBody className="justify-between gap-10 border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
           <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
             {/* Logo */}
-            <div className="mb-8">
-              <div className="flex items-center gap-2 px-2">
-                <IconLayoutDashboard className="h-7 w-7 text-violet-500" />
-                <span className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+            <div className="mb-8 pl-1">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-violet-600 flex items-center justify-center">
+                  <IconLayoutDashboard className="h-5 w-5 text-white" />
+                </div>
+                <span className="text-lg font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">
                   DECOM
                 </span>
               </div>
@@ -77,41 +95,55 @@ export default function AdminDashboard() {
           <div>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-2 py-2 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-800 rounded-lg transition-colors w-full"
+              className="flex items-center gap-2 px-2 py-2 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-colors w-full group"
             >
-              <IconLogout className="h-5 w-5" />
+              <IconLogout className="h-5 w-5 group-hover:stroke-red-600 dark:group-hover:stroke-red-500" />
               <span>Cerrar Sesión</span>
             </button>
           </div>
         </SidebarBody>
       </Sidebar>
 
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="flex flex-1 flex-col overflow-hidden bg-neutral-50/50 dark:bg-neutral-950 relative">
+        {/* Decorative background gradient */}
+        <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-violet-500/5 to-transparent pointer-events-none" />
+
+        <div className="flex-1 overflow-y-auto relative z-10">
+          <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-10">
             {/* Header */}
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
-                Panel de Administración DECOM
-              </h1>
-              <p className="mt-2 text-neutral-600 dark:text-neutral-400">
-                Gestiona todas las solicitudes de material gráfico
-              </p>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold text-neutral-500 dark:text-neutral-400 mb-1 uppercase tracking-wider">
+                  {format(new Date(), "EEEE, d 'de' MMMM", { locale: es })}
+                </p>
+                <h1 className="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">
+                  {getGreeting()}, Admin
+                </h1>
+              </div>
+              <div className="flex items-center gap-3">
+                <button className="p-2.5 rounded-full bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-200 transition-colors relative">
+                  <IconBell className="w-5 h-5" />
+                  <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-neutral-800" />
+                </button>
+                <div className="w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900/20 flex items-center justify-center border-2 border-white dark:border-neutral-800 shadow-sm">
+                  <span className="font-bold text-violet-700 dark:text-violet-300">A</span>
+                </div>
+              </div>
             </div>
 
             {/* Stats Grid */}
-            <div className="mb-12" key={`stats-${refreshKey}`}>
-              <h2 className="text-xl font-semibold mb-4 text-neutral-900 dark:text-neutral-100">
-                Estadísticas Generales
-              </h2>
+            <div key={`stats-${refreshKey}`}>
               <StatsGrid />
             </div>
 
             {/* Requests Table */}
-            <div key={`table-${refreshKey}`}>
-              <h2 className="text-xl font-semibold mb-4 text-neutral-900 dark:text-neutral-100">
-                Solicitudes
-              </h2>
+            <div key={`table-${refreshKey}`} className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+                  Solicitudes Recientes
+                </h2>
+                {/* Could add filters or export buttons here */}
+              </div>
               <RequestsTable onSelectRequest={setSelectedRequestId} />
             </div>
           </div>

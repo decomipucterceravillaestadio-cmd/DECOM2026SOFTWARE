@@ -30,31 +30,28 @@ export async function GET() {
       supabase
         .from('requests')
         .select('*', { count: 'exact', head: true })
-        .eq('status', 'pending'),
+        .eq('status', 'pendiente'),
       
-      // Solicitudes en progreso
+      // Solicitudes en progreso (en_planificacion + en_diseño)
       supabase
         .from('requests')
         .select('*', { count: 'exact', head: true })
-        .eq('status', 'in_progress'),
+        .in('status', ['en_planificacion', 'en_diseño']),
       
-      // Solicitudes completadas
+      // Solicitudes completadas (lista + entregada)
       supabase
         .from('requests')
         .select('*', { count: 'exact', head: true })
-        .eq('status', 'completed'),
+        .in('status', ['lista', 'entregada']),
       
-      // Solicitudes aprobadas
+      // Solicitudes aprobadas (usando lista como aprobada)
       supabase
         .from('requests')
         .select('*', { count: 'exact', head: true })
-        .eq('status', 'approved'),
+        .eq('status', 'lista'),
       
-      // Solicitudes rechazadas
-      supabase
-        .from('requests')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'rejected'),
+      // Solicitudes rechazadas (no hay estado de rechazado, así que 0)
+      Promise.resolve({ count: 0 }),
       
       // Solicitudes por comité
       supabase

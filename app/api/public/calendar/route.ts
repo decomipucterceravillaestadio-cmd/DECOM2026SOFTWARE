@@ -79,9 +79,9 @@ export async function GET(request: NextRequest) {
     const stats = {
       total: data?.length || 0,
       byStatus: {
-        pending: data?.filter(e => e.status === 'pending').length || 0,
-        in_progress: data?.filter(e => e.status === 'in_progress').length || 0,
-        completed: data?.filter(e => e.status === 'completed').length || 0,
+        pendiente: data?.filter(e => e.status === 'pendiente').length || 0,
+        en_progreso: data?.filter(e => e.status === 'en_planificacion' || e.status === 'en_diseño').length || 0,
+        completado: data?.filter(e => e.status === 'lista' || e.status === 'entregada').length || 0,
       },
       byType: {
         flyer: data?.filter(e => e.material_type === 'flyer').length || 0,
