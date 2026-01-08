@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { format, addMonths, subMonths } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { motion } from 'framer-motion'
 import { 
   IconChevronLeft, 
   IconChevronRight,
@@ -97,36 +98,65 @@ export default function PublicCalendarPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#F5F5F5] to-white">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-b from-[#16233B] via-[#15539C] to-[#1a2847]">
+      {/* Animated Background Beams */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          className="absolute -top-40 -left-40 w-80 h-80 bg-[#F49E2C]/15 rounded-full blur-3xl"
+          animate={{
+            x: [0, 60, 0],
+            y: [0, 60, 0],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        <motion.div
+          className="absolute -bottom-40 -right-40 w-80 h-80 bg-[#F49E2C]/20 rounded-full blur-3xl"
+          animate={{
+            x: [0, -60, 0],
+            y: [0, -60, 0],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.03)_1px,transparent_1px)] bg-[size:50px_50px] opacity-20" />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Botón de regreso y header */}
         <div className="mb-8 flex items-start justify-between">
           <div className="flex-1">
             <button
               onClick={() => router.back()}
-              className="inline-flex items-center gap-2 text-[#15539C] hover:text-[#16233B] font-semibold mb-4 transition-colors"
+              className="inline-flex items-center gap-2 text-[#F49E2C] hover:text-white font-semibold mb-4 transition-colors"
             >
               <IconArrowLeft className="w-5 h-5" />
               Volver atrás
             </button>
-            <h1 className="text-4xl md:text-5xl font-bold text-[#16233B] mb-2">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
               Calendario Público DECOM
             </h1>
-            <p className="text-lg text-gray-700">
+            <p className="text-lg text-white/80">
               Visualiza la carga de trabajo y planifica tus solicitudes
             </p>
           </div>
         </div>
 
         {/* Card informativa */}
-        <Card className="mb-8 bg-blue-50 border-l-4 border-l-[#15539C]">
+        <Card className="mb-8 bg-white/10 backdrop-blur-md border border-white/20 border-l-4 border-l-[#F49E2C]">
           <div className="flex gap-4">
-            <IconInfoCircle className="h-6 w-6 text-[#15539C] flex-shrink-0 mt-1" />
+            <IconInfoCircle className="h-6 w-6 text-[#F49E2C] flex-shrink-0 mt-1" />
             <div>
-              <h3 className="font-semibold text-[#16233B] mb-2 text-lg">
+              <h3 className="font-semibold text-white mb-2 text-lg">
                 ¿Cómo funciona este calendario?
               </h3>
-              <p className="text-base text-gray-700">
+              <p className="text-base text-white/80">
                 Este calendario muestra la carga de trabajo actual del equipo DECOM. 
                 Puedes ver cuántas solicitudes hay pendientes cada día del mes. 
                 Te sugerimos elegir fechas con menor carga para una respuesta más rápida.
@@ -138,19 +168,19 @@ export default function PublicCalendarPage() {
         {/* Estadísticas */}
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <Card className="bg-white border-t-4 border-t-[#16233B]">
+            <Card className="bg-white/10 backdrop-blur-md border border-white/20 border-t-4 border-t-[#16233B]">
               <div className="text-center">
-                <p className="text-sm text-gray-600 font-semibold mb-1">
+                <p className="text-sm text-white/80 font-semibold mb-1">
                   Total Solicitudes
                 </p>
-                <p className="text-3xl font-bold text-[#16233B]">
+                <p className="text-3xl font-bold text-white">
                   {stats.total}
                 </p>
               </div>
             </Card>
-            <Card>
+            <Card className="bg-white/10 backdrop-blur-md border border-white/20">
               <div className="text-center">
-                <p className="text-sm text-gray-600 font-semibold mb-1">
+                <p className="text-sm text-white/80 font-semibold mb-1">
                   Pendientes
                 </p>
                 <p className="text-3xl font-bold text-[#F49E2C]">
@@ -158,19 +188,19 @@ export default function PublicCalendarPage() {
                 </p>
               </div>
             </Card>
-            <Card className="bg-white border-t-4 border-t-[#15539C]">
+            <Card className="bg-white/10 backdrop-blur-md border border-white/20 border-t-4 border-t-[#15539C]">
               <div className="text-center">
-                <p className="text-sm text-gray-600 font-semibold mb-1">
+                <p className="text-sm text-white/80 font-semibold mb-1">
                   En Progreso
                 </p>
-                <p className="text-3xl font-bold text-[#15539C]">
+                <p className="text-3xl font-bold text-[#F49E2C]">
                   {stats.byStatus.in_progress}
                 </p>
               </div>
             </Card>
-            <Card className="bg-white border-t-4 border-t-[#4CAF50]">
+            <Card className="bg-white/10 backdrop-blur-md border border-white/20 border-t-4 border-t-[#4CAF50]">
               <div className="text-center">
-                <p className="text-sm text-gray-600 font-semibold mb-1">
+                <p className="text-sm text-white/80 font-semibold mb-1">
                   Completadas
                 </p>
                 <p className="text-3xl font-bold text-[#4CAF50]">
@@ -182,35 +212,35 @@ export default function PublicCalendarPage() {
         )}
 
         {/* Controles del calendario */}
-        <div className="flex items-center justify-between mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+        <div className="flex items-center justify-between mb-6 bg-white/10 backdrop-blur-md p-4 rounded-xl shadow-sm border border-white/20">
           <div className="flex items-center gap-4">
             <button
               onClick={handlePreviousMonth}
-              className="p-2 rounded-lg hover:bg-[#15539C]/10 transition-colors text-[#15539C]"
+              className="p-2 rounded-lg hover:bg-white/20 transition-colors text-[#F49E2C]"
               title="Mes anterior"
             >
               <IconChevronLeft className="w-6 h-6 font-bold" />
             </button>
             
-            <h2 className="text-2xl font-bold text-[#16233B] capitalize min-w-[200px]">
+            <h2 className="text-2xl font-bold text-white capitalize min-w-[200px]">
               {format(currentDate, 'MMMM yyyy', { locale: es })}
             </h2>
             
             <button
               onClick={handleNextMonth}
-              className="p-2 rounded-lg hover:bg-[#15539C]/10 transition-colors text-[#15539C]"
+              className="p-2 rounded-lg hover:bg-white/20 transition-colors text-[#F49E2C]"
               title="Próximo mes"
             >
               <IconChevronRight className="w-6 h-6 font-bold" />
             </button>
           </div>
 
-          <Button
+          <button
             onClick={() => setCurrentDate(new Date())}
-            className="border-2 border-[#15539C] text-[#15539C] hover:bg-[#15539C] hover:text-white font-semibold"
+            className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#15539C] to-[#16233B] hover:shadow-lg text-white font-bold transition-all"
           >
             Hoy
-          </Button>
+          </button>
         </div>
 
         {/* Calendario */}
@@ -240,26 +270,26 @@ export default function PublicCalendarPage() {
         )}
 
         {/* Leyenda */}
-        <div className="mt-8 bg-white rounded-xl border border-gray-300 p-6">
-          <h3 className="font-semibold text-[#16233B] mb-4 text-lg">
+        <div className="mt-8 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 p-6">
+          <h3 className="font-semibold text-white mb-4 text-lg">
             Leyenda de Estados
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-[#F49E2C]" />
-              <span className="text-sm text-gray-700 font-medium">
+              <span className="text-sm text-white/80 font-medium">
                 Pendiente de revisión
               </span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-[#15539C]" />
-              <span className="text-sm text-gray-700 font-medium">
+              <span className="text-sm text-white/80 font-medium">
                 En proceso de diseño
               </span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-[#4CAF50]" />
-              <span className="text-sm text-gray-700 font-medium">
+              <span className="text-sm text-white/80 font-medium">
                 Completada
               </span>
             </div>
@@ -273,16 +303,15 @@ export default function PublicCalendarPage() {
               <h3 className="text-2xl font-bold mb-2">
                 ¿Necesitas material gráfico?
               </h3>
-              <p className="mb-6 text-white/80">
+              <p className="mb-6 text-white/90">
                 Envía tu solicitud y nosotros nos encargamos del resto
               </p>
-              <Button
+              <button
                 onClick={() => window.location.href = '/new-request'}
-                variant="primary"
-                className="bg-white text-[#15539C] hover:bg-gray-100 font-bold"
+                className="px-8 py-3 rounded-lg bg-white text-[#15539C] hover:bg-gray-100 font-bold transition-all hover:shadow-lg active:scale-95"
               >
                 Crear Nueva Solicitud
-              </Button>
+              </button>
             </div>
           </Card>
         </div>
