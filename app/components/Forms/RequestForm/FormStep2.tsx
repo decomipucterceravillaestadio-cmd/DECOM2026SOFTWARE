@@ -5,6 +5,18 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { motion, AnimatePresence } from 'framer-motion'
+import { 
+  IconPalette,
+  IconPhone,
+  IconBook,
+  IconFileText,
+  IconVideo,
+  IconBrandInstagram,
+  IconPackage,
+  IconQuote,
+  IconArrowLeft,
+  IconCheck
+} from '@tabler/icons-react'
 import { Button } from '../../UI/Button'
 import type { Step1Data } from './FormStep1'
 import {
@@ -62,11 +74,11 @@ interface FormStep2Props {
 }
 
 const MATERIAL_TYPES = [
-  { id: 'flyer', label: 'Flyer', icon: '📄', description: 'Volante impreso' },
-  { id: 'banner', label: 'Banner', icon: '🖼️', description: 'Banner digital' },
-  { id: 'video', label: 'Video', icon: '🎥', description: 'Contenido video' },
-  { id: 'redes_sociales', label: 'Redes', icon: '📱', description: 'Social media' },
-  { id: 'otro', label: 'Otro', icon: '📦', description: 'Especificar' },
+  { id: 'flyer', label: 'Flyer', icon: <IconFileText size={28} />, description: 'Volante impreso' },
+  { id: 'banner', label: 'Banner', icon: <IconPalette size={28} />, description: 'Banner digital' },
+  { id: 'video', label: 'Video', icon: <IconVideo size={28} />, description: 'Contenido video' },
+  { id: 'redes_sociales', label: 'Redes', icon: <IconBrandInstagram size={28} />, description: 'Social media' },
+  { id: 'otro', label: 'Otro', icon: <IconPackage size={28} />, description: 'Especificar' },
 ]
 
 export function FormStep2({
@@ -123,7 +135,7 @@ export function FormStep2({
         <FormSection
           title="Tipo de Material"
           description="Selecciona qué tipo de material necesitas para tu evento"
-          icon="🎨"
+          icon={<IconPalette size={24} />}
         >
           <SelectButtonGroup
             options={MATERIAL_TYPES}
@@ -152,7 +164,7 @@ export function FormStep2({
         <FormSection
           title="Información de Contacto"
           description="Cómo podemos notificarte sobre el progreso de tu solicitud"
-          icon="📞"
+          icon={<IconPhone size={24} />}
         >
           <FormField
             label="Número de WhatsApp"
@@ -160,19 +172,19 @@ export function FormStep2({
             error={errors.contact_whatsapp?.message}
             hint="+57 3XX XXX XXXX"
           >
-            <div className="flex gap-0 rounded-xl overflow-hidden border-2 border-gray-200 focus-within:border-[#15539C] focus-within:ring-2 focus-within:ring-[#15539C]/20 transition-all">
-              <div className="flex items-center px-3 md:px-4 bg-gradient-to-r from-gray-50 to-gray-100 border-r border-gray-200">
-                <span className="font-bold text-gray-700 text-sm md:text-base">🇨🇴 +57</span>
+            <div className="flex gap-0 rounded-xl overflow-hidden border-2 border-gray-300 focus-within:border-[#15539C] focus-within:ring-2 focus-within:ring-[#15539C]/20 transition-all">
+              <div className="flex items-center px-3 md:px-4 bg-gradient-to-r from-gray-100 to-gray-50 border-r border-gray-300">
+                <span className="font-bold text-gray-900 text-sm md:text-base">🇨🇴 +57</span>
               </div>
               <input
                 type="tel"
                 placeholder="300 123 4567"
                 maxLength={10}
                 {...register('contact_whatsapp')}
-                className="flex-1 px-3 md:px-4 py-3 text-base border-0 focus:outline-none text-gray-800 placeholder-gray-400 w-full font-medium"
+                className="flex-1 px-3 md:px-4 py-3 text-base text-gray-900 placeholder-gray-500 border-0 focus:outline-none w-full font-medium"
               />
             </div>
-            <p className="text-xs text-gray-500 font-medium mt-1.5 md:mt-2">
+            <p className="text-xs text-gray-700 font-semibold mt-1.5 md:mt-2">
               Te notificaremos el estado de tu solicitud por WhatsApp
             </p>
           </FormField>
@@ -203,10 +215,10 @@ export function FormStep2({
                   <div className="w-10 h-6 md:w-12 md:h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#15539C]/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] md:after:top-[3px] after:left-[2px] md:after:left-[3px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all after:duration-300 peer-checked:bg-[#15539C] shadow-inner"></div>
                 </motion.div>
                 <div className="flex-1 min-w-0">
-                  <span className="font-bold text-[#16233B] flex flex-wrap items-center gap-1 md:gap-2 text-sm md:text-base">
-                    <span className="text-lg md:text-xl">📖</span> Incluir Cita Bíblica
+                  <span className="font-bold text-gray-900 flex flex-wrap items-center gap-1 md:gap-2 text-sm md:text-base">
+                    <IconBook size={20} className="flex-shrink-0" /> Incluir Cita Bíblica
                   </span>
-                  <p className="text-[10px] md:text-xs text-gray-500 font-medium mt-0.5">
+                  <p className="text-[10px] md:text-xs text-gray-700 font-medium mt-0.5">
                     Opcional • Agrega un toque espiritual a tu material
                   </p>
                 </div>
@@ -232,7 +244,7 @@ export function FormStep2({
                       id="bible_verse_text"
                       placeholder="Ej: 'Todo lo puedo en Cristo que me fortalece' - Filipenses 4:13"
                       rows={2}
-                      icon="❝"
+                      icon={<IconQuote size={20} />}
                       {...register('bible_verse_text')}
                     />
                   </FormField>
@@ -279,9 +291,9 @@ export function FormStep2({
             variant="outline"
             onClick={onBack}
             disabled={isLoadingRequest}
-            className="flex-1 border-2 border-[#15539C] text-[#15539C] hover:bg-[#15539C] hover:text-white font-bold py-3 md:py-3.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 border-2 border-[#15539C] text-[#15539C] hover:bg-[#15539C] hover:text-white font-bold py-3 md:py-3.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            ← Atrás
+            <IconArrowLeft size={20} /> Atrás
           </Button>
           <Button
             type="submit"
@@ -318,7 +330,9 @@ export function FormStep2({
                 Enviando solicitud...
               </motion.span>
             ) : (
-              <>✓ Enviar Solicitud</>
+              <span className="flex items-center justify-center gap-2">
+                <IconCheck size={20} /> Enviar Solicitud
+              </span>
             )}
           </Button>
         </motion.div>

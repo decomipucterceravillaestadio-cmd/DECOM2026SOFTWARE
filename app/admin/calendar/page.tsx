@@ -44,6 +44,24 @@ export default function AdminCalendarPage() {
   const [loading, setLoading] = useState(true)
   const [open, setOpen] = useState(false)
 
+  // Suprimir errores de extension listeners
+  useEffect(() => {
+    const handleMessage = (request: any, sender: any, sendResponse: any) => {
+      sendResponse({ received: true })
+      return false
+    }
+
+    if (typeof window !== 'undefined' && (window as any).chrome?.runtime) {
+      (window as any).chrome.runtime.onMessage.addListener(handleMessage)
+      
+      return () => {
+        if ((window as any).chrome?.runtime?.onMessage?.removeListener) {
+          (window as any).chrome.runtime.onMessage.removeListener(handleMessage)
+        }
+      }
+    }
+  }, [])
+
   const links = [
     {
       label: 'Dashboard',

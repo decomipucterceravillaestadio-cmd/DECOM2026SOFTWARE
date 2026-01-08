@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { IconAlertCircle } from "@tabler/icons-react";
 import { Card } from "@/app/components/UI/Card";
 import { Badge } from "@/app/components/UI/Badge";
 import { Button } from "@/app/components/UI/Button";
@@ -115,7 +116,9 @@ export function RequestList({
     return (
       <Card className="border-red-200 bg-red-50 p-6">
         <div className="text-center space-y-4">
-          <div className="text-red-500 text-4xl">⚠️</div>
+          <div className="text-red-500">
+            <IconAlertCircle size={48} />
+          </div>
           <h3 className="text-red-700 font-bold">Error al cargar solicitudes</h3>
           <p className="text-red-600 text-sm">{error}</p>
           <Button 

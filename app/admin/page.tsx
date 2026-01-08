@@ -8,13 +8,13 @@ import {
   IconUser,
   IconLogout,
   IconPlus,
-  IconBell
+  IconBell,
+  IconCalendar
 } from '@tabler/icons-react'
 import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar'
 import StatsGrid from '@/app/components/Dashboard/StatsGrid'
 import RequestsTable from '@/app/components/Dashboard/RequestsTable'
 import RequestDetailModal from '@/app/components/Dashboard/RequestDetailModal'
-import MiniCalendar from '@/app/components/UI/MiniCalendar'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 
@@ -24,27 +24,9 @@ export default function AdminDashboard() {
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
   const [mounted, setMounted] = useState(false)
-  const [calendarEvents, setCalendarEvents] = useState<any[]>([])
 
   useEffect(() => {
     setMounted(true)
-  }, [])
-
-  // Obtener eventos del calendario
-  useEffect(() => {
-    const fetchCalendarEvents = async () => {
-      try {
-        const response = await fetch('/api/public/calendar')
-        if (response.ok) {
-          const data = await response.json()
-          setCalendarEvents(data.events || [])
-        }
-      } catch (error) {
-        console.error('Error fetching calendar events:', error)
-      }
-    }
-
-    fetchCalendarEvents()
   }, [])
 
   const links = [
@@ -62,6 +44,11 @@ export default function AdminDashboard() {
       label: 'Solicitudes',
       href: '/admin',
       icon: <IconClipboardList className="h-5 w-5" />,
+    },
+    {
+      label: 'Calendario',
+      href: '/admin/calendar',
+      icon: <IconCalendar className="h-5 w-5" />,
     },
     {
       label: 'Perfil',
@@ -109,17 +96,6 @@ export default function AdminDashboard() {
               {links.map((link, idx) => (
                 <SidebarLink key={idx} link={link} />
               ))}
-            </div>
-
-            {/* Mini Calendar */}
-            <div className="mt-6">
-              <MiniCalendar
-                events={calendarEvents}
-                onDateSelect={(date) => {
-                  // Navegar a la página del calendario con la fecha seleccionada
-                  router.push(`/admin/calendar?date=${format(date, 'yyyy-MM-dd')}`)
-                }}
-              />
             </div>
           </div>
           <div>

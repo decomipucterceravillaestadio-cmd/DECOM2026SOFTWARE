@@ -2,6 +2,20 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
+import { 
+  IconCheck,
+  IconAlertCircle,
+  IconClipboardList,
+  IconPalette,
+  IconPhone,
+  IconBook,
+  IconRocket,
+  IconPackage,
+  IconCalendar,
+  IconFileText,
+  IconTag,
+  IconQuote
+} from '@tabler/icons-react'
 
 // Indicador de Progreso Profesional
 interface ProgressIndicatorProps {
@@ -30,13 +44,13 @@ export function ProgressIndicator({
             {currentStep}
           </div>
           <div className="flex flex-col">
-            <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-500">
+            <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-700">
               Paso {currentStep} de {totalSteps}
             </span>
-            <span className="text-xs md:text-sm font-semibold text-[#16233B]">{stepTitle}</span>
+            <span className="text-xs md:text-sm font-semibold text-gray-900">{stepTitle}</span>
           </div>
         </div>
-        <span className="text-[10px] md:text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded-full">
+        <span className="text-[10px] md:text-xs font-bold text-gray-900 bg-gray-200 px-2 py-1 rounded-full">
           {Math.round(progress)}%
         </span>
       </div>
@@ -79,12 +93,12 @@ export function FormField({
       transition={{ duration: 0.3 }}
     >
       <div className="flex items-baseline justify-between flex-wrap gap-1">
-        <label className="block text-sm font-semibold text-[#16233B]">
+        <label className="block text-sm font-semibold text-gray-900">
           {label}
-          {required && <span className="ml-1 text-red-500 font-bold">*</span>}
+          {required && <span className="ml-1 text-red-600 font-bold">*</span>}
         </label>
         {hint && !error && (
-          <span className="text-[10px] md:text-xs text-gray-500 font-medium">{hint}</span>
+          <span className="text-[10px] md:text-xs text-gray-700 font-medium">{hint}</span>
         )}
       </div>
 
@@ -137,13 +151,17 @@ export function FormSection({
       <div className="flex items-start gap-2.5 md:gap-3">
         {icon && (
           <div className="p-1.5 md:p-2 rounded-lg bg-gradient-to-br from-[#15539C]/10 to-[#F49E2C]/10 flex-shrink-0 mt-0.5">
-            <span className="text-xl md:text-2xl block leading-none">{icon}</span>
+            {typeof icon === 'string' ? (
+              <span className="text-xl md:text-2xl block leading-none">{icon}</span>
+            ) : (
+              <div className="text-[#15539C]">{icon}</div>
+            )}
           </div>
         )}
         <div className="flex-1 min-w-0">
-          <h3 className="text-base md:text-lg font-bold text-[#16233B] leading-tight">{title}</h3>
+          <h3 className="text-base md:text-lg font-bold text-gray-900 leading-tight">{title}</h3>
           {description && (
-            <p className="text-xs md:text-sm text-gray-600 mt-0.5 md:mt-1 leading-relaxed">{description}</p>
+            <p className="text-xs md:text-sm text-gray-700 mt-0.5 md:mt-1 leading-relaxed">{description}</p>
           )}
         </div>
       </div>
@@ -155,7 +173,7 @@ export function FormSection({
 
 // Card Info con Icono y Detalles
 interface InfoCardProps {
-  icon: string
+  icon: string | React.ReactNode
   title: string
   subtitle: string
   details: string
@@ -183,15 +201,19 @@ export function InfoCard({
     >
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
         <div className="flex items-start gap-3 md:gap-4">
-          <div className="p-2 md:p-3 bg-white rounded-lg shadow-sm text-xl md:text-2xl flex-shrink-0">
-            {icon}
+          <div className="p-2 md:p-3 bg-white rounded-lg shadow-sm flex-shrink-0">
+            {typeof icon === 'string' ? (
+              <span className="text-xl md:text-2xl">{icon}</span>
+            ) : (
+              <div className="text-[#15539C]">{icon}</div>
+            )}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-600">
+            <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-700">
               {subtitle}
             </p>
-            <p className="text-base md:text-lg font-bold text-[#16233B] mt-0.5 md:mt-1">{title}</p>
-            <p className="text-xs md:text-sm text-gray-600 mt-1 md:mt-2 leading-relaxed">{details}</p>
+            <p className="text-base md:text-lg font-bold text-gray-900 mt-0.5 md:mt-1">{title}</p>
+            <p className="text-xs md:text-sm text-gray-700 mt-1 md:mt-2 leading-relaxed">{details}</p>
           </div>
         </div>
         {action && <div className="flex-shrink-0 self-end sm:self-auto">{action}</div>}
@@ -205,7 +227,7 @@ interface SelectButtonGroupProps {
   options: Array<{
     id: string
     label: string
-    icon?: string
+    icon?: string | React.ReactNode
     description?: string
   }>
   value: string
@@ -232,11 +254,13 @@ export function SelectButtonGroup({
             whileTap={{ scale: 0.95 }}
             className={`relative p-2 sm:p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center justify-center gap-1.5 md:gap-2 min-h-[80px] md:min-h-[100px] ${value === option.id
                 ? 'border-[#15539C] bg-gradient-to-br from-[#15539C] to-[#16233B] text-white shadow-lg'
-                : 'border-gray-200 bg-white text-gray-600 hover:border-[#F49E2C] hover:shadow-md'
+                : 'border-gray-300 bg-white text-gray-800 hover:border-[#F49E2C] hover:shadow-md'
               }`}
           >
             {option.icon && (
-              <span className="text-2xl sm:text-3xl filter drop-shadow-sm">{option.icon}</span>
+              <div className="text-2xl sm:text-3xl filter drop-shadow-sm">
+                {typeof option.icon === 'string' ? option.icon : option.icon}
+              </div>
             )}
             <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wide text-center leading-tight">
               {option.label}
@@ -294,12 +318,12 @@ export const EnhancedInput = React.forwardRef<
     <div className="relative group">
       {icon && (
         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#15539C] transition-colors">
-          {icon}
+          {typeof icon === 'string' ? icon : <div className="w-5 h-5">{icon}</div>}
         </div>
       )}
       <input
         ref={ref}
-        className={`w-full px-4 py-3 text-base ${icon ? 'pl-11' : ''} ${suffix ? 'pr-11' : ''} border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#15539C]/20 focus:border-[#15539C] bg-white transition-all duration-200 hover:border-gray-300 ${isValid === false ? 'border-red-400' : ''
+        className={`w-full px-4 py-3 text-base text-gray-900 placeholder-gray-500 ${icon ? 'pl-11' : ''} ${suffix ? 'pr-11' : ''} border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#15539C]/20 focus:border-[#15539C] bg-white transition-all duration-200 hover:border-gray-400 ${isValid === false ? 'border-red-400' : ''
           } ${className}`}
         {...props}
       />
@@ -337,18 +361,18 @@ export const EnhancedTextarea = React.forwardRef<
       <div className="relative">
         {icon && (
           <div className="absolute left-4 top-4 text-gray-400 group-focus-within:text-[#15539C] transition-colors">
-            {icon}
+            {typeof icon === 'string' ? icon : <div className="w-5 h-5">{icon}</div>}
           </div>
         )}
         <textarea
           ref={ref}
-          className={`w-full px-4 py-3 text-base ${icon ? 'pl-11' : ''} border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#15539C]/20 focus:border-[#15539C] bg-white transition-all duration-200 hover:border-gray-300 resize-none ${className}`}
+          className={`w-full px-4 py-3 text-base text-gray-900 placeholder-gray-500 ${icon ? 'pl-11' : ''} border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#15539C]/20 focus:border-[#15539C] bg-white transition-all duration-200 hover:border-gray-400 resize-none ${className}`}
           onChange={handleChange}
           {...props}
         />
       </div>
       {characterLimit && (
-        <p className="text-xs text-gray-500 font-medium text-right">
+        <p className="text-xs text-gray-700 font-medium text-right">
           {charCount} / {characterLimit}
         </p>
       )}

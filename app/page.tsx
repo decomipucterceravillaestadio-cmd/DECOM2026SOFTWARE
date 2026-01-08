@@ -1,189 +1,270 @@
 'use client'
 
 import Link from 'next/link'
-import { Button } from './components/UI/Button'
-import { Card } from './components/UI/Card'
-import { 
-  IconCalendar, 
-  IconClipboardList, 
-  IconUsers,
+import { motion } from 'framer-motion'
+import Image from 'next/image'
+import {
+  IconCalendar,
+  IconClipboardList,
   IconSparkles,
-  IconArrowRight
+  IconArrowRight,
+  IconPalette,
+  IconSend
 } from '@tabler/icons-react'
+import { Button } from './components/UI/Button'
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+}
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2
+    }
+  }
+}
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-purple-50">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-violet-600/10 to-purple-600/10" />
+    <div className="min-h-screen bg-gradient-to-b from-[#16233B] via-[#15539C] to-[#1a2847] text-white selection:bg-[#F49E2C]/30 overflow-hidden">
+
+      {/* Animated Background Beams */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          className="absolute -top-40 -left-40 w-80 h-80 bg-[#F49E2C]/15 rounded-full blur-3xl"
+          animate={{
+            x: [0, 60, 0],
+            y: [0, 60, 0],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
         
-        <div className="relative max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-violet-100 mb-6">
-              <IconSparkles className="w-12 h-12 text-violet-600" />
-            </div>
-            
-            <h1 className="text-5xl font-bold text-gray-900 mb-4">
-              Sistema <span className="text-violet-600">DECOM</span>
-            </h1>
-            
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Gestión de Solicitudes de Material Gráfico
-            </p>
-            
-            <p className="text-lg text-gray-500 mt-4 max-w-3xl mx-auto">
-              Centraliza y gestiona solicitudes de material publicitario para el 
-              Departamento de Comunicaciones de la iglesia
-            </p>
-          </div>
+        <motion.div
+          className="absolute -bottom-40 -right-40 w-80 h-80 bg-[#15539C]/20 rounded-full blur-3xl"
+          animate={{
+            x: [0, -60, 0],
+            y: [0, -60, 0],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Link href="/new-request">
-              <Button 
-                className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
-              >
-                <IconClipboardList className="w-6 h-6 mr-2" />
-                Nueva Solicitud
-              </Button>
-            </Link>
-            
-            <Link href="/calendar">
-              <Button 
-                variant="outline"
-                className="border-2 border-violet-600 text-violet-600 hover:bg-violet-50 px-8 py-4 text-lg font-semibold"
-              >
-                <IconCalendar className="w-6 h-6 mr-2" />
-                Ver Calendario
-              </Button>
-            </Link>
-          </div>
-
-          {/* Features Grid */}
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <Card className="hover:shadow-lg transition-shadow">
-              <div className="p-6 text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 mb-4">
-                  <IconClipboardList className="w-8 h-8 text-blue-600" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Solicitudes Fáciles
-                </h3>
-                <p className="text-gray-600">
-                  Formulario simple y guiado para enviar tus solicitudes de material gráfico
-                </p>
-              </div>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow">
-              <div className="p-6 text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
-                  <IconCalendar className="w-8 h-8 text-green-600" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Calendario Transparente
-                </h3>
-                <p className="text-gray-600">
-                  Ve la carga de trabajo actual y planifica mejor tus solicitudes
-                </p>
-              </div>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow">
-              <div className="p-6 text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-purple-100 mb-4">
-                  <IconUsers className="w-8 h-8 text-purple-600" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Gestión Centralizada
-                </h3>
-                <p className="text-gray-600">
-                  Reemplaza la comunicación informal por WhatsApp con un proceso estructurado
-                </p>
-              </div>
-            </Card>
-          </div>
-
-          {/* Stats Section */}
-          <div className="mt-16 p-8 bg-white rounded-2xl shadow-lg max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-              ¿Cómo funciona?
-            </h2>
-            
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center">
-                  <span className="text-violet-600 font-bold">1</span>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">
-                    Envía tu Solicitud
-                  </h3>
-                  <p className="text-gray-600">
-                    Completa el formulario con los detalles de tu evento y material necesario
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center">
-                  <span className="text-violet-600 font-bold">2</span>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">
-                    DECOM Revisa y Diseña
-                  </h3>
-                  <p className="text-gray-600">
-                    El equipo de comunicaciones trabaja en tu material siguiendo fechas clave
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center">
-                  <span className="text-violet-600 font-bold">3</span>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">
-                    Recibe tu Material
-                  </h3>
-                  <p className="text-gray-600">
-                    Te contactamos por WhatsApp cuando esté listo para entrega
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Admin Login Link */}
-          <div className="mt-16 text-center">
-            <Link 
-              href="/login" 
-              className="inline-flex items-center gap-2 text-gray-500 hover:text-violet-600 transition-colors"
-            >
-              <span className="text-sm">¿Eres administrador DECOM?</span>
-              <span className="text-sm font-semibold flex items-center gap-1">
-                Iniciar Sesión
-                <IconArrowRight className="w-4 h-4" />
-              </span>
-            </Link>
-          </div>
-        </div>
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.03)_1px,transparent_1px)] bg-[size:50px_50px] opacity-20" />
       </div>
 
-      {/* Footer */}
-      <footer className="bg-gray-50 border-t border-gray-200 mt-16">
-        <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-          <div className="text-center text-gray-600">
-            <p className="text-sm">
-              Sistema DECOM - Departamento de Comunicaciones
-            </p>
-            <p className="text-xs text-gray-500 mt-2">
-              Gestión de Solicitudes de Material Gráfico © 2026
-            </p>
+      {/* Navbar */}
+      <nav className="relative z-50 fixed top-0 w-full backdrop-blur-md bg-white/5 border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <motion.div 
+            className="flex items-center gap-3"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+          >
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#15539C] to-[#16233B] border border-[#F49E2C] flex items-center justify-center">
+              <Image
+                src="/IPUC_COLOR para fondo oscuro (2).png"
+                alt="Logo"
+                width={32}
+                height={32}
+                className="object-contain p-1"
+              />
+            </div>
+            <span className="font-bold text-xl tracking-tight text-white">DECOM</span>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+          >
+            <Link href="/login">
+              <Button className="bg-[#F49E2C]/20 border border-[#F49E2C]/50 text-[#F49E2C] hover:bg-[#F49E2C]/30 font-semibold">
+                Administración
+              </Button>
+            </Link>
+          </motion.div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="relative pt-20 pb-16 lg:pt-24 lg:pb-24 overflow-hidden">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={staggerContainer}
+            className="max-w-4xl mx-auto"
+          >
+            {/* Badge */}
+            <motion.div 
+              variants={fadeInUp} 
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#F49E2C]/20 border border-[#F49E2C]/50 mb-6"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F49E2C] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F49E2C]"></span>
+              </span>
+              <span className="text-sm font-semibold text-[#F49E2C]">Sistema de Gestión 2026</span>
+            </motion.div>
+
+            {/* Main Title */}
+            <motion.h1
+              variants={fadeInUp}
+              className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4"
+            >
+              <span className="bg-gradient-to-r from-white via-white to-[#F49E2C] bg-clip-text text-transparent">
+                Solicita Material Gráfico
+              </span>
+              <br />
+              <span className="text-[#F49E2C]">Sin Complicaciones</span>
+            </motion.h1>
+
+            {/* Subtitle - Minimalizado */}
+            <motion.p
+              variants={fadeInUp}
+              className="text-lg md:text-xl text-white/70 mb-10 max-w-2xl mx-auto"
+            >
+              Agiliza y centraliza tus solicitudes de diseño
+            </motion.p>
+
+            {/* CTA Buttons */}
+            <motion.div
+              variants={fadeInUp}
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            >
+              <Link href="/new-request" className="w-full sm:w-auto">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button className="w-full sm:w-auto h-14 px-8 text-lg rounded-lg bg-gradient-to-r from-[#15539C] to-[#16233B] border-b-4 border-[#F49E2C] text-white font-bold shadow-lg hover:shadow-2xl transition-all">
+                    <IconClipboardList className="mr-2 w-5 h-5" />
+                    Nueva Solicitud
+                  </Button>
+                </motion.div>
+              </Link>
+              <Link href="/calendar" className="w-full sm:w-auto">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button className="w-full sm:w-auto h-14 px-8 text-lg rounded-lg border-2 border-[#F49E2C]/50 bg-white/5 text-white font-bold hover:bg-white/10 transition-all">
+                    <IconCalendar className="mr-2 w-5 h-5" />
+                    Ver Calendario
+                  </Button>
+                </motion.div>
+              </Link>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Features Grid - Minimalizado */}
+      <section className="relative z-10 py-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            {/* Feature 1 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 hover:border-[#F49E2C]/50 transition-all group cursor-pointer overflow-hidden relative"
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#F49E2C]/10 rounded-full blur-2xl group-hover:blur-xl transition-all" />
+              <div className="relative z-10">
+                <div className="w-12 h-12 rounded-xl bg-[#F49E2C]/20 flex items-center justify-center text-[#F49E2C] mb-4">
+                  <IconSend className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold mb-2">Solicitudes Simplificadas</h3>
+                <p className="text-white/70 text-sm">
+                  Formularios guiados para asegurar toda la información necesaria
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Feature 2 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 hover:border-[#F49E2C]/50 transition-all group cursor-pointer overflow-hidden relative"
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#F49E2C]/10 rounded-full blur-2xl group-hover:blur-xl transition-all" />
+              <div className="relative z-10">
+                <div className="w-12 h-12 rounded-xl bg-[#F49E2C]/20 flex items-center justify-center text-[#F49E2C] mb-4">
+                  <IconCalendar className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold mb-2">Agenda Clara</h3>
+                <p className="text-white/70 text-sm">
+                  Visualiza la carga de trabajo y planifica con anticipación
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Feature 3 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 hover:border-[#F49E2C]/50 transition-all group cursor-pointer overflow-hidden relative"
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#F49E2C]/10 rounded-full blur-2xl group-hover:blur-xl transition-all" />
+              <div className="relative z-10">
+                <div className="w-12 h-12 rounded-xl bg-[#F49E2C]/20 flex items-center justify-center text-[#F49E2C] mb-4">
+                  <IconPalette className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold mb-2">Diseño Profesional</h3>
+                <p className="text-white/70 text-sm">
+                  Estándares de calidad consistentes para toda la iglesia
+                </p>
+              </div>
+            </motion.div>
+
+            {/* CTA Admin - Span 2 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="md:col-span-1 bg-gradient-to-br from-[#15539C]/30 to-[#16233B]/30 rounded-2xl p-8 border border-[#F49E2C]/30 backdrop-blur-md relative overflow-hidden group"
+            >
+              <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay" />
+              <div className="relative z-10">
+                <h3 className="text-xl font-bold mb-2">Panel Admin</h3>
+                <p className="text-white/70 text-sm mb-4">
+                  Gestiona tareas y monitorea progreso
+                </p>
+                <Link href="/login">
+                  <motion.div whileHover={{ x: 5 }}>
+                    <Button className="bg-[#F49E2C] text-[#16233B] hover:bg-[#F49E2C]/90 font-bold w-full">
+                      Ingresar
+                      <IconArrowRight className="ml-2 w-4 h-4" />
+                    </Button>
+                  </motion.div>
+                </Link>
+              </div>
+            </motion.div>
+
           </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="relative z-10 py-12 border-t border-white/10 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-white/50">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-[#F49E2C]/20 border border-[#F49E2C]/50 flex items-center justify-center">
+              <IconSparkles className="w-4 h-4 text-[#F49E2C]" />
+            </div>
+            <span className="font-semibold text-white/80">DECOM System</span>
+          </div>
+          <p>© 2026 Departamento de Comunicaciones IPUC</p>
         </div>
       </footer>
     </div>

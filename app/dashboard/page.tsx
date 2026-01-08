@@ -38,13 +38,13 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 gap-3 sm:flex sm:gap-2">
           <Link href="/new-request" className="flex-1 sm:flex-none">
             <Button fullWidth variant="secondary" size="sm">
-              ✨ Nueva Solicitud
+              Nueva Solicitud
             </Button>
           </Link>
           {userRole === "decom_admin" && (
             <Link href="/admin" className="flex-1 sm:flex-none">
               <Button fullWidth variant="outline" size="sm">
-                📊 Panel Admin
+                Panel Admin
               </Button>
             </Link>
           )}
@@ -57,7 +57,7 @@ export default function DashboardPage() {
 
         {/* Info Card */}
         <Card className="bg-decom-bg-light border-l-4 border-decom-secondary">
-          <h3 className="font-bold text-decom-text-dark mb-2">💡 Consejo</h3>
+          <h3 className="font-bold text-decom-text-dark mb-2">Consejo</h3>
           <p className="text-sm text-decom-text-light">
             Crea solicitudes con al menos 7 días antes de tu evento para que DECOM 
             tenga tiempo suficiente de preparación.

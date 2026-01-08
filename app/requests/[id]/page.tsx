@@ -151,7 +151,7 @@ export default function RequestDetailPage() {
 
     // Crear mensaje predefinido con información completa de la solicitud
     const message = encodeURIComponent(
-      `Dios le bendiga ${request.requester_name},\n\nSoy del equipo DECOM. Te contacto respecto a tu solicitud:\n\n📋 *DETALLES DE LA SOLICITUD #${request.id}*\n\n🎯 *Evento:* ${request.event_name}\n📝 *Descripción:* ${request.description}\n📅 *Fecha del evento:* ${formatDate(request.event_date)}\n🏢 *Comité:* ${request.committee_name}\n🎨 *Tipo de material:* ${request.material_type}\n📊 *Estado actual:* ${currentStatus}\n📅 *Fecha de creación:* ${formatDate(request.created_at)}\n\n${request.bible_verse ? `📖 *Versículo bíblico:* "${request.bible_verse.text}" - ${request.bible_verse.reference}\n\n` : ''}💬 ¿Podemos conversar sobre el progreso de tu solicitud?`
+      `Dios le bendiga ${request.requester_name},\n\nSoy del equipo DECOM. Te contacto respecto a tu solicitud:\n\n*DETALLES DE LA SOLICITUD #${request.id}*\n\n*Evento:* ${request.event_name}\n*Descripción:* ${request.description}\n*Fecha del evento:* ${formatDate(request.event_date)}\n*Comité:* ${request.committee_name}\n*Tipo de material:* ${request.material_type}\n*Estado actual:* ${currentStatus}\n*Fecha de creación:* ${formatDate(request.created_at)}\n\n${request.bible_verse ? `*Versículo bíblico:* "${request.bible_verse.text}" - ${request.bible_verse.reference}\n\n` : ''}¿Podemos conversar sobre el progreso de tu solicitud?`
     )
 
     // Abrir WhatsApp con el mensaje
@@ -288,7 +288,7 @@ export default function RequestDetailPage() {
                   <p className="text-gray-500 text-sm">{request.committee_name}</p>
                   {request.requester_phone && (
                     <p className="text-green-600 text-xs font-medium mt-1">
-                      📱 {formatPhoneNumber(request.requester_phone)}
+                      � {formatPhoneNumber(request.requester_phone)}
                     </p>
                   )}
                 </div>
@@ -297,7 +297,7 @@ export default function RequestDetailPage() {
 
             {/* BOTÓN DE WHATSAPP - DEBUG VERSION */}
             <div className="bg-red-100 border-4 border-red-500 p-4 mb-4 rounded-lg">
-              <h3 className="text-red-800 font-bold text-lg mb-2">🚨 BOTÓN DE WHATSAPP DEBUG 🚨</h3>
+              <h3 className="text-red-800 font-bold text-lg mb-2">BOTÓN DE WHATSAPP DEBUG</h3>
               <div className="text-red-700 text-sm mb-3">
                 <p>Request ID: {request?.id}</p>
                 <p>Requester Phone: {request?.requester_phone || 'NO PHONE'}</p>
@@ -313,11 +313,11 @@ export default function RequestDetailPage() {
                   className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-6 rounded-lg text-xl border-4 border-green-700 shadow-lg"
                   style={{ backgroundColor: '#25D366', borderColor: '#128C7E' }}
                 >
-                  📱📱📱 WHATSAPP BUTTON - CLICK ME! 📱📱📱
+                  ENVIAR POR WHATSAPP
                 </button>
               ) : (
                 <div className="bg-yellow-200 border-2 border-yellow-500 p-3 rounded">
-                  <p className="text-yellow-800 font-bold">⚠️ NO PHONE NUMBER FOUND ⚠️</p>
+                  <p className="text-yellow-800 font-bold">NO PHONE NUMBER FOUND</p>
                 </div>
               )}
             </div>

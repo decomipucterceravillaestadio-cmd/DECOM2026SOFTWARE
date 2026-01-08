@@ -6,6 +6,16 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { 
+  IconClipboardList,
+  IconTag,
+  IconFileText,
+  IconCalendar,
+  IconRocket,
+  IconPackage,
+  IconInfoCircle,
+  IconCalendarEvent
+} from '@tabler/icons-react'
 import { Button } from '../../UI/Button'
 import { Skeleton } from '../../UI/Skeleton'
 import {
@@ -125,7 +135,7 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
         <FormSection
           title="Detalles del Evento"
           description="Proporciona información básica sobre tu evento para iniciar el proceso de solicitud"
-          icon="📋"
+          icon={<IconClipboardList size={24} />}
         >
           {/* Comité Selection */}
           <FormField
@@ -159,7 +169,7 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
               <select
                 id="committee_id"
                 {...register('committee_id')}
-                className="w-full px-3 md:px-4 py-3 text-base border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#15539C]/20 focus:border-[#15539C] bg-white text-gray-800 transition-all hover:border-gray-300 appearance-none font-medium cursor-pointer"
+                className="w-full px-3 md:px-4 py-3 text-base border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#15539C]/20 focus:border-[#15539C] bg-white text-gray-900 transition-all hover:border-gray-400 appearance-none font-medium cursor-pointer"
                 style={{
                   backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2315539C' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E")`,
                   backgroundRepeat: 'no-repeat',
@@ -188,7 +198,7 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
               id="event_name"
               type="text"
               placeholder="Ej: Retiro de Jóvenes 2026"
-              icon="🏷️"
+              icon={<IconTag size={20} />}
               {...register('event_name')}
               maxLength={200}
               isValid={!errors.event_name}
@@ -206,7 +216,7 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
               id="event_info"
               placeholder="Describe el propósito del evento, público objetivo, y cualquier detalle relevante..."
               rows={4}
-              icon="📝"
+              icon={<IconFileText size={20} />}
               characterLimit={500}
               {...register('event_info')}
               maxLength={500}
@@ -222,7 +232,7 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
             <EnhancedInput
               id="event_date"
               type="date"
-              icon="📅"
+              icon={<IconCalendarEvent size={20} />}
               {...register('event_date')}
               isValid={!errors.event_date}
             />
@@ -242,7 +252,7 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
             </p>
             <div className="space-y-2 md:space-y-3">
               <InfoCard
-                icon="🚀"
+                icon={<IconRocket size={24} />}
                 title={planningDate ? formatDate(planningDate, 'long') : '-'}
                 subtitle="Planificación Inicia"
                 details="7 días antes del evento para comenzar el proceso de diseño"
@@ -250,7 +260,7 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
               />
 
               <InfoCard
-                icon="📦"
+                icon={<IconPackage size={24} />}
                 title={deliveryDate ? formatDate(deliveryDate, 'long') : '-'}
                 subtitle="Entrega Sugerida"
                 details="2 días antes del evento para revisiones finales"
@@ -258,13 +268,13 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
               />
 
               <motion.div
-                className="p-3 md:p-4 bg-blue-50 border-l-4 border-blue-500 rounded-lg"
+                className="p-3 md:p-4 bg-blue-50 border-l-4 border-blue-600 rounded-lg"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                <p className="text-xs md:text-sm text-blue-900 font-medium flex items-start gap-2">
-                  <span className="text-base md:text-lg flex-shrink-0">ℹ️</span>
+                <p className="text-xs md:text-sm text-blue-900 font-semibold flex items-start gap-2">
+                  <IconInfoCircle size={20} className="flex-shrink-0" />
                   <span>
                     Tienes <strong>{daysRemaining} días</strong> para preparar tu
                     solicitud. Cuanta más información proporciones, mejor será el
@@ -286,9 +296,9 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
           <Link href="/calendar" className="flex-1">
             <Button
               variant="outline"
-              className="w-full border-2 border-[#15539C] text-[#15539C] hover:bg-[#15539C] hover:text-white font-bold py-3 md:py-3.5 transition-all"
+              className="w-full border-2 border-[#15539C] text-[#15539C] hover:bg-[#15539C] hover:text-white font-bold py-3 md:py-3.5 transition-all flex items-center justify-center gap-2"
             >
-              📅 Ver Calendario
+              <IconCalendar size={20} /> Ver Calendario
             </Button>
           </Link>
           <Button
