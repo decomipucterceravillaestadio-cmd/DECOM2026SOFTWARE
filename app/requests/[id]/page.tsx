@@ -405,6 +405,9 @@ export default function RequestDetailPage() {
                   </div>
                 </div>
               ))}
+              {(!request.timeline || request.timeline.length === 0) && (
+                <p className="text-gray-500 text-sm">No hay eventos en el timeline</p>
+              )}
             </div>
           </div>
         </Card>
