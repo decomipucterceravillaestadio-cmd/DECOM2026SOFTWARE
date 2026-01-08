@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { LoginInput } from './LoginInput';
 import { LoginButton } from './LoginButton';
+import { IconArrowLeft } from '@tabler/icons-react';
 
 interface AceternitiyLoginFormProps {
   onSubmit?: (email: string, password: string) => Promise<void>;
@@ -15,6 +17,7 @@ export function AceternitiyLoginForm({
   isLoading = false,
   error: externalError,
 }: AceternitiyLoginFormProps) {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -60,6 +63,15 @@ export function AceternitiyLoginForm({
 
   return (
     <div className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-[#16233B] via-[#15539C] to-[#1a2847]">
+      {/* Botón de regreso a inicio */}
+      <button
+        onClick={() => router.push('/')}
+        className="absolute top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition-all backdrop-blur-sm border border-white/20 hover:border-white/40"
+        title="Ir a página principal"
+      >
+        <IconArrowLeft className="w-5 h-5" />
+        <span className="hidden sm:inline">Volver</span>
+      </button>
       {/* Animated Background Beams Effect */}
       <div className="absolute inset-0 overflow-hidden">
         {/* Beam 1 - Top left */}
