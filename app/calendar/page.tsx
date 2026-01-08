@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { format, addMonths, subMonths } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { 
@@ -8,7 +9,8 @@ import {
   IconChevronRight,
   IconCalendar,
   IconAlertCircle,
-  IconInfoCircle
+  IconInfoCircle,
+  IconArrowLeft
 } from '@tabler/icons-react'
 import CalendarGrid from '@/app/components/Calendar/CalendarGrid'
 import { Badge } from '@/app/components/UI/Badge'
@@ -46,6 +48,7 @@ interface Stats {
 }
 
 export default function PublicCalendarPage() {
+  const router = useRouter()
   const [currentDate, setCurrentDate] = useState(new Date())
   const [events, setEvents] = useState<PublicDayEvents[]>([])
   const [stats, setStats] = useState<Stats | null>(null)
@@ -96,14 +99,23 @@ export default function PublicCalendarPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F5F5F5] to-white">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-[#16233B] mb-2">
-            Calendario Público DECOM
-          </h1>
-          <p className="text-lg text-gray-700">
-            Visualiza la carga de trabajo y planifica tus solicitudes
-          </p>
+        {/* Botón de regreso y header */}
+        <div className="mb-8 flex items-start justify-between">
+          <div className="flex-1">
+            <button
+              onClick={() => router.back()}
+              className="inline-flex items-center gap-2 text-[#15539C] hover:text-[#16233B] font-semibold mb-4 transition-colors"
+            >
+              <IconArrowLeft className="w-5 h-5" />
+              Volver atrás
+            </button>
+            <h1 className="text-4xl md:text-5xl font-bold text-[#16233B] mb-2">
+              Calendario Público DECOM
+            </h1>
+            <p className="text-lg text-gray-700">
+              Visualiza la carga de trabajo y planifica tus solicitudes
+            </p>
+          </div>
         </div>
 
         {/* Card informativa */}
@@ -126,12 +138,12 @@ export default function PublicCalendarPage() {
         {/* Estadísticas */}
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <Card className="bg-white border-t-4 border-t-[#4CAF50]">
+            <Card className="bg-white border-t-4 border-t-[#16233B]">
               <div className="text-center">
-                <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">
+                <p className="text-sm text-gray-600 font-semibold mb-1">
                   Total Solicitudes
                 </p>
-                <p className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+                <p className="text-3xl font-bold text-[#16233B]">
                   {stats.total}
                 </p>
               </div>
@@ -228,26 +240,26 @@ export default function PublicCalendarPage() {
         )}
 
         {/* Leyenda */}
-        <div className="mt-8 bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-6">
-          <h3 className="font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
+        <div className="mt-8 bg-white rounded-xl border border-gray-300 p-6">
+          <h3 className="font-semibold text-[#16233B] mb-4 text-lg">
             Leyenda de Estados
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-yellow-500" />
-              <span className="text-sm text-neutral-700 dark:text-neutral-300">
+              <div className="w-3 h-3 rounded-full bg-[#F49E2C]" />
+              <span className="text-sm text-gray-700 font-medium">
                 Pendiente de revisión
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-blue-500" />
-              <span className="text-sm text-neutral-700 dark:text-neutral-300">
+              <div className="w-3 h-3 rounded-full bg-[#15539C]" />
+              <span className="text-sm text-gray-700 font-medium">
                 En proceso de diseño
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-green-500" />
-              <span className="text-sm text-neutral-700 dark:text-neutral-300">
+              <div className="w-3 h-3 rounded-full bg-[#4CAF50]" />
+              <span className="text-sm text-gray-700 font-medium">
                 Completada
               </span>
             </div>
@@ -256,18 +268,18 @@ export default function PublicCalendarPage() {
 
         {/* CTA */}
         <div className="mt-8 text-center">
-          <Card className="bg-gradient-to-r from-violet-500 to-purple-600 border-0">
+          <Card className="bg-gradient-to-r from-[#15539C] to-[#16233B] border-0">
             <div className="text-white py-8">
               <h3 className="text-2xl font-bold mb-2">
                 ¿Necesitas material gráfico?
               </h3>
-              <p className="mb-6 text-violet-100">
+              <p className="mb-6 text-white/80">
                 Envía tu solicitud y nosotros nos encargamos del resto
               </p>
               <Button
                 onClick={() => window.location.href = '/new-request'}
                 variant="primary"
-                className="bg-white text-violet-600 hover:bg-neutral-100"
+                className="bg-white text-[#15539C] hover:bg-gray-100 font-bold"
               >
                 Crear Nueva Solicitud
               </Button>
