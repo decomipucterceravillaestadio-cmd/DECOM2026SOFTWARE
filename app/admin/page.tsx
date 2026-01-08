@@ -78,15 +78,15 @@ export default function AdminDashboard() {
   return (
     <div className="flex h-screen w-full overflow-hidden bg-white dark:bg-neutral-950 flex-col md:flex-row">
       <Sidebar open={open} setOpen={setOpen}>
-        <SidebarBody className="justify-between gap-10 border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
+        <SidebarBody className="justify-between gap-10 border-r border-gray-300 bg-white">
           <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
             {/* Logo */}
             <div className="mb-8 pl-1">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-violet-600 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#15539C] to-[#16233B] flex items-center justify-center">
                   <IconLayoutDashboard className="h-5 w-5 text-white" />
                 </div>
-                <span className="text-lg font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">
+                <span className="text-lg font-bold text-[#16233B] tracking-tight">
                   DECOM
                 </span>
               </div>
@@ -101,38 +101,38 @@ export default function AdminDashboard() {
           <div>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-2 py-2 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-colors w-full group"
+              className="flex items-center gap-2 px-2 py-2 text-sm font-medium text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors w-full group"
             >
-              <IconLogout className="h-5 w-5 group-hover:stroke-red-600 dark:group-hover:stroke-red-500" />
+              <IconLogout className="h-5 w-5 group-hover:stroke-red-600" />
               <span>Cerrar Sesión</span>
             </button>
           </div>
         </SidebarBody>
       </Sidebar>
 
-      <div className="flex flex-1 flex-col overflow-hidden bg-neutral-50/50 dark:bg-neutral-950 relative">
+      <div className="flex flex-1 flex-col overflow-hidden bg-[#F5F5F5] relative">
         {/* Decorative background gradient */}
-        <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-violet-500/5 to-transparent pointer-events-none" />
+        <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-[#15539C]/5 to-transparent pointer-events-none" />
 
         <div className="flex-1 overflow-y-auto relative z-10">
           <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-10">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <p className="text-sm font-semibold text-neutral-500 dark:text-neutral-400 mb-1 uppercase tracking-wider">
+                <p className="text-sm font-semibold text-gray-500 mb-1 uppercase tracking-wider">
                   {format(new Date(), "EEEE, d 'de' MMMM", { locale: es })}
                 </p>
-                <h1 className="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">
+                <h1 className="text-3xl md:text-4xl font-bold text-[#16233B] tracking-tight">
                   {getGreeting()}, Admin
                 </h1>
               </div>
               <div className="flex items-center gap-3">
-                <button className="p-2.5 rounded-full bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-200 transition-colors relative">
+                <button className="p-2.5 rounded-full bg-white border border-gray-300 text-gray-500 hover:text-[#15539C] transition-colors relative">
                   <IconBell className="w-5 h-5" />
-                  <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-neutral-800" />
+                  <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
                 </button>
-                <div className="w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900/20 flex items-center justify-center border-2 border-white dark:border-neutral-800 shadow-sm">
-                  <span className="font-bold text-violet-700 dark:text-violet-300">A</span>
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#15539C] to-[#16233B] flex items-center justify-center border-2 border-white shadow-sm">
+                  <span className="font-bold text-white">A</span>
                 </div>
               </div>
             </div>
@@ -145,7 +145,7 @@ export default function AdminDashboard() {
             {/* Requests Table */}
             <div key={`table-${refreshKey}`} className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+                <h2 className="text-xl font-bold text-[#16233B]">
                   Solicitudes Recientes
                 </h2>
                 {/* Could add filters or export buttons here */}

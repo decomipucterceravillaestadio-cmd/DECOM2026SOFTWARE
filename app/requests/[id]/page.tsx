@@ -245,8 +245,8 @@ export default function RequestDetailPage() {
   const currentStatusOption = getCurrentStatusOption()
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="sticky top-0 z-50 bg-gradient-to-r from-primary-dark to-primary shadow-md">
+    <div className="min-h-screen bg-gradient-to-b from-[#F5F5F5] to-white">
+      <div className="sticky top-0 z-50 bg-gradient-to-r from-[#16233B] to-[#15539C] shadow-lg">
         <div className="flex items-center justify-between p-4 h-[72px]">
           <button
             onClick={() => router.back()}
@@ -266,7 +266,7 @@ export default function RequestDetailPage() {
 
           <Badge
             variant={getStatusVariant(request.status)}
-            className="bg-secondary/20 border-secondary text-secondary backdrop-blur-sm bg-white/10 text-white shadow-sm"
+            className="bg-[#F49E2C]/20 border-[#F49E2C] text-[#F49E2C] backdrop-blur-sm bg-white/10 text-white shadow-sm"
           >
             {request.status.replace('_', ' ')}
           </Badge>
@@ -274,7 +274,7 @@ export default function RequestDetailPage() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-24">
-        <Card className="border-t-4 border-secondary overflow-hidden">
+        <Card className="border-t-4 border-[#F49E2C] overflow-hidden">
           <div className="p-5">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">

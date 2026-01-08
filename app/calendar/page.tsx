@@ -94,30 +94,27 @@ export default function PublicCalendarPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950">
+    <div className="min-h-screen bg-gradient-to-b from-[#F5F5F5] to-white">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <IconCalendar className="h-10 w-10 text-violet-500" />
-            <h1 className="text-4xl font-bold text-neutral-900 dark:text-neutral-100">
-              Calendario Público DECOM
-            </h1>
-          </div>
-          <p className="text-lg text-neutral-600 dark:text-neutral-400">
-            Visualiza la carga de trabajo del Departamento de Comunicaciones
+          <h1 className="text-4xl md:text-5xl font-bold text-[#16233B] mb-2">
+            Calendario Público DECOM
+          </h1>
+          <p className="text-lg text-gray-700">
+            Visualiza la carga de trabajo y planifica tus solicitudes
           </p>
         </div>
 
         {/* Card informativa */}
-        <Card className="mb-8 bg-violet-50 dark:bg-violet-950 border-violet-200 dark:border-violet-800">
+        <Card className="mb-8 bg-blue-50 border-l-4 border-l-[#15539C]">
           <div className="flex gap-4">
-            <IconInfoCircle className="h-6 w-6 text-violet-600 dark:text-violet-400 flex-shrink-0 mt-1" />
+            <IconInfoCircle className="h-6 w-6 text-[#15539C] flex-shrink-0 mt-1" />
             <div>
-              <h3 className="font-semibold text-violet-900 dark:text-violet-100 mb-2">
+              <h3 className="font-semibold text-[#16233B] mb-2 text-lg">
                 ¿Cómo funciona este calendario?
               </h3>
-              <p className="text-sm text-violet-800 dark:text-violet-200">
+              <p className="text-base text-gray-700">
                 Este calendario muestra la carga de trabajo actual del equipo DECOM. 
                 Puedes ver cuántas solicitudes hay pendientes cada día del mes. 
                 Te sugerimos elegir fechas con menor carga para una respuesta más rápida.
@@ -129,7 +126,7 @@ export default function PublicCalendarPage() {
         {/* Estadísticas */}
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <Card>
+            <Card className="bg-white border-t-4 border-t-[#4CAF50]">
               <div className="text-center">
                 <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">
                   Total Solicitudes
@@ -141,30 +138,30 @@ export default function PublicCalendarPage() {
             </Card>
             <Card>
               <div className="text-center">
-                <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">
+                <p className="text-sm text-gray-600 font-semibold mb-1">
                   Pendientes
                 </p>
-                <p className="text-3xl font-bold text-yellow-600">
+                <p className="text-3xl font-bold text-[#F49E2C]">
                   {stats.byStatus.pending}
                 </p>
               </div>
             </Card>
-            <Card>
+            <Card className="bg-white border-t-4 border-t-[#15539C]">
               <div className="text-center">
-                <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">
+                <p className="text-sm text-gray-600 font-semibold mb-1">
                   En Progreso
                 </p>
-                <p className="text-3xl font-bold text-blue-600">
+                <p className="text-3xl font-bold text-[#15539C]">
                   {stats.byStatus.in_progress}
                 </p>
               </div>
             </Card>
-            <Card>
+            <Card className="bg-white border-t-4 border-t-[#4CAF50]">
               <div className="text-center">
-                <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">
+                <p className="text-sm text-gray-600 font-semibold mb-1">
                   Completadas
                 </p>
-                <p className="text-3xl font-bold text-green-600">
+                <p className="text-3xl font-bold text-[#4CAF50]">
                   {stats.byStatus.completed}
                 </p>
               </div>
@@ -173,30 +170,32 @@ export default function PublicCalendarPage() {
         )}
 
         {/* Controles del calendario */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
           <div className="flex items-center gap-4">
             <button
               onClick={handlePreviousMonth}
-              className="p-2 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
+              className="p-2 rounded-lg hover:bg-[#15539C]/10 transition-colors text-[#15539C]"
+              title="Mes anterior"
             >
-              <IconChevronLeft className="w-5 h-5" />
+              <IconChevronLeft className="w-6 h-6 font-bold" />
             </button>
             
-            <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 capitalize">
+            <h2 className="text-2xl font-bold text-[#16233B] capitalize min-w-[200px]">
               {format(currentDate, 'MMMM yyyy', { locale: es })}
             </h2>
             
             <button
               onClick={handleNextMonth}
-              className="p-2 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
+              className="p-2 rounded-lg hover:bg-[#15539C]/10 transition-colors text-[#15539C]"
+              title="Próximo mes"
             >
-              <IconChevronRight className="w-5 h-5" />
+              <IconChevronRight className="w-6 h-6 font-bold" />
             </button>
           </div>
 
           <Button
             onClick={() => setCurrentDate(new Date())}
-            variant="outline"
+            className="border-2 border-[#15539C] text-[#15539C] hover:bg-[#15539C] hover:text-white font-semibold"
           >
             Hoy
           </Button>
@@ -204,7 +203,7 @@ export default function PublicCalendarPage() {
 
         {/* Calendario */}
         {loading ? (
-          <div className="h-96 bg-neutral-200 dark:bg-neutral-800 rounded-xl animate-pulse" />
+          <div className="h-96 bg-gray-200 rounded-xl animate-pulse" />
         ) : (
           <CalendarGrid
             selectedDate={currentDate}

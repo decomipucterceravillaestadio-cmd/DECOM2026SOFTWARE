@@ -25,9 +25,9 @@ export default function DashboardPage() {
     >
       <div className="space-y-6 pb-20">
         {/* Welcome Section */}
-        <Card className="bg-gradient-to-r from-decom-primary to-decom-primary/80 text-white">
-          <h2 className="text-2xl font-bold mb-2">Mis Solicitudes</h2>
-          <p className="text-decom-secondary text-sm">
+        <Card className="bg-gradient-to-r from-[#15539C] via-[#16233B] to-[#0f3a6b] text-white shadow-lg">
+          <h2 className="text-3xl font-bold mb-2">Mis Solicitudes</h2>
+          <p className="text-[#F49E2C] text-base font-semibold">
             {userRole === "decom_admin"
               ? "Administra todas las solicitudes de comunicación"
               : "Gestiona tus solicitudes de material publicitario"}
@@ -37,13 +37,13 @@ export default function DashboardPage() {
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-3 sm:flex sm:gap-2">
           <Link href="/new-request" className="flex-1 sm:flex-none">
-            <Button fullWidth variant="secondary" size="sm">
+            <Button fullWidth variant="secondary" size="sm" className="bg-gradient-to-r from-[#15539C] to-[#16233B] border-none text-white hover:shadow-lg">
               Nueva Solicitud
             </Button>
           </Link>
           {userRole === "decom_admin" && (
             <Link href="/admin" className="flex-1 sm:flex-none">
-              <Button fullWidth variant="outline" size="sm">
+              <Button fullWidth variant="outline" size="sm" className="border-2 border-[#15539C] text-[#15539C] hover:bg-[#15539C] hover:text-white">
                 Panel Admin
               </Button>
             </Link>
@@ -56,9 +56,9 @@ export default function DashboardPage() {
         </div>
 
         {/* Info Card */}
-        <Card className="bg-decom-bg-light border-l-4 border-decom-secondary">
-          <h3 className="font-bold text-decom-text-dark mb-2">Consejo</h3>
-          <p className="text-sm text-decom-text-light">
+        <Card className="bg-[#F5F5F5] border-l-4 border-l-[#F49E2C]">
+          <h3 className="font-bold text-[#16233B] mb-2 text-lg">Consejo</h3>
+          <p className="text-gray-700 text-base font-medium">
             Crea solicitudes con al menos 7 días antes de tu evento para que DECOM 
             tenga tiempo suficiente de preparación.
           </p>

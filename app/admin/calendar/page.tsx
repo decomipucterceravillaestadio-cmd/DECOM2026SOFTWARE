@@ -128,14 +128,14 @@ export default function AdminCalendarPage() {
   }
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-neutral-100 dark:bg-neutral-950">
+    <div className="flex h-screen w-full overflow-hidden bg-[#F5F5F5]">
       <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
             <div className="mb-8">
               <div className="flex items-center gap-2 px-2">
-                <IconCalendar className="h-7 w-7 text-violet-500" />
-                <span className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+                <IconCalendar className="h-7 w-7 text-[#15539C]" />
+                <span className="text-xl font-bold text-[#16233B]">
                   DECOM
                 </span>
               </div>
