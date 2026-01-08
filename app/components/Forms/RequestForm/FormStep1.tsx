@@ -35,7 +35,7 @@ import {
 
 // Esquema de validación para Step 1
 const step1Schema = z.object({
-  committee_id: z.string().uuid('Debes seleccionar un comité').optional(),
+  committee_id: z.string().uuid('Debes seleccionar un comité'),
   event_name: z
     .string()
     .min(5, 'Mínimo 5 caracteres')
@@ -47,6 +47,7 @@ const step1Schema = z.object({
   event_date: z
     .string()
     .refine((date) => new Date(date) > new Date(), 'La fecha debe ser futura'),
+  event_time: z.string().regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Formato de hora inválido (HH:MM)'),
 })
 
 export type Step1Data = z.infer<typeof step1Schema>
@@ -67,6 +68,9 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
   const [committees, setCommittees] = useState<Committee[]>([])
   const [isLoadingCommittees, setIsLoadingCommittees] = useState(true)
   const [errorCommittees, setErrorCommittees] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [selectedCommittee, setSelectedCommittee] = useState<Committee | null>(null)
 
   // Calcular fechas derivadas
   const eventDateValue = initialData?.event_date
@@ -79,6 +83,7 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<Step1Data>({
     resolver: zodResolver(step1Schema),
@@ -111,6 +116,48 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
 
     fetchCommittees()
   }, [])
+
+  // Sincronizar selectedCommittee con el form
+  useEffect(() => {
+    const currentId = watch('committee_id')
+    if (currentId && committees.length > 0) {
+      const committee = committees.find(c => c.id === currentId)
+      if (committee) {
+        setSelectedCommittee(committee)
+        setSearchTerm(committee.name)
+      }
+    }
+  }, [watch('committee_id'), committees])
+
+  const filteredCommittees = committees.filter(committee =>
+    committee.name.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
+  const handleSelectCommittee = (committee: Committee) => {
+    setSelectedCommittee(committee)
+    setValue('committee_id', committee.id)
+    setSearchTerm(committee.name)
+    setIsDropdownOpen(false)
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setSearchTerm(value)
+    setIsDropdownOpen(true)
+    if (!value) {
+      setSelectedCommittee(null)
+      setValue('committee_id', '')
+    }
+  }
+
+  const handleInputFocus = () => {
+    setIsDropdownOpen(true)
+  }
+
+  const handleInputBlur = () => {
+    // Delay to allow click on options
+    setTimeout(() => setIsDropdownOpen(false), 200)
+  }
 
   const onSubmit = (data: Step1Data) => {
     onNext(data)
@@ -166,24 +213,31 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
                 {errorCommittees}
               </motion.div>
             ) : (
-              <select
-                id="committee_id"
-                {...register('committee_id')}
-                className="w-full px-3 md:px-4 py-3 text-base border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#15539C]/20 focus:border-[#15539C] bg-white text-gray-900 transition-all hover:border-gray-400 appearance-none font-medium cursor-pointer"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2315539C' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E")`,
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'right 1rem center',
-                  paddingRight: '2.5rem',
-                }}
-              >
-                <option value="">Selecciona tu comité...</option>
-                {committees.map((committee) => (
-                  <option key={committee.id} value={committee.id}>
-                    {committee.name}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={handleInputChange}
+                  onFocus={handleInputFocus}
+                  onBlur={handleInputBlur}
+                  placeholder="Busca y selecciona tu comité..."
+                  className="w-full px-3 md:px-4 py-3 text-base border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#15539C]/20 focus:border-[#15539C] bg-white text-gray-900 transition-all hover:border-gray-400 font-medium"
+                />
+                {isDropdownOpen && filteredCommittees.length > 0 && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                    {filteredCommittees.map((committee) => (
+                      <div
+                        key={committee.id}
+                        onClick={() => handleSelectCommittee(committee)}
+                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-900"
+                      >
+                        {committee.name}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <input type="hidden" {...register('committee_id')} />
+              </div>
             )}
           </FormField>
 
@@ -235,6 +289,21 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
               icon={<IconCalendarEvent size={20} />}
               {...register('event_date')}
               isValid={!errors.event_date}
+            />
+          </FormField>
+
+          {/* Event Time */}
+          <FormField
+            label="Hora del Evento"
+            required
+            error={errors.event_time?.message}
+          >
+            <EnhancedInput
+              id="event_time"
+              type="time"
+              icon={<IconCalendarEvent size={20} />}
+              {...register('event_time')}
+              isValid={!errors.event_time}
             />
           </FormField>
         </FormSection>

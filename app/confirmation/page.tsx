@@ -1,16 +1,46 @@
 'use client'
 
-import { Suspense } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '../components/UI/Button'
 import { Card } from '../components/UI/Card'
 import { Layout } from '../components/Layout'
-import { IconCheck, IconClock, IconPhone } from '@tabler/icons-react'
+import { IconCheck, IconClock, IconPhone, IconAlertTriangle, IconCalendar } from '@tabler/icons-react'
 
 function ConfirmationContent() {
   const searchParams = useSearchParams()
   const requestId = searchParams.get('requestId')
+
+  const [stats, setStats] = useState<{
+    total_active: number
+    pending: number
+    in_progress: number
+    upcoming_events: Array<{
+      event_date: string
+      event_name: string
+      committee: { name: string }
+    }>
+  } | null>(null)
+  const [statsLoading, setStatsLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const response = await fetch('/api/public/stats')
+        if (response.ok) {
+          const data = await response.json()
+          setStats(data)
+        }
+      } catch (error) {
+        console.error('Error fetching stats:', error)
+      } finally {
+        setStatsLoading(false)
+      }
+    }
+
+    fetchStats()
+  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F5F5F5] to-white py-12 px-4">
@@ -27,6 +57,99 @@ function ConfirmationContent() {
             Tu solicitud ha sido registrada en nuestro sistema.
           </p>
         </div>
+
+        {/* Estado Actual del Sistema - MÁS PROMINENTE */}
+        <Card padding="lg" className="mb-8 border-l-4 border-l-[#F49E2C] bg-gradient-to-r from-orange-50 to-yellow-50">
+          <div className="flex items-center gap-3 mb-6">
+            <IconAlertTriangle className="w-7 h-7 text-[#F49E2C]" />
+            <h3 className="text-xl font-bold text-[#16233B]">Carga de Trabajo Actual</h3>
+          </div>
+
+          <div className="mb-4 p-4 bg-white rounded-lg border border-orange-200">
+            <p className="text-sm text-gray-700 mb-3">
+              <strong>Tu solicitud se suma al trabajo pendiente.</strong> El equipo de DECOM procesa las solicitudes
+              por orden de prioridad y fecha del evento. Aquí puedes ver la carga actual:
+            </p>
+          </div>
+
+          {statsLoading ? (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="text-center p-4 bg-white rounded-lg border">
+                    <div className="h-8 bg-gray-200 rounded animate-pulse mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4 mx-auto"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : stats ? (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="text-center p-4 bg-white rounded-lg border border-blue-200 shadow-sm">
+                  <div className="text-3xl font-bold text-[#15539C] mb-1">{stats.total_active}</div>
+                  <div className="text-sm font-medium text-gray-700">Solicitudes Activas</div>
+                  <div className="text-xs text-gray-500 mt-1">Total en proceso</div>
+                </div>
+                <div className="text-center p-4 bg-white rounded-lg border border-orange-200 shadow-sm">
+                  <div className="text-3xl font-bold text-orange-600 mb-1">{stats.pending}</div>
+                  <div className="text-sm font-medium text-gray-700">Pendientes</div>
+                  <div className="text-xs text-gray-500 mt-1">Esperando revisión</div>
+                </div>
+                <div className="text-center p-4 bg-white rounded-lg border border-green-200 shadow-sm">
+                  <div className="text-3xl font-bold text-green-600 mb-1">{stats.in_progress}</div>
+                  <div className="text-sm font-medium text-gray-700">En Progreso</div>
+                  <div className="text-xs text-gray-500 mt-1">Ya en diseño</div>
+                </div>
+              </div>
+
+              {stats.upcoming_events.length > 0 && (
+                <div className="mt-6">
+                  <h4 className="font-semibold text-[#16233B] mb-3 flex items-center gap-2 text-lg">
+                    <IconCalendar size={20} />
+                    Próximos Eventos (7 días)
+                  </h4>
+                  <div className="space-y-3">
+                    {stats.upcoming_events.slice(0, 5).map((event, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
+                        <div className="flex-1">
+                          <span className="font-medium text-[#16233B]">{event.event_name}</span>
+                          <span className="text-gray-500 ml-2 text-sm">({event.committee?.name})</span>
+                        </div>
+                        <span className="text-gray-600 font-medium bg-gray-100 px-2 py-1 rounded text-sm">
+                          {new Date(event.event_date).toLocaleDateString('es-ES', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric'
+                          })}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <IconClock className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-blue-900 mb-1">¿Cuánto tiempo toma?</p>
+                    <p className="text-sm text-blue-800">
+                      El proceso típico incluye: revisión (1-2 días), diseño (3-5 días), producción (1-2 días)
+                      y entrega. Los tiempos pueden variar según la complejidad y carga de trabajo.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center p-6 bg-gray-50 rounded-lg border border-gray-200">
+              <IconAlertTriangle className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+              <p className="text-sm text-gray-600">No se pudo cargar la información del sistema.</p>
+              <p className="text-xs text-gray-500 mt-1">Esto no afecta tu solicitud.</p>
+            </div>
+          )}
+        </Card>
 
         {/* Tarjeta de Resumen */}
         <Card padding="lg" className="mb-8 space-y-4 border-l-4 border-l-[#15539C]">

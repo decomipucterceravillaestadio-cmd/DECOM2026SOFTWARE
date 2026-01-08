@@ -80,7 +80,7 @@ export default function HomePage() {
                 className="object-contain p-1"
               />
             </div>
-            <span className="font-bold text-xl tracking-tight text-white">DECOM</span>
+            <span className="font-bold text-xl tracking-tight text-white">DECOM IPUC VILLA ESTADIO</span>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: 20 }}

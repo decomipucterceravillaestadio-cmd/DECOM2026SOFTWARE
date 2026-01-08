@@ -16,6 +16,7 @@ export const createRequestSchema = z
       (date) => new Date(date) > new Date(),
       'La fecha debe ser futura'
     ),
+    event_time: z.string().regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Formato de hora inválido (HH:MM)'),
     material_type: z.enum(['flyer', 'banner', 'video', 'redes_sociales', 'otro']),
     contact_whatsapp: z
       .string()

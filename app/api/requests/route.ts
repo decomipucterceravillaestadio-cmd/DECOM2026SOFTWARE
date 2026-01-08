@@ -96,6 +96,7 @@ export async function POST(request: NextRequest) {
         event_name: validatedData.event_name,
         event_info: validatedData.event_info,
         event_date: validatedData.event_date,
+        event_time: validatedData.event_time,
         material_type: validatedData.material_type,
         contact_whatsapp: validatedData.contact_whatsapp,
         include_bible_verse: validatedData.include_bible_verse || false,

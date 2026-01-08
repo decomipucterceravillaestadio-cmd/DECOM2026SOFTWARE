@@ -52,6 +52,7 @@ export default function NewRequestPage() {
         event_name: data.event_name,
         event_info: data.event_info,
         event_date: data.event_date,
+        event_time: data.event_time,
         material_type: data.material_type,
         contact_whatsapp: whatsappNumber,
         include_bible_verse: data.include_bible_verse,

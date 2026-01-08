@@ -78,6 +78,7 @@ export type Database = {
           created_by: string
           delivery_date: string | null
           event_date: string
+          event_time: string | null
           event_info: string
           event_name: string
           id: string
@@ -96,6 +97,7 @@ export type Database = {
           created_by: string
           delivery_date?: string | null
           event_date: string
+          event_time?: string | null
           event_info: string
           event_name: string
           id?: string
@@ -114,6 +116,7 @@ export type Database = {
           created_by?: string
           delivery_date?: string | null
           event_date?: string
+          event_time?: string | null
           event_info?: string
           event_name?: string
           id?: string

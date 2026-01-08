@@ -4,6 +4,7 @@ import { startOfMonth, endOfMonth, format } from 'date-fns'
 
 interface PublicCalendarEvent {
   id: string
+  event_name: string
   event_date: string
   status: string
   priority_score: number | null
@@ -43,7 +44,7 @@ export async function GET(request: NextRequest) {
     // Obtener solo campos públicos
     const { data, error } = await supabase
       .from('requests')
-      .select('id, event_date, status, priority_score, material_type, planning_start_date, delivery_date, created_at')
+      .select('id, event_name, event_date, status, priority_score, material_type, planning_start_date, delivery_date, created_at')
       .gte('event_date', format(startDate, 'yyyy-MM-dd'))
       .lte('event_date', format(endDate, 'yyyy-MM-dd'))
       .neq('status', 'rejected') // No mostrar rechazadas

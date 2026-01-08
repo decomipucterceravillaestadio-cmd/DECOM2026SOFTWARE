@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { 
-  startOfMonth, 
-  endOfMonth, 
-  eachDayOfInterval, 
-  format, 
+import {
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  format,
   isSameDay,
   isToday,
   addMonths,
@@ -88,65 +88,67 @@ export default function CalendarGrid({ selectedDate, events, onDaySelect, select
   }
 
   return (
-    <div className="bg-white dark:bg-[#1e1e2d] rounded-xl shadow-md overflow-hidden">
-      {/* Header de días de la semana */}
-      <div className="grid grid-cols-7 bg-decom-primary-light border-b border-decom-primary-light/10">
-        {['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'].map((day) => (
-          <div
-            key={day}
-            className="h-9 flex items-center justify-center text-white text-[11px] font-bold uppercase tracking-wider"
-          >
-            {day}
-          </div>
-        ))}
-      </div>
+    <div className="bg-white dark:bg-[#1e1e2d] rounded-xl shadow-md overflow-hidden overflow-x-auto">
+      <div className="min-w-[340px]">
+        {/* Header de días de la semana */}
+        <div className="grid grid-cols-7 bg-decom-primary-light border-b border-decom-primary-light/10">
+          {['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'].map((day) => (
+            <div
+              key={day}
+              className="h-9 flex items-center justify-center text-white text-[11px] font-bold uppercase tracking-wider"
+            >
+              {day}
+            </div>
+          ))}
+        </div>
 
-      {/* Grid de días */}
-      <div className="grid grid-cols-7 p-2 gap-y-2">
-        {calendarDays.map((day, index) => {
-          if (!day) {
+        {/* Grid de días */}
+        <div className="grid grid-cols-7 p-2 gap-y-2">
+          {calendarDays.map((day, index) => {
+            if (!day) {
+              return (
+                <div
+                  key={`empty-${index}`}
+                  className="h-14 flex flex-col items-center justify-start py-1 opacity-30"
+                />
+              )
+            }
+
+            const dayEvents = getEventsForDay(day)
+            const isCurrentDay = isToday(day)
+            const isSelected = isDaySelected(day)
+
             return (
-              <div
-                key={`empty-${index}`}
-                className="h-14 flex flex-col items-center justify-start py-1 opacity-30"
-              />
-            )
-          }
-
-          const dayEvents = getEventsForDay(day)
-          const isCurrentDay = isToday(day)
-          const isSelected = isDaySelected(day)
-
-          return (
-            <button
-              key={day.toString()}
-              onClick={() => onDaySelect(day, dayEvents)}
-              className={`
+              <button
+                key={day.toString()}
+                onClick={() => onDaySelect(day, dayEvents)}
+                className={`
                 h-14 flex flex-col items-center justify-start py-1 relative group cursor-pointer rounded-lg
                 transition-all duration-200
-                ${isCurrentDay 
-                  ? 'border-[2px] border-secondary bg-white dark:bg-transparent' 
-                  : 'hover:bg-gray-50 dark:hover:bg-white/5'
-                }
-                ${isSelected 
-                  ? 'bg-secondary/10 dark:bg-secondary/20 ring-1 ring-inset ring-secondary/30' 
-                  : ''
-                }
+                ${isCurrentDay
+                    ? 'border-[2px] border-secondary bg-white dark:bg-transparent'
+                    : 'hover:bg-gray-50 dark:hover:bg-white/5'
+                  }
+                ${isSelected
+                    ? 'bg-secondary/10 dark:bg-secondary/20 ring-1 ring-inset ring-secondary/30'
+                    : ''
+                  }
               `}
-            >
-              <span
-                className={`
+              >
+                <span
+                  className={`
                   text-sm font-medium
                   ${isCurrentDay || isSelected ? 'font-bold' : ''}
                   text-decom-primary dark:text-white
                 `}
-              >
-                {format(day, 'd')}
-              </span>
-              {getStatusDots(dayEvents)}
-            </button>
-          )
-        })}
+                >
+                  {format(day, 'd')}
+                </span>
+                {getStatusDots(dayEvents)}
+              </button>
+            )
+          })}
+        </div>
       </div>
     </div>
   )
