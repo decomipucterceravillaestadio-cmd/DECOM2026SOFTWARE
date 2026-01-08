@@ -21,6 +21,9 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "Sistema DECOM - Gestión de Comunicaciones",
   description: "Sistema de gestión de solicitudes de material publicitario para iglesia",
+  icons: {
+    icon: '/favicon.png',
+  },
 };
 
 export default function RootLayout({
