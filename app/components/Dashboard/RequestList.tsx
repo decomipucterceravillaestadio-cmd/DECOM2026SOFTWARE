@@ -6,6 +6,7 @@ import { Card } from "@/app/components/UI/Card";
 import { Badge } from "@/app/components/UI/Badge";
 import { Button } from "@/app/components/UI/Button";
 import { Skeleton } from "@/app/components/UI/Skeleton";
+import { EmptyState } from "@/app/components/UI";
 import { formatDate, daysUntilEvent } from "@/app/lib/dateUtils";
 import { MATERIAL_TYPES, REQUEST_STATUSES } from "@/app/lib/constants";
 import type { Request } from "@/app/types/index";
@@ -207,12 +208,17 @@ export function RequestList({
             ))}
           </>
         ) : paginatedRequests.length === 0 ? (
-          <Card className="text-center py-8">
-            <p className="text-decom-text-light text-lg">No hay solicitudes</p>
-            <p className="text-decom-text-light text-sm mt-1">
-              {filterStatus !== "all" ? "Intenta cambiar los filtros" : "Crea una nueva solicitud para comenzar"}
-            </p>
-          </Card>
+          <EmptyState
+            title={filterStatus === "all" ? "No hay solicitudes aún" : "No hay solicitudes con este filtro"}
+            description={
+              filterStatus === "all"
+                ? "Todavía no has creado ninguna solicitud de material gráfico. ¡Comienza ahora y el comité DECOM te ayudará a promocionar tu evento!"
+                : "No se encontraron solicitudes que coincidan con el filtro seleccionado. Intenta cambiar los filtros o crea una nueva solicitud."
+            }
+            actionLabel={filterStatus === "all" ? "Crear Mi Primera Solicitud" : "Crear Nueva Solicitud"}
+            onAction={() => window.location.href = "/new-request"}
+            variant={filterStatus === "all" ? "featured" : "default"}
+          />
         ) : (
           paginatedRequests.map((request) => {
             const daysRemaining = daysUntilEvent(new Date(request.event_date));

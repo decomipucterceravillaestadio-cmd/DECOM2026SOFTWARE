@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Estado Vacío Solicitudes</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#15539C", /* IPUC Primary Light */
+              "primary-dark": "#16233B", /* IPUC Primary Dark */
+              "secondary": "#F49E2C", /* IPUC Secondary Orange */
+              "background-light": "#F5F5F5",
+              "background-dark": "#111921",
+            },
+            fontFamily: {
+              "display": ["Plus Jakarta Sans", "sans-serif"],
+              "body": ["Noto Sans", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+            boxShadow: {
+                'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                'hard': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar hiding for cleaner mobile look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#16233B] font-display overflow-hidden antialiased">
+<!-- Main Container -->
+<div class="relative flex h-screen w-full flex-col overflow-hidden bg-[#F5F5F5]">
+<!-- Header -->
+<header class="shrink-0 pt-safe-top">
+<div class="bg-gradient-to-r from-[#16233B] to-[#15539C] px-4 py-3 shadow-md flex items-center justify-between">
+<div class="flex items-center gap-3">
+<!-- Logo Placeholder -->
+<div class="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
+<span class="material-symbols-outlined text-white text-[20px]">church</span>
+</div>
+<h1 class="text-lg font-bold text-white tracking-wide">Mis Solicitudes</h1>
+</div>
+<!-- Optional notification or profile icon -->
+<button class="text-white/80 hover:text-white transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</header>
+<!-- Scrollable Content -->
+<main class="flex-1 flex flex-col items-center justify-center overflow-y-auto no-scrollbar px-6 pb-8 pt-4 w-full max-w-[480px] mx-auto">
+<!-- Illustration -->
+<div class="relative mb-6 size-[140px] flex items-center justify-center">
+<!-- Decorative background glow -->
+<div class="absolute inset-0 bg-primary/5 rounded-full blur-2xl transform scale-150"></div>
+<svg class="relative z-10 drop-shadow-xl" data-alt="Empty folder illustration with line style and gradients" fill="none" height="120" viewbox="0 0 120 120" width="120" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<lineargradient gradientunits="userSpaceOnUse" id="folderGradient" x1="0" x2="120" y1="0" y2="120">
+<stop offset="0%" stop-color="#15539C"></stop>
+<stop offset="100%" stop-color="#16233B"></stop>
+</lineargradient>
+</defs>
+<!-- Folder Back -->
+<path d="M10 30 C10 24.477 14.477 20 20 20 H45 L55 30 H100 C105.523 30 110 34.477 110 40 V100 C110 105.523 105.523 110 100 110 H20 C14.477 110 10 105.523 10 100 V30Z" fill="#FFFFFF" fill-opacity="0.5" stroke="url(#folderGradient)" stroke-width="2.5"></path>
+<!-- Folder Front Flap (Open look) -->
+<path d="M10 45 C10 39.477 14.477 35 20 35 H100 C105.523 35 110 39.477 110 45 V100 C110 105.523 105.523 110 100 110 H20 C14.477 110 10 105.523 10 100 V45Z" fill="#F8FAFC" opacity="0.9" stroke="url(#folderGradient)" stroke-width="2.5"></path>
+<!-- Decorative Elements -->
+<!-- Star -->
+<path d="M85 25 L87 31 H93 L88 35 L90 41 L85 37 L80 41 L82 35 L77 31 H83 L85 25Z" fill="#F49E2C"></path>
+<!-- Cross detail -->
+<path d="M30 65 V85 M20 75 H40" opacity="0.3" stroke="#15539C" stroke-linecap="round" stroke-width="2"></path>
+<!-- Lines representing empty text -->
+<path d="M45 65 H85" stroke="#16233B" stroke-linecap="round" stroke-opacity="0.1" stroke-width="2"></path>
+<path d="M45 75 H75" stroke="#16233B" stroke-linecap="round" stroke-opacity="0.1" stroke-width="2"></path>
+<path d="M45 85 H65" stroke="#16233B" stroke-linecap="round" stroke-opacity="0.1" stroke-width="2"></path>
+</svg>
+<!-- Floating accent icon -->
+<div class="absolute -right-2 top-0 bg-white rounded-full p-1.5 shadow-md border border-gray-100 animate-bounce" style="animation-duration: 3s;">
+<span class="material-symbols-outlined text-secondary text-[20px]">search_off</span>
+</div>
+</div>
+<!-- Text Content -->
+<div class="text-center space-y-3 mb-8">
+<h2 class="text-[#16233B] text-2xl font-extrabold leading-tight tracking-tight">
+                    No hay solicitudes aún
+                </h2>
+<p class="text-gray-600 text-base font-normal leading-relaxed max-w-[320px] mx-auto">
+                    Todavía no has creado ninguna solicitud de material publicitario. ¡Comienza ahora y el comité DECOM te ayudará a promocionar tu evento!
+                </p>
+</div>
+<!-- Bullet Points -->
+<div class="w-full bg-white rounded-xl p-5 shadow-soft border border-gray-100 mb-8 space-y-4">
+<div class="flex items-start gap-3">
+<div class="mt-0.5 flex-shrink-0 bg-secondary/10 rounded-full p-1">
+<span class="material-symbols-outlined text-secondary text-[18px] font-bold">bolt</span>
+</div>
+<p class="text-[#16233B] text-sm font-medium leading-snug pt-0.5">Proceso rápido y organizado</p>
+</div>
+<div class="flex items-start gap-3">
+<div class="mt-0.5 flex-shrink-0 bg-secondary/10 rounded-full p-1">
+<span class="material-symbols-outlined text-secondary text-[18px] font-bold">visibility</span>
+</div>
+<p class="text-[#16233B] text-sm font-medium leading-snug pt-0.5">Seguimiento en tiempo real</p>
+</div>
+<div class="flex items-start gap-3">
+<div class="mt-0.5 flex-shrink-0 bg-secondary/10 rounded-full p-1">
+<span class="material-symbols-outlined text-secondary text-[18px] font-bold">workspace_premium</span>
+</div>
+<p class="text-[#16233B] text-sm font-medium leading-snug pt-0.5">Material profesional garantizado</p>
+</div>
+</div>
+<!-- CTA Button -->
+<button class="group relative w-full overflow-hidden rounded-[12px] bg-[#15539C] p-0 shadow-lg transition-transform active:scale-[0.98]">
+<!-- Border Effect using a nested div to ensure text stays centered vertically relative to the main block -->
+<div class="relative flex w-full items-center justify-center gap-2 border-b-[4px] border-[#F49E2C] bg-[#15539C] py-4 transition-all group-active:border-b-0 group-active:py-[18px]">
+<span class="material-symbols-outlined text-[#F49E2C] text-[24px] font-bold drop-shadow-sm">add_circle</span>
+<span class="text-white text-base font-bold tracking-wide">Crear Mi Primera Solicitud</span>
+</div>
+</button>
+</main>
+</div>
+</body></html>

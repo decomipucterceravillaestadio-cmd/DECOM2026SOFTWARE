@@ -6,6 +6,7 @@
 
 import { createServerClient } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import { loginSchema } from '../../../lib/validations'
 import type { Database } from '../../../types/database'
 import { createAdminClient } from '../../../lib/supabase/admin'
@@ -16,12 +17,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = loginSchema.parse(body)
 
-    // Crear cliente Supabase para server
-    let supabaseResponse = NextResponse.json({
-      success: true,
-      message: 'Login exitoso',
-    })
+    // Obtener cookieStore
+    const cookieStore = await cookies()
 
+    // Crear cliente Supabase para server con cookies()
     const supabase = createServerClient<Database>(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
@@ -29,24 +28,12 @@ export async function POST(request: NextRequest) {
       {
         cookies: {
           getAll() {
-            return request.cookies.getAll()
+            return cookieStore.getAll()
           },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) => {
-              request.cookies.set(name, value)
+              cookieStore.set(name, value, options)
             })
-            supabaseResponse = NextResponse.json(
-              {
-                success: true,
-                message: 'Login exitoso',
-              },
-              {
-                status: 200,
-              }
-            )
-            cookiesToSet.forEach(({ name, value, options }) =>
-              supabaseResponse.cookies.set(name, value, options)
-            )
           },
         },
       }
@@ -133,8 +120,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Actualizar la response con datos del usuario
-    const response = NextResponse.json({
+    // IMPORTANTE: Retornar respuesta simple - las cookies ya están en cookieStore
+    return NextResponse.json({
       success: true,
       message: 'Login exitoso',
       user: {
@@ -144,9 +131,6 @@ export async function POST(request: NextRequest) {
         role: userData.role,
       },
     })
-
-    // Las cookies se han seteado automáticamente por Supabase
-    return response
   } catch (error) {
     // Error de validación
     if (error instanceof Error) {

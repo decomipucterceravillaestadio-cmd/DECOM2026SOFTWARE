@@ -3,10 +3,10 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { 
-  IconLayoutDashboard, 
-  IconClipboardList, 
-  IconSettings,
+import {
+  IconLayoutDashboard,
+  IconClipboardList,
+  IconUser,
   IconLogout,
   IconPlus
 } from '@tabler/icons-react'
@@ -38,9 +38,9 @@ export default function AdminDashboard() {
       icon: <IconClipboardList className="h-5 w-5" />,
     },
     {
-      label: 'Configuración',
-      href: '/admin/settings',
-      icon: <IconSettings className="h-5 w-5" />,
+      label: 'Perfil',
+      href: '/admin/profile',
+      icon: <IconUser className="h-5 w-5" />,
     },
   ]
 
@@ -54,7 +54,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-neutral-100 dark:bg-neutral-950">
+    <div className="flex h-screen w-full overflow-hidden bg-neutral-100 dark:bg-neutral-950 flex-col md:flex-row">
       <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">

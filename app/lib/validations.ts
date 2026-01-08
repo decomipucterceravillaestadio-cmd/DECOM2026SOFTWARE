@@ -9,7 +9,7 @@ export type LoginInput = z.infer<typeof loginSchema>
 
 export const createRequestSchema = z
   .object({
-    committee_id: z.string().uuid('ID de comité inválido'),
+    committee_id: z.string().uuid('ID de comité inválido').optional(),
     event_name: z.string().min(5, 'Mínimo 5 caracteres').max(200),
     event_info: z.string().min(5, 'Mínimo 5 caracteres').max(500),
     event_date: z.string().refine(
@@ -33,7 +33,7 @@ export const createRequestSchema = z
         'Número WhatsApp inválido (Ej: 3001234567 o +573001234567)'
       ),
     include_bible_verse: z.boolean().default(false),
-    bible_verse_text: z.string().optional(),
+    bible_verse_text: z.string().nullish(),
   })
   .refine(
     (data) => {

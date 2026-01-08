@@ -53,8 +53,10 @@ export default function NewRequestPage() {
         material_type: data.material_type,
         contact_whatsapp: whatsappNumber,
         include_bible_verse: data.include_bible_verse,
-        bible_verse_text: data.bible_verse_text || null,
+        bible_verse_text: data.bible_verse_text || undefined,
       }
+
+      console.log('Sending request data:', requestData)
 
       // Enviar la solicitud
       const response = await fetch('/api/requests', {
@@ -68,6 +70,8 @@ export default function NewRequestPage() {
       const result = await response.json()
 
       if (!response.ok || !result.success) {
+        console.error('API Error details:', result)
+        console.error('Validation details:', result.details)
         throw new Error(result.error || 'Error al crear la solicitud')
       }
 

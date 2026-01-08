@@ -106,7 +106,7 @@ export function FormStep2({
 
   return (
     <motion.div
-      className="space-y-8 w-full max-w-2xl mx-auto px-4 py-8"
+      className="space-y-6 md:space-y-8 w-full max-w-2xl mx-auto px-4 py-6 md:py-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -118,7 +118,7 @@ export function FormStep2({
         stepTitle="Detalles del Material"
       />
 
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6 md:space-y-8">
         {/* Material Type Section */}
         <FormSection
           title="Tipo de Material"
@@ -161,18 +161,18 @@ export function FormStep2({
             hint="+57 3XX XXX XXXX"
           >
             <div className="flex gap-0 rounded-xl overflow-hidden border-2 border-gray-200 focus-within:border-[#15539C] focus-within:ring-2 focus-within:ring-[#15539C]/20 transition-all">
-              <div className="flex items-center px-4 bg-gradient-to-r from-gray-50 to-gray-100 border-r border-gray-200">
-                <span className="font-bold text-gray-700">🇨🇴 +57</span>
+              <div className="flex items-center px-3 md:px-4 bg-gradient-to-r from-gray-50 to-gray-100 border-r border-gray-200">
+                <span className="font-bold text-gray-700 text-sm md:text-base">🇨🇴 +57</span>
               </div>
               <input
                 type="tel"
                 placeholder="300 123 4567"
                 maxLength={10}
                 {...register('contact_whatsapp')}
-                className="flex-1 px-4 py-3 border-0 focus:outline-none text-gray-800 placeholder-gray-400 w-full font-medium"
+                className="flex-1 px-3 md:px-4 py-3 text-base border-0 focus:outline-none text-gray-800 placeholder-gray-400 w-full font-medium"
               />
             </div>
-            <p className="text-xs text-gray-500 font-medium mt-2">
+            <p className="text-xs text-gray-500 font-medium mt-1.5 md:mt-2">
               Te notificaremos el estado de tu solicitud por WhatsApp
             </p>
           </FormField>
@@ -181,18 +181,17 @@ export function FormStep2({
         {/* Bible Verse Optional Section */}
         <motion.div
           layout
-          className={`border-2 rounded-xl p-6 transition-all duration-300 ${
-            includeBibleVerse
+          className={`border-2 rounded-xl p-4 md:p-6 transition-all duration-300 ${includeBibleVerse
               ? 'border-[#15539C] bg-gradient-to-br from-[#15539C]/5 to-transparent'
               : 'border-dashed border-gray-300 bg-white hover:border-[#15539C]/40'
-          }`}
+            }`}
         >
-          <div className="space-y-5">
+          <div className="space-y-4 md:space-y-5">
             {/* Toggle */}
             <label className="flex items-center justify-between cursor-pointer group select-none">
               <div className="flex items-center gap-3">
                 <motion.div
-                  className="relative"
+                  className="relative flex-shrink-0"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -201,13 +200,13 @@ export function FormStep2({
                     {...register('include_bible_verse')}
                     className="peer sr-only"
                   />
-                  <div className="w-12 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#15539C]/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all after:duration-300 peer-checked:bg-[#15539C] shadow-inner"></div>
+                  <div className="w-10 h-6 md:w-12 md:h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#15539C]/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] md:after:top-[3px] after:left-[2px] md:after:left-[3px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all after:duration-300 peer-checked:bg-[#15539C] shadow-inner"></div>
                 </motion.div>
-                <div>
-                  <span className="font-bold text-[#16233B] flex items-center gap-2">
-                    <span className="text-xl">📖</span> Incluir Cita Bíblica
+                <div className="flex-1 min-w-0">
+                  <span className="font-bold text-[#16233B] flex flex-wrap items-center gap-1 md:gap-2 text-sm md:text-base">
+                    <span className="text-lg md:text-xl">📖</span> Incluir Cita Bíblica
                   </span>
-                  <p className="text-xs text-gray-500 font-medium mt-0.5">
+                  <p className="text-[10px] md:text-xs text-gray-500 font-medium mt-0.5">
                     Opcional • Agrega un toque espiritual a tu material
                   </p>
                 </div>
@@ -222,7 +221,7 @@ export function FormStep2({
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.3, ease: 'easeInOut' }}
-                  className="space-y-3 pt-4 border-t border-[#15539C]/20"
+                  className="space-y-3 pt-3 md:pt-4 border-t border-[#15539C]/20"
                 >
                   <FormField
                     label="Texto de la Cita Bíblica"
@@ -247,7 +246,7 @@ export function FormStep2({
         <AnimatePresence>
           {error && (
             <motion.div
-              className="p-4 bg-red-50 border-l-4 border-red-500 rounded-lg text-red-700 text-sm font-medium flex items-start gap-3"
+              className="p-3 md:p-4 bg-red-50 border-l-4 border-red-500 rounded-lg text-red-700 text-sm font-medium flex items-start gap-3"
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -10 }}
@@ -270,7 +269,7 @@ export function FormStep2({
 
         {/* Action Buttons */}
         <motion.div
-          className="flex gap-3 pt-8 flex-col sm:flex-row"
+          className="flex gap-3 pt-6 md:pt-8 flex-col sm:flex-row"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.3 }}
@@ -280,13 +279,13 @@ export function FormStep2({
             variant="outline"
             onClick={onBack}
             disabled={isLoadingRequest}
-            className="flex-1 border-2 border-[#15539C] text-[#15539C] hover:bg-[#15539C] hover:text-white font-bold py-3.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 border-2 border-[#15539C] text-[#15539C] hover:bg-[#15539C] hover:text-white font-bold py-3 md:py-3.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             ← Atrás
           </Button>
           <Button
             type="submit"
-            className="flex-1 bg-gradient-to-r from-[#15539C] to-[#16233B] hover:shadow-lg text-white font-bold py-3.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+            className="flex-1 bg-gradient-to-r from-[#15539C] to-[#16233B] hover:shadow-lg text-white font-bold py-3 md:py-3.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
             fullWidth
             disabled={isLoadingRequest}
           >

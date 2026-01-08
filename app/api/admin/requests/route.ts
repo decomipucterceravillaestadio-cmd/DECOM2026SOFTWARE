@@ -23,8 +23,9 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const status = searchParams.get('status')
     const committee_id = searchParams.get('committee_id')
+    const filter = searchParams.get('filter') // Nuevo parámetro para filtros especiales
     const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '10')
+    const limit = parseInt(searchParams.get('limit') || '50') // Aumenté el límite por defecto para vista lista
     const sort = searchParams.get('sort') || 'created_at'
     const order = searchParams.get('order') || 'desc'
     
@@ -49,6 +50,9 @@ export async function GET(request: NextRequest) {
     }
     if (committee_id) {
       query = query.eq('committee_id', committee_id)
+    }
+    if (filter === 'urgent') {
+      query = query.gte('priority_score', 8)
     }
 
     // Aplicar ordenamiento y paginación

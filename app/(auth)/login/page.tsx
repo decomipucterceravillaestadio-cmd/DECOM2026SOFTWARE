@@ -20,6 +20,7 @@ export default function LoginPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
+        credentials: 'include', // IMPORTANTE: incluir cookies en la petición
       })
 
       if (!response.ok) {
@@ -27,8 +28,14 @@ export default function LoginPage() {
         throw new Error(data.message || 'Error al iniciar sesión')
       }
 
-      // Redirigir al dashboard
-      router.push('/admin/dashboard')
+      const data = await response.json()
+      console.log('Login exitoso:', data)
+
+      // Esperar un momento para que las cookies se establezcan
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
+      // Forzar navegación completa (no usar router.push)
+      window.location.href = '/admin'
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error al iniciar sesión'
       setError(message)

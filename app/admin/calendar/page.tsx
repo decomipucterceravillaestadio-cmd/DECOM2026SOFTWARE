@@ -14,6 +14,7 @@ import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar'
 import CalendarGrid from '@/app/components/Calendar/CalendarGrid'
 import { Badge } from '@/app/components/UI/Badge'
 import { Button } from '@/app/components/UI/Button'
+import { EmptyState } from '@/app/components/UI'
 
 interface CalendarEvent {
   id: string
@@ -39,6 +40,7 @@ export default function AdminCalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [events, setEvents] = useState<DayEvents[]>([])
   const [selectedDayEvents, setSelectedDayEvents] = useState<CalendarEvent[]>([])
+  const [selectedDay, setSelectedDay] = useState<Date | null>(null)
   const [loading, setLoading] = useState(true)
   const [open, setOpen] = useState(false)
 
@@ -87,6 +89,7 @@ export default function AdminCalendarPage() {
 
   const handleDaySelect = (date: Date, dayEvents: CalendarEvent[]) => {
     setSelectedDayEvents(dayEvents)
+    setSelectedDay(date)
   }
 
   const handleLogout = async () => {
@@ -151,80 +154,144 @@ export default function AdminCalendarPage() {
             </div>
 
             {/* Controles del calendario */}
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-4">
+            <div className="p-4">
+              <div className="bg-gradient-to-r from-decom-primary to-[#1e2e4a] rounded-xl shadow-lg p-1 flex items-center justify-between relative overflow-hidden">
+                {/* Decorative element */}
+                <div className="absolute right-0 top-0 h-full w-2 bg-secondary/80 skew-x-[-10deg] translate-x-1"></div>
                 <button
                   onClick={handlePreviousMonth}
-                  className="p-2 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
+                  className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-lg transition-colors z-10"
                 >
                   <IconChevronLeft className="w-5 h-5" />
                 </button>
                 
-                <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+                <h2 className="text-white text-lg font-bold tracking-wide z-10">
                   {format(currentDate, 'MMMM yyyy', { locale: es })}
                 </h2>
                 
                 <button
                   onClick={handleNextMonth}
-                  className="p-2 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
+                  className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-lg transition-colors z-10"
                 >
                   <IconChevronRight className="w-5 h-5" />
                 </button>
               </div>
-
-              <Button
-                onClick={() => setCurrentDate(new Date())}
-                variant="outline"
-              >
-                Hoy
-              </Button>
             </div>
 
             {/* Calendario */}
-            {loading ? (
-              <div className="h-96 bg-neutral-200 dark:bg-neutral-800 rounded-xl animate-pulse" />
-            ) : (
-              <CalendarGrid
-                selectedDate={currentDate}
-                events={events}
-                onDaySelect={handleDaySelect}
-              />
+            <div className="px-4 pb-4">
+              {loading ? (
+                <div className="h-96 bg-neutral-200 dark:bg-neutral-800 rounded-xl animate-pulse" />
+              ) : (
+                <CalendarGrid
+                  selectedDate={currentDate}
+                  events={events}
+                  onDaySelect={handleDaySelect}
+                  selectedDay={selectedDayEvents.length > 0 ? selectedDay : null}
+                />
+              )}
+            </div>
+
+            {/* Estado vacío cuando no hay eventos */}
+            {!loading && events.length === 0 && (
+              <div className="mt-8">
+                <EmptyState
+                  title="Calendario vacío"
+                  description="No hay eventos programados para este mes. Los eventos aparecerán aquí cuando se aprueben las solicitudes de material gráfico."
+                  actionLabel="Ver Todas las Solicitudes"
+                  onAction={() => router.push('/admin')}
+                  variant="default"
+                />
+              </div>
             )}
 
             {/* Panel de eventos del día seleccionado */}
             {selectedDayEvents.length > 0 && (
-              <div className="mt-8">
-                <h3 className="text-xl font-semibold mb-4 text-neutral-900 dark:text-neutral-100">
-                  Eventos seleccionados ({selectedDayEvents.length})
-                </h3>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {selectedDayEvents.map((event) => (
-                    <div
-                      key={event.id}
-                      onClick={() => router.push(`/admin/requests/${event.id}`)}
-                      className="bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 p-4 hover:shadow-lg transition-shadow cursor-pointer"
-                    >
-                      <div className="flex items-start justify-between mb-2">
-                        <h4 className="font-semibold text-neutral-900 dark:text-neutral-100">
-                          {event.event_name}
-                        </h4>
-                        {event.priority_score && event.priority_score >= 8 && (
-                          <Badge variant="error">Urgente</Badge>
-                        )}
+              <>
+                {/* Overlay with gradient fade */}
+                <div className="fixed bottom-0 left-0 w-full h-[50vh] bg-gradient-to-t from-black/20 to-transparent pointer-events-none z-20" />
+                
+                {/* Bottom Sheet */}
+                <div className="fixed bottom-0 left-0 w-full z-30 pointer-events-none">
+                  <div className="bg-white dark:bg-[#1e1e2d] rounded-t-3xl shadow-[0_-5px_30px_-10px_rgba(0,0,0,0.1)] w-full h-auto min-h-[340px] pointer-events-auto transform transition-transform relative flex flex-col">
+                    {/* Drag Handle */}
+                    <div className="w-full flex items-center justify-center pt-3 pb-1 cursor-grab active:cursor-grabbing">
+                      <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="px-5 pt-2 pb-8 flex-1 flex flex-col gap-4">
+                      {/* Date Header */}
+                      <div className="flex flex-col gap-1 border-b border-gray-100 dark:border-gray-700 pb-3">
+                        <h3 className="text-lg font-bold text-decom-primary dark:text-white">
+                          Eventos del día {selectedDay ? format(selectedDay, 'd MMMM', { locale: es }) : ''}
+                        </h3>
+                        <div className="h-1 w-12 bg-secondary rounded-full"></div>
                       </div>
-                      <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
-                        {event.committee.name}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        {getStatusBadge(event.status)}
-                        <span className="text-xs text-neutral-500">
-                          {event.material_type}
-                        </span>
+                      
+                      {/* Events List */}
+                      <div className="flex flex-col gap-3 overflow-y-auto">
+                        {selectedDayEvents.map((event) => {
+                          const statusConfig = {
+                            pending: { label: 'Pendiente', color: 'decom-secondary', bgColor: 'bg-decom-secondary/10', borderColor: 'border-decom-secondary/20', dotColor: 'bg-decom-secondary' },
+                            in_progress: { label: 'En Proceso', color: 'decom-primary-light', bgColor: 'bg-decom-primary-light/10', borderColor: 'border-decom-primary-light/20', dotColor: 'bg-decom-primary-light' },
+                            completed: { label: 'Listo', color: 'decom-success', bgColor: 'bg-decom-success/10', borderColor: 'border-decom-success/20', dotColor: 'bg-decom-success' },
+                            approved: { label: 'Aprobado', color: 'decom-success', bgColor: 'bg-decom-success/10', borderColor: 'border-decom-success/20', dotColor: 'bg-decom-success' },
+                            rejected: { label: 'Rechazado', color: 'error', bgColor: 'bg-red-500/10', borderColor: 'border-red-500/20', dotColor: 'bg-red-500' },
+                          }[event.status] || { label: event.status, color: 'gray', bgColor: 'bg-gray-100', borderColor: 'border-gray-200', dotColor: 'bg-gray-400' }
+
+                          const isInProgress = event.status === 'in_progress'
+
+                          return (
+                            <div
+                              key={event.id}
+                              onClick={() => router.push(`/admin/requests/${event.id}`)}
+                              className={`
+                                bg-white dark:bg-[#252538] border border-gray-100 dark:border-gray-700 rounded-xl p-3 shadow-sm 
+                                flex items-start gap-3 cursor-pointer hover:shadow-md transition-shadow relative overflow-hidden
+                                ${isInProgress ? 'relative' : ''}
+                              `}
+                            >
+                              {isInProgress && (
+                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-decom-primary-light"></div>
+                              )}
+                              
+                              <div className={`flex flex-col items-center justify-center min-w-[50px] pt-1 ${isInProgress ? 'pl-1' : ''}`}>
+                                <span className="text-xs text-gray-400 font-semibold mb-1">HORA</span>
+                                <span className="text-sm font-bold text-decom-primary dark:text-white">
+                                  {event.event_date ? format(new Date(event.event_date), 'HH:mm') : 'TBD'}
+                                </span>
+                                <span className="text-xs text-gray-500">
+                                  {event.event_date ? (parseInt(format(new Date(event.event_date), 'H')) >= 12 ? 'PM' : 'AM') : ''}
+                                </span>
+                              </div>
+                              
+                              <div className="w-[1px] h-12 bg-gray-200 dark:bg-gray-600 self-center"></div>
+                              
+                              <div className="flex-1 min-w-0">
+                                <div className="flex justify-between items-start mb-1">
+                                  <h4 className="font-bold text-decom-primary dark:text-white text-sm truncate pr-2">
+                                    {event.event_name}
+                                  </h4>
+                                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${statusConfig.bgColor} text-${statusConfig.color} border ${statusConfig.borderColor}`}>
+                                    {statusConfig.label}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1.5 mb-1">
+                                  <span className={`w-2 h-2 rounded-full ${statusConfig.dotColor}`}></span>
+                                  <p className="text-xs text-gray-500 font-medium truncate">
+                                    {event.committee.name}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          )
+                        })}
                       </div>
                     </div>
-                  ))}
+                  </div>
                 </div>
-              </div>
+              </>
             )}
           </div>
         </div>

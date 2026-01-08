@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import Image from "next/image";
 import { Button } from "@/app/components/UI/Button";
 import { Card } from "@/app/components/UI/Card";
 
@@ -68,10 +69,17 @@ export function LoginForm({ onSubmit, isLoading: externalLoading = false, error:
           <div className="relative">
             {/* Decorative circles */}
             <div className="absolute -inset-2 bg-gradient-to-r from-[#F49E2C] to-[#F49E2C]/50 rounded-full opacity-20 blur-lg"></div>
-            
+
             {/* Logo Circle */}
-            <div className="relative bg-gradient-to-br from-[#15539C] to-[#16233B] w-24 h-24 rounded-full flex items-center justify-center shadow-2xl border-2 border-[#F49E2C]">
-              <span className="text-5xl">✝️</span>
+            <div className="relative bg-gradient-to-br from-[#15539C] to-[#16233B] w-24 h-24 rounded-full flex items-center justify-center shadow-2xl border-2 border-[#F49E2C] overflow-hidden">
+              <Image
+                src="/IPUC_COLOR para fondo oscuro (2).png"
+                alt="Logo IPUC Villa Estadio"
+                width={80}
+                height={80}
+                className="object-contain p-2"
+                priority
+              />
             </div>
           </div>
         </div>
@@ -109,9 +117,8 @@ export function LoginForm({ onSubmit, isLoading: externalLoading = false, error:
                   id="email"
                   type="email"
                   placeholder="correo@ejemplo.com"
-                  className={`w-full px-4 py-3 pl-10 rounded-lg bg-white text-[#16233B] placeholder-gray-400 border-2 ${
-                    errors.email ? "border-red-300" : "border-[#15539C]"
-                  } focus:outline-none focus:ring-2 focus:ring-[#15539C]/50 transition-all`}
+                  className={`w-full px-4 py-3 pl-10 rounded-lg bg-white text-[#16233B] placeholder-gray-400 border-2 ${errors.email ? "border-red-300" : "border-[#15539C]"
+                    } focus:outline-none focus:ring-2 focus:ring-[#15539C]/50 transition-all`}
                   {...register("email")}
                   disabled={isLoading}
                 />
@@ -132,9 +139,8 @@ export function LoginForm({ onSubmit, isLoading: externalLoading = false, error:
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  className={`w-full px-4 py-3 pl-10 pr-12 rounded-lg bg-white text-[#16233B] placeholder-gray-400 border-2 ${
-                    errors.password ? "border-red-300" : "border-[#15539C]"
-                  } focus:outline-none focus:ring-2 focus:ring-[#15539C]/50 transition-all`}
+                  className={`w-full px-4 py-3 pl-10 pr-12 rounded-lg bg-white text-[#16233B] placeholder-gray-400 border-2 ${errors.password ? "border-red-300" : "border-[#15539C]"
+                    } focus:outline-none focus:ring-2 focus:ring-[#15539C]/50 transition-all`}
                   {...register("password")}
                   disabled={isLoading}
                 />
@@ -170,8 +176,8 @@ export function LoginForm({ onSubmit, isLoading: externalLoading = false, error:
 
         {/* Forgot Password Link */}
         <div className="text-center">
-          <a 
-            href="#" 
+          <a
+            href="#"
             className="text-[#F49E2C] hover:text-[#F49E2C]/80 text-sm font-semibold transition-colors drop-shadow"
           >
             ¿Olvidaste tu contraseña?

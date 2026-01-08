@@ -43,11 +43,10 @@ export function LoginInput({
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
           autoComplete={isPassword ? 'current-password' : 'off'}
-          className={`w-full px-4 py-3 rounded-lg bg-white border-2 transition-all duration-200 focus:outline-none ${
-            error
+          className={`w-full px-4 py-3 rounded-lg bg-white border-2 transition-all duration-200 focus:outline-none text-base ${error
               ? 'border-red-500 focus:border-red-600 focus:ring-2 focus:ring-red-200'
               : 'border-gray-200 focus:border-decom-primary focus:ring-2 focus:ring-decom-primary/20'
-          } disabled:bg-gray-100 disabled:cursor-not-allowed text-decom-text-dark placeholder-gray-400`}
+            } disabled:bg-gray-100 disabled:cursor-not-allowed text-decom-text-dark placeholder-gray-400`}
         />
         {isPassword && (
           <button

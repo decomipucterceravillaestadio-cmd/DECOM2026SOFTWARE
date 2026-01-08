@@ -25,7 +25,7 @@ import {
 
 // Esquema de validación para Step 1
 const step1Schema = z.object({
-  committee_id: z.string().uuid('Debes seleccionar un comité'),
+  committee_id: z.string().uuid('Debes seleccionar un comité').optional(),
   event_name: z
     .string()
     .min(5, 'Mínimo 5 caracteres')
@@ -108,7 +108,7 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
 
   return (
     <motion.div
-      className="space-y-8 w-full max-w-2xl mx-auto px-4 py-8"
+      className="space-y-6 md:space-y-8 w-full max-w-2xl mx-auto px-4 py-6 md:py-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -120,7 +120,7 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
         stepTitle="Información del Evento"
       />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 md:space-y-8">
         {/* Main Section - Event Details */}
         <FormSection
           title="Detalles del Evento"
@@ -138,7 +138,7 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
               <Skeleton height={50} className="w-full rounded-xl" />
             ) : errorCommittees ? (
               <motion.div
-                className="p-4 bg-red-50 border-l-4 border-red-500 rounded-lg text-red-700 text-sm font-medium flex items-center gap-3"
+                className="p-3 md:p-4 bg-red-50 border-l-4 border-red-500 rounded-lg text-red-700 text-sm font-medium flex items-center gap-3"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
               >
@@ -159,7 +159,7 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
               <select
                 id="committee_id"
                 {...register('committee_id')}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#15539C]/20 focus:border-[#15539C] bg-white text-gray-800 transition-all hover:border-gray-300 appearance-none font-medium cursor-pointer"
+                className="w-full px-3 md:px-4 py-3 text-base border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#15539C]/20 focus:border-[#15539C] bg-white text-gray-800 transition-all hover:border-gray-300 appearance-none font-medium cursor-pointer"
                 style={{
                   backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2315539C' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E")`,
                   backgroundRepeat: 'no-repeat',
@@ -204,7 +204,7 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
           >
             <EnhancedTextarea
               id="event_info"
-              placeholder="Describe el propósito del evento, público objetivo, paleta de colores preferida y cualquier detalle relevante para el equipo de diseño..."
+              placeholder="Describe el propósito del evento, público objetivo, y cualquier detalle relevante..."
               rows={4}
               icon="📝"
               characterLimit={500}
@@ -232,15 +232,15 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
         {/* Timeline Info */}
         {eventDate && (
           <motion.div
-            className="space-y-4 pt-4"
+            className="space-y-3 md:space-y-4 pt-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
           >
-            <p className="text-sm font-semibold text-gray-600 uppercase tracking-widest">
+            <p className="text-xs md:text-sm font-semibold text-gray-600 uppercase tracking-widest">
               Cronograma Sugerido
             </p>
-            <div className="space-y-3">
+            <div className="space-y-2 md:space-y-3">
               <InfoCard
                 icon="🚀"
                 title={planningDate ? formatDate(planningDate, 'long') : '-'}
@@ -258,13 +258,13 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
               />
 
               <motion.div
-                className="p-4 bg-blue-50 border-l-4 border-blue-500 rounded-lg"
+                className="p-3 md:p-4 bg-blue-50 border-l-4 border-blue-500 rounded-lg"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                <p className="text-sm text-blue-900 font-medium flex items-start gap-2">
-                  <span className="text-lg flex-shrink-0">ℹ️</span>
+                <p className="text-xs md:text-sm text-blue-900 font-medium flex items-start gap-2">
+                  <span className="text-base md:text-lg flex-shrink-0">ℹ️</span>
                   <span>
                     Tienes <strong>{daysRemaining} días</strong> para preparar tu
                     solicitud. Cuanta más información proporciones, mejor será el
@@ -278,7 +278,7 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
 
         {/* Action Buttons */}
         <motion.div
-          className="flex gap-3 pt-8 flex-col sm:flex-row"
+          className="flex gap-3 pt-6 md:pt-8 flex-col sm:flex-row"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.3 }}
@@ -286,14 +286,14 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
           <Link href="/calendar" className="flex-1">
             <Button
               variant="outline"
-              className="w-full border-2 border-[#15539C] text-[#15539C] hover:bg-[#15539C] hover:text-white font-bold py-3.5 transition-all"
+              className="w-full border-2 border-[#15539C] text-[#15539C] hover:bg-[#15539C] hover:text-white font-bold py-3 md:py-3.5 transition-all"
             >
               📅 Ver Calendario
             </Button>
           </Link>
           <Button
             type="submit"
-            className="flex-1 bg-gradient-to-r from-[#15539C] to-[#16233B] hover:shadow-lg text-white font-bold py-3.5 transition-all active:scale-95"
+            className="flex-1 bg-gradient-to-r from-[#15539C] to-[#16233B] hover:shadow-lg text-white font-bold py-3 md:py-3.5 transition-all active:scale-95"
             fullWidth
           >
             Continuar →

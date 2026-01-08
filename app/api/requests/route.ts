@@ -23,6 +23,7 @@ import {
   calculatePriorityScore,
 } from '../../lib/dateUtils'
 import type { Database } from '../../types/database'
+import { ZodError } from 'zod'
 
 export async function POST(request: NextRequest) {
   try {
@@ -61,21 +62,23 @@ export async function POST(request: NextRequest) {
       }
     )
 
-    // Verificar que el comité existe
-    const { data: committee, error: committeeError } = await supabase
-      .from('committees')
-      .select('id, name')
-      .eq('id', validatedData.committee_id)
-      .single()
+    // Verificar que el comité existe (solo si se proporcionó)
+    if (validatedData.committee_id) {
+      const { data: committee, error: committeeError } = await supabase
+        .from('committees')
+        .select('id, name')
+        .eq('id', validatedData.committee_id)
+        .single()
 
-    if (committeeError || !committee) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Comité no encontrado',
-        },
-        { status: 400 }
-      )
+      if (committeeError || !committee) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Comité no encontrado',
+          },
+          { status: 400 }
+        )
+      }
     }
 
     // Calcular fechas automáticas
@@ -89,7 +92,7 @@ export async function POST(request: NextRequest) {
     const { data: requestData, error: createError } = await supabase
       .from('requests')
       .insert({
-        committee_id: validatedData.committee_id,
+        committee_id: validatedData.committee_id || null,
         event_name: validatedData.event_name,
         event_info: validatedData.event_info,
         event_date: validatedData.event_date,
@@ -154,17 +157,19 @@ export async function POST(request: NextRequest) {
     console.error('Error en POST /api/requests:', error)
 
     // Error de validación con Zod
-    if (error instanceof Error) {
-      if ('errors' in error || error.message.includes('Validation')) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'Datos inválidos',
-            details: error.message,
-          },
-          { status: 400 }
-        )
-      }
+    if (error instanceof ZodError) {
+      console.error('Zod validation errors:', error.issues)
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Datos inválidos',
+          details: error.issues.map(err => ({
+            field: err.path.join('.'),
+            message: err.message,
+          })),
+        },
+        { status: 400 }
+      )
     }
 
     return NextResponse.json(

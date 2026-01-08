@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Panel DECOM - Vista Lista</title>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "ipuc-dark": "#16233B",
+                        "ipuc-light": "#15539C",
+                        "ipuc-accent": "#F49E2C",
+                        "background-light": "#F5F5F5",
+                        "background-dark": "#111121",
+                        "status-success": "#10B981",
+                        "status-warning": "#F59E0B",
+                        "status-pending": "#64748B",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'soft': '0 2px 8px rgba(0, 0, 0, 0.05)',
+                        'card': '0 4px 12px rgba(0, 0, 0, 0.08)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased text-ipuc-dark min-h-screen flex flex-col">
+<div class="sticky top-0 z-50 w-full flex flex-col">
+<header class="bg-gradient-to-r from-ipuc-dark to-ipuc-light pt-6 pb-0 shadow-md relative z-20">
+<div class="px-4 mb-4 flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="bg-white/10 p-2 rounded-xl backdrop-blur-sm border border-white/20 flex items-center justify-center size-10">
+<span class="material-symbols-outlined text-white" style="font-size: 24px;">church</span>
+</div>
+<div>
+<h1 class="text-white text-xl font-bold tracking-tight">Panel DECOM</h1>
+<p class="text-white/70 text-xs font-medium uppercase tracking-wider">Sistema de Solicitudes</p>
+</div>
+</div>
+<div class="relative">
+<div class="size-2 bg-red-500 rounded-full absolute top-0 right-0 border-2 border-ipuc-light"></div>
+<span class="material-symbols-outlined text-white">notifications</span>
+</div>
+</div>
+<div class="flex px-4 gap-6 mt-2">
+<button class="flex flex-col items-center pb-3 border-b-[3px] border-ipuc-accent text-white transition-all">
+<span class="text-sm font-bold tracking-wide">Lista</span>
+</button>
+<button class="flex flex-col items-center pb-3 border-b-[3px] border-transparent text-white/60 hover:text-white transition-all">
+<span class="text-sm font-bold tracking-wide">Calendario</span>
+</button>
+</div>
+</header>
+<div class="bg-background-light/95 backdrop-blur-sm dark:bg-background-dark/95 py-4 pl-4 border-b border-gray-200/50 relative z-10">
+<div class="flex gap-3 overflow-x-auto hide-scrollbar pr-4">
+<button class="flex h-9 shrink-0 items-center justify-center px-4 rounded-full bg-ipuc-accent text-white shadow-sm transition-transform active:scale-95">
+<span class="text-sm font-bold">Todas</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center px-4 rounded-full bg-white border border-ipuc-light/30 text-ipuc-light shadow-sm transition-transform active:scale-95">
+<span class="text-sm font-medium">Pendientes</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center px-4 rounded-full bg-white border border-ipuc-light/30 text-ipuc-light shadow-sm transition-transform active:scale-95">
+<span class="text-sm font-medium">En proceso</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center px-4 rounded-full bg-white border border-ipuc-light/30 text-ipuc-light shadow-sm transition-transform active:scale-95">
+<span class="text-sm font-medium">Urgentes</span>
+</button>
+</div>
+</div>
+</div>
+<main class="flex-1 overflow-x-hidden flex flex-col">
+<div class="px-4 pb-20 pt-4 flex flex-col gap-4">
+<article class="group relative flex flex-col bg-white rounded-xl shadow-card overflow-hidden transition-all hover:-translate-y-1">
+<div class="absolute left-0 top-0 bottom-0 w-[5px] bg-ipuc-accent"></div>
+<div class="p-4 pl-5">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<div class="size-8 rounded-full bg-ipuc-light/10 flex items-center justify-center text-ipuc-light">
+<span class="material-symbols-outlined text-[18px]">diversity_1</span>
+</div>
+<span class="text-ipuc-dark font-semibold text-sm">Comité de Damas</span>
+</div>
+<span class="bg-red-50 text-red-600 text-[10px] font-bold px-2 py-1 rounded-full border border-red-100 uppercase tracking-wide">Alta</span>
+</div>
+<div class="mb-4">
+<h3 class="text-ipuc-dark text-lg font-bold leading-tight mb-2">Confraternidad Distrital</h3>
+<div class="flex items-center gap-3 flex-wrap">
+<div class="flex items-center gap-1.5 text-gray-500 bg-gray-50 px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-ipuc-accent text-[18px]">calendar_month</span>
+<span class="text-xs font-medium pt-0.5">12 Oct 2024</span>
+</div>
+<span class="bg-ipuc-accent text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm">2 días</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-3 border-t border-gray-100">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 bg-green-50 text-status-success px-2.5 py-1 rounded-full text-xs font-bold border border-green-100">
+<span class="size-1.5 rounded-full bg-status-success animate-pulse"></span>
+                                Aprobado
+                            </span>
+<div class="size-6 rounded-full bg-gray-50 flex items-center justify-center" title="Tipo: Video">
+<span class="material-symbols-outlined text-ipuc-light text-[14px]">videocam</span>
+</div>
+</div>
+<button class="flex items-center gap-1 text-ipuc-light text-xs font-bold hover:underline decoration-ipuc-light decoration-2 underline-offset-4 transition-all">
+                            Ver detalle
+                            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+</article>
+<article class="group relative flex flex-col bg-white rounded-xl shadow-card overflow-hidden transition-all hover:-translate-y-1">
+<div class="absolute left-0 top-0 bottom-0 w-[5px] bg-ipuc-light"></div>
+<div class="p-4 pl-5">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<div class="size-8 rounded-full bg-ipuc-light/10 flex items-center justify-center text-ipuc-light">
+<span class="material-symbols-outlined text-[18px]">hiking</span>
+</div>
+<span class="text-ipuc-dark font-semibold text-sm">Comité de Jóvenes</span>
+</div>
+<span class="bg-blue-50 text-ipuc-light text-[10px] font-bold px-2 py-1 rounded-full border border-blue-100 uppercase tracking-wide">Media</span>
+</div>
+<div class="mb-4">
+<h3 class="text-ipuc-dark text-lg font-bold leading-tight mb-2">Campamento Juvenil 2024</h3>
+<div class="flex items-center gap-3 flex-wrap">
+<div class="flex items-center gap-1.5 text-gray-500 bg-gray-50 px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-ipuc-accent text-[18px]">calendar_month</span>
+<span class="text-xs font-medium pt-0.5">15 Nov 2024</span>
+</div>
+<span class="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-1 rounded-full border border-gray-200">35 días</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-3 border-t border-gray-100">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 bg-yellow-50 text-status-warning px-2.5 py-1 rounded-full text-xs font-bold border border-yellow-100">
+                                En Revisión
+                            </span>
+<div class="size-6 rounded-full bg-gray-50 flex items-center justify-center" title="Tipo: Fotografía">
+<span class="material-symbols-outlined text-ipuc-light text-[14px]">photo_camera</span>
+</div>
+</div>
+<button class="flex items-center gap-1 text-ipuc-light text-xs font-bold hover:underline decoration-ipuc-light decoration-2 underline-offset-4 transition-all">
+                            Ver detalle
+                            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+</article>
+<article class="group relative flex flex-col bg-white rounded-xl shadow-card overflow-hidden transition-all hover:-translate-y-1">
+<div class="absolute left-0 top-0 bottom-0 w-[5px] bg-status-success"></div>
+<div class="p-4 pl-5">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<div class="size-8 rounded-full bg-ipuc-light/10 flex items-center justify-center text-ipuc-light">
+<span class="material-symbols-outlined text-[18px]">menu_book</span>
+</div>
+<span class="text-ipuc-dark font-semibold text-sm">Escuela Dominical</span>
+</div>
+<span class="bg-green-50 text-status-success text-[10px] font-bold px-2 py-1 rounded-full border border-green-100 uppercase tracking-wide">Baja</span>
+</div>
+<div class="mb-4">
+<h3 class="text-ipuc-dark text-lg font-bold leading-tight mb-2">Material Didáctico - Clase 5</h3>
+<div class="flex items-center gap-3 flex-wrap">
+<div class="flex items-center gap-1.5 text-gray-500 bg-gray-50 px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-ipuc-accent text-[18px]">calendar_month</span>
+<span class="text-xs font-medium pt-0.5">20 Nov 2024</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-3 border-t border-gray-100">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 bg-gray-100 text-status-pending px-2.5 py-1 rounded-full text-xs font-bold border border-gray-200">
+                                Pendiente
+                            </span>
+<div class="size-6 rounded-full bg-gray-50 flex items-center justify-center" title="Tipo: Diseño">
+<span class="material-symbols-outlined text-ipuc-light text-[14px]">brush</span>
+</div>
+</div>
+<button class="flex items-center gap-1 text-ipuc-light text-xs font-bold hover:underline decoration-ipuc-light decoration-2 underline-offset-4 transition-all">
+                            Ver detalle
+                            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+</article>
+<article class="group relative flex flex-col bg-white rounded-xl shadow-card overflow-hidden transition-all hover:-translate-y-1">
+<div class="absolute left-0 top-0 bottom-0 w-[5px] bg-ipuc-accent"></div>
+<div class="p-4 pl-5">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<div class="size-8 rounded-full bg-ipuc-light/10 flex items-center justify-center text-ipuc-light">
+<span class="material-symbols-outlined text-[18px]">mic_external_on</span>
+</div>
+<span class="text-ipuc-dark font-semibold text-sm">Comité de Alabanza</span>
+</div>
+<span class="bg-red-50 text-red-600 text-[10px] font-bold px-2 py-1 rounded-full border border-red-100 uppercase tracking-wide">Alta</span>
+</div>
+<div class="mb-4">
+<h3 class="text-ipuc-dark text-lg font-bold leading-tight mb-2">Concierto Anual - Sonido</h3>
+<div class="flex items-center gap-3 flex-wrap">
+<div class="flex items-center gap-1.5 text-gray-500 bg-gray-50 px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-ipuc-accent text-[18px]">calendar_month</span>
+<span class="text-xs font-medium pt-0.5">25 Oct 2024</span>
+</div>
+<span class="bg-ipuc-accent text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm">15 días</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-3 border-t border-gray-100">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 bg-yellow-50 text-status-warning px-2.5 py-1 rounded-full text-xs font-bold border border-yellow-100">
+                                En proceso
+                            </span>
+<div class="size-6 rounded-full bg-gray-50 flex items-center justify-center" title="Tipo: Sonido">
+<span class="material-symbols-outlined text-ipuc-light text-[14px]">speaker</span>
+</div>
+</div>
+<button class="flex items-center gap-1 text-ipuc-light text-xs font-bold hover:underline decoration-ipuc-light decoration-2 underline-offset-4 transition-all">
+                            Ver detalle
+                            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+</main>
+<button class="fixed bottom-6 right-6 z-50 bg-gradient-to-br from-ipuc-light to-ipuc-dark text-white rounded-full size-14 shadow-xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95">
+<span class="material-symbols-outlined text-2xl">add</span>
+</button>
+
+</body></html>

@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel DECOM - Prototype</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-dark": "#16233B",
+                        "primary-light": "#15539C",
+                        "secondary": "#F49E2C",
+                        "background-light": "#F5F5F5",
+                        "background-dark": "#111121",
+                        "success": "#22C55E",
+                        "ipuc-dark": "#16233B",
+                        "ipuc-light": "#15539C",
+                        "ipuc-accent": "#F49E2C",
+                        "status-success": "#10B981",
+                        "status-warning": "#F59E0B",
+                        "status-pending": "#64748B",
+                        "surface": "#FFFFFF",
+                        "text-main": "#16233B",
+                        "whatsapp": "#25D366"
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "Public Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'soft': '0 2px 8px rgba(0, 0, 0, 0.05)',
+                        'card': '0 4px 12px rgba(0, 0, 0, 0.08)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body { min-height: 100vh; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+
+    <!-- React Dependencies -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/history@5/umd/history.development.js"></script>
+    <script src="https://unpkg.com/react-router@6.3.0/umd/react-router.development.js"></script>
+    <script src="https://unpkg.com/react-router-dom@6.3.0/umd/react-router-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-primary-dark dark:text-white min-h-screen overflow-hidden">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // --- Setup & Constants ---
+        const { useState, useEffect } = React;
+        const { createRoot } = ReactDOM;
+        const { MemoryRouter, Routes, Route, Link, useNavigate } = ReactRouterDOM;
+
+        // --- Components ---
+
+        // Screen 1: Calendar View
+        const CalendarScreen = () => {
+            const navigate = useNavigate();
+
+            return (
+                <div className="flex flex-col h-screen overflow-hidden bg-background-light dark:bg-background-dark text-primary-dark dark:text-white">
+                    {/* Top App Bar */}
+                    <div className="bg-white dark:bg-[#1e1e2d] pt-2 pb-2 px-4 flex items-center justify-between shadow-sm z-20 relative">
+                        <div className="flex items-center gap-3">
+                            <button className="text-primary-dark dark:text-white flex items-center justify-center">
+                                <span className="material-symbols-outlined text-[28px]">menu</span>
+                            </button>
+                            <h1 className="text-primary-dark dark:text-white text-lg font-bold tracking-tight">Panel DECOM</h1>
+                        </div>
+                        <button className="relative flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                            <span className="material-symbols-outlined text-[24px]">notifications</span>
+                            <span className="absolute top-2 right-2 w-2 h-2 bg-secondary rounded-full border border-white dark:border-[#1e1e2d]"></span>
+                        </button>
+                    </div>
+
+                    {/* View Toggle (Tabs) */}
+                    <div className="bg-white dark:bg-[#1e1e2d] px-4 shadow-sm z-10 relative">
+                        <div className="flex border-b border-gray-200 dark:border-gray-700">
+                            <Link to="/list" className="flex-1 pb-3 pt-2 text-gray-500 dark:text-gray-400 font-medium text-sm text-center relative hover:text-primary-dark transition-colors">
+                                Lista
+                            </Link>
+                            <button className="flex-1 pb-3 pt-2 text-primary-dark dark:text-white font-bold text-sm text-center relative">
+                                Calendario
+                                <span className="absolute bottom-0 left-0 w-full h-[3px] bg-secondary rounded-t-sm"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Main Scrollable Content Area */}
+                    <div className="flex-1 overflow-y-auto hide-scrollbar pb-24">
+                        {/* Month Navigator */}
+                        <div className="p-4">
+                            <div className="bg-gradient-to-r from-primary-dark to-[#1e2e4a] rounded-xl shadow-lg p-1 flex items-center justify-between relative overflow-hidden">
+                                <div className="absolute right-0 top-0 h-full w-2 bg-secondary/80 skew-x-[-10deg] translate-x-1"></div>
+                                <button className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-lg transition-colors z-10">
+                                    <span className="material-symbols-outlined">chevron_left</span>
+                                </button>
+                                <h2 className="text-white text-lg font-bold tracking-wide z-10">&lt; Enero 2026 &gt;</h2>
+                                <button className="w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-lg transition-colors z-10">
+                                    <span className="material-symbols-outlined">chevron_right</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Calendar Grid */}
+                        <div className="px-4 pb-4">
+                            <div className="bg-white dark:bg-[#1e1e2d] rounded-xl shadow-md overflow-hidden">
+                                {/* Weekday Headers */}
+                                <div className="grid grid-cols-7 bg-primary-light border-b border-primary-light/10">
+                                    {['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].map(d => (
+                                        <div key={d} className="h-9 flex items-center justify-center text-white text-[11px] font-bold uppercase tracking-wider">{d}</div>
+                                    ))}
+                                </div>
+                                {/* Days Grid - Abbreviated for React implementation but structure intact */}
+                                <div className="grid grid-cols-7 p-2 gap-y-2">
+                                    {/* Previous month days */}
+                                    {[28, 29, 30, 31].map(d => (
+                                        <div key={`prev-${d}`} className="h-14 flex flex-col items-center justify-start py-1 opacity-30">
+                                            <span className="text-xs font-medium text-primary-dark dark:text-gray-400">{d}</span>
+                                        </div>
+                                    ))}
+                                    
+                                    {/* Current month days (1-31) - Highlight key days from HTML */}
+                                    {[...Array(31)].map((_, i) => {
+                                        const day = i + 1;
+                                        // Specific logic based on original HTML mockup
+                                        let isToday = day === 5;
+                                        let isSelected = day === 15;
+                                        
+                                        let dots = [];
+                                        if (day === 1) dots = ['bg-secondary'];
+                                        if (day === 4) dots = ['bg-primary-light'];
+                                        if (day === 5) dots = ['bg-secondary', 'bg-primary-light'];
+                                        if (day === 9) dots = ['bg-success'];
+                                        if (day === 13) dots = ['bg-secondary'];
+                                        if (day === 15) dots = ['bg-secondary', 'bg-primary-light', 'bg-success'];
+                                        if (day === 20) dots = ['bg-primary-light'];
+                                        if (day === 30) dots = ['bg-secondary'];
+
+                                        return (
+                                            <div 
+                                                key={`curr-${day}`} 
+                                                onClick={() => isSelected ? null : null} // Placeholder for interaction
+                                                className={`h-14 flex flex-col items-center justify-start py-1 relative group cursor-pointer rounded-lg 
+                                                    ${isSelected ? 'bg-secondary/10 dark:bg-secondary/20 ring-1 ring-inset ring-secondary/30' : 'hover:bg-gray-50 dark:hover:bg-white/5'}
+                                                    ${isToday ? 'border-[2px] border-secondary bg-white dark:bg-transparent' : ''}
+                                                `}
+                                            >
+                                                <span className={`text-sm ${isToday || isSelected ? 'font-bold' : 'font-medium'} text-primary-dark dark:text-white`}>{day}</span>
+                                                <div className="flex gap-1 mt-1">
+                                                    {dots.map((color, idx) => (
+                                                        <span key={idx} className={`w-[6px] h-[6px] rounded-full ${color}`}></span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Bottom Sheet */}
+                    <div className="fixed bottom-0 left-0 w-full z-30 pointer-events-none">
+                        <div className="absolute bottom-0 left-0 w-full h-[50vh] bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
+                        <div className="bg-white dark:bg-[#1e1e2d] rounded-t-3xl shadow-[0_-5px_30px_-10px_rgba(0,0,0,0.1)] w-full h-auto min-h-[340px] pointer-events-auto transform transition-transform relative flex flex-col">
+                            <div className="w-full flex items-center justify-center pt-3 pb-1 cursor-grab active:cursor-grabbing">
+                                <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+                            </div>
+                            <div className="px-5 pt-2 pb-8 flex-1 flex flex-col gap-4">
+                                <div className="flex flex-col gap-1 border-b border-gray-100 dark:border-gray-700 pb-3">
+                                    <h3 className="text-lg font-bold text-primary-dark dark:text-white">Eventos del día 15 Enero</h3>
+                                    <div className="h-1 w-12 bg-secondary rounded-full"></div>
+                                </div>
+                                <div className="flex flex-col gap-3 overflow-y-auto">
+                                    {/* Event Card 1 */}
+                                    <div onClick={() => navigate('/detail')} className="bg-white dark:bg-[#252538] border border-gray-100 dark:border-gray-700 rounded-xl p-3 shadow-sm flex items-start gap-3 cursor-pointer hover:bg-gray-50 transition-colors">
+                                        <div className="flex flex-col items-center justify-center min-w-[50px] pt-1">
+                                            <span className="text-xs text-gray-400 font-semibold mb-1">HORA</span>
+                                            <span className="text-sm font-bold text-primary-dark dark:text-white">09:00</span>
+                                            <span className="text-xs text-gray-500">AM</span>
+                                        </div>
+                                        <div className="w-[1px] h-12 bg-gray-200 dark:bg-gray-600 self-center"></div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex justify-between items-start mb-1">
+                                                <h4 className="font-bold text-primary-dark dark:text-white text-sm truncate pr-2">Planificación Anual</h4>
+                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-secondary/10 text-secondary border border-secondary/20">Pendiente</span>
+                                            </div>
+                                            <div className="flex items-center gap-1.5 mb-1">
+                                                <span className="w-2 h-2 rounded-full bg-secondary"></span>
+                                                <p class="text-xs text-gray-500 font-medium truncate">Comité Administrativo</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Event Card 2 */}
+                                    <div onClick={() => navigate('/detail')} className="bg-white dark:bg-[#252538] border border-gray-100 dark:border-gray-700 rounded-xl p-3 shadow-sm flex items-start gap-3 relative overflow-hidden cursor-pointer hover:bg-gray-50 transition-colors">
+                                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary-light"></div>
+                                        <div className="flex flex-col items-center justify-center min-w-[50px] pt-1 pl-1">
+                                            <span className="text-xs text-gray-400 font-semibold mb-1">HORA</span>
+                                            <span className="text-sm font-bold text-primary-dark dark:text-white">02:00</span>
+                                            <span className="text-xs text-gray-500">PM</span>
+                                        </div>
+                                        <div className="w-[1px] h-12 bg-gray-200 dark:bg-gray-600 self-center"></div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex justify-between items-start mb-1">
+                                                <h4 className="font-bold text-primary-dark dark:text-white text-sm truncate pr-2">Revisión de Medios</h4>
+                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-primary-light/10 text-primary-light border border-primary-light/20">En Proceso</span>
+                                            </div>
+                                            <div className="flex items-center gap-1.5 mb-1">
+                                                <span className="w-2 h-2 rounded-full bg-primary-light"></span>
+                                                <p class="text-xs text-gray-500 font-medium truncate">Comité Multimedia</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Event Card 3 */}
+                                    <div onClick={() => navigate('/detail')} className="bg-white dark:bg-[#252538] border border-gray-100 dark:border-gray-700 rounded-xl p-3 shadow-sm flex items-start gap-3 cursor-pointer hover:bg-gray-50 transition-colors">
+                                        <div className="flex flex-col items-center justify-center min-w-[50px] pt-1">
+                                            <span className="text-xs text-gray-400 font-semibold mb-1">HORA</span>
+                                            <span className="text-sm font-bold text-primary-dark dark:text-white">05:30</span>
+                                            <span className="text-xs text-gray-500">PM</span>
+                                        </div>
+                                        <div className="w-[1px] h-12 bg-gray-200 dark:bg-gray-600 self-center"></div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex justify-between items-start mb-1">
+                                                <h4 className="font-bold text-primary-dark dark:text-white text-sm truncate pr-2">Entrega Informe</h4>
+                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-success/10 text-success border border-success/20">Listo</span>
+                                            </div>
+                                            <div className="flex items-center gap-1.5 mb-1">
+                                                <span className="w-2 h-2 rounded-full bg-success"></span>
+                                                <p class="text-xs text-gray-500 font-medium truncate">Secretaría</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Screen 2: Detail View
+        const DetailScreen = () => {
+            const navigate = useNavigate();
+
+            return (
+                <div className="relative flex min-h-screen w-full flex-col max-w-md mx-auto overflow-hidden bg-[#F5F5F5] dark:bg-background-dark shadow-2xl">
+                    {/* Header */}
+                    <div className="sticky top-0 z-50 bg-gradient-to-r from-primary-dark to-primary-light shadow-md">
+                        <div className="flex items-center justify-between p-4 h-[72px]">
+                            <button onClick={() => navigate(-1)} className="flex items-center justify-center text-white w-10 h-10 -ml-2 rounded-full hover:bg-white/10 transition-colors">
+                                <span className="material-symbols-outlined text-2xl">arrow_back</span>
+                            </button>
+                            <div className="flex-1 px-2">
+                                <h1 className="text-white text-lg font-bold leading-tight truncate">Concierto de Jóvenes Distrital</h1>
+                                <p className="text-white/80 text-xs font-medium">Solicitud #4829</p>
+                            </div>
+                            <div className="flex items-center">
+                                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-secondary/20 border border-secondary text-secondary backdrop-blur-sm bg-white/10 text-white shadow-sm">
+                                    En Proceso
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-24">
+                        {/* Info Card */}
+                        <div className="bg-surface rounded-xl shadow-md border-t-4 border-secondary overflow-hidden">
+                            <div className="p-5">
+                                <div className="flex items-start justify-between mb-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary-light/10 text-primary-light shrink-0">
+                                            <span className="material-symbols-outlined text-2xl">groups</span>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-text-main font-bold text-base leading-tight">Comité de Alabanza</h3>
+                                            <p className="text-gray-500 text-sm">Solicitante</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="mb-5">
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Descripción</h4>
+                                    <p className="text-text-main text-sm leading-relaxed">
+                                        Requerimos apoyo visual y sonoro para el concierto anual de jóvenes. Se necesita diseño de pantallas LED y transmisión en vivo para las redes sociales del distrito.
+                                    </p>
+                                </div>
+                                <div className="grid grid-cols-1 gap-3">
+                                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
+                                        <span className="material-symbols-outlined text-secondary text-xl">calendar_month</span>
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Fecha del Evento</span>
+                                            <span className="text-text-main text-sm font-semibold">12 Oct 2023 - 6:00 PM</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
+                                        <span className="material-symbols-outlined text-primary-light text-xl">design_services</span>
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Tipo de Recurso</span>
+                                            <span className="text-text-main text-sm font-semibold">Diseño Gráfico & Streaming</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Timeline Card */}
+                        <div className="bg-surface rounded-xl shadow-md p-5">
+                            <h3 className="text-text-main text-lg font-bold mb-5">Timeline de Trabajo</h3>
+                            <div className="relative pl-2">
+                                <div className="absolute left-[7px] top-2 bottom-4 w-[2px] bg-gray-200"></div>
+                                <div className="absolute left-[7px] top-2 h-1/3 w-[2px] bg-secondary"></div>
+                                <div className="space-y-6">
+                                    <div className="relative flex items-start gap-4">
+                                        <div className="relative z-10 flex items-center justify-center w-4 h-4 mt-1 rounded-full bg-secondary ring-4 ring-white">
+                                            <span className="material-symbols-outlined text-[10px] text-white font-bold">check</span>
+                                        </div>
+                                        <div className="flex flex-col -mt-1">
+                                            <span className="text-sm font-bold text-text-main">Solicitud creada</span>
+                                            <span className="text-xs text-gray-500">28 Sep 2023</span>
+                                        </div>
+                                    </div>
+                                    <div className="relative flex items-start gap-4">
+                                        <div className="relative z-10 flex items-center justify-center w-4 h-4 mt-1 rounded-full bg-white border-2 border-secondary ring-4 ring-white">
+                                            <div className="w-1.5 h-1.5 bg-secondary rounded-full"></div>
+                                        </div>
+                                        <div className="flex flex-col -mt-1">
+                                            <span className="text-sm font-bold text-text-main">Inicio de planificación</span>
+                                            <span className="text-xs text-secondary font-semibold">En proceso</span>
+                                        </div>
+                                    </div>
+                                    <div className="relative flex items-start gap-4 opacity-60">
+                                        <div className="relative z-10 flex items-center justify-center w-4 h-4 mt-1 rounded-full bg-gray-200 ring-4 ring-white"></div>
+                                        <div className="flex flex-col -mt-1">
+                                            <span className="text-sm font-medium text-text-main">Entrega sugerida</span>
+                                            <span className="text-xs text-gray-500">10 Oct 2023</span>
+                                        </div>
+                                    </div>
+                                    <div className="relative flex items-start gap-4 opacity-60">
+                                        <div className="relative z-10 flex items-center justify-center w-4 h-4 mt-1 rounded-full bg-gray-200 ring-4 ring-white"></div>
+                                        <div className="flex flex-col -mt-1">
+                                            <span className="text-sm font-medium text-text-main">Evento Final</span>
+                                            <span className="text-xs text-gray-500">12 Oct 2023</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Quote Card */}
+                        <div className="bg-blue-50/50 rounded-xl p-5 border border-blue-100 relative overflow-hidden">
+                            <div className="absolute top-2 right-4 text-secondary/20 text-6xl font-serif leading-none select-none">”</div>
+                            <div className="flex gap-3 relative z-10">
+                                <div className="shrink-0 text-primary-light">
+                                    <span className="material-symbols-outlined">menu_book</span>
+                                </div>
+                                <div>
+                                    <p className="text-text-main text-sm italic font-medium leading-relaxed">
+                                        "Y todo lo que hacéis, hacedlo de corazón, como para el Señor y no para los hombres."
+                                    </p>
+                                    <p className="text-primary-light text-xs font-bold mt-2">— Colosenses 3:23</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="bg-surface rounded-xl shadow-md p-5 space-y-4">
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-text-main block">Actualizar Estado</label>
+                                <div className="relative">
+                                    <div className="flex items-center justify-between w-full p-3 bg-white border border-primary-light/30 rounded-lg shadow-sm">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
+                                                <span className="material-symbols-outlined text-lg">autorenew</span>
+                                            </div>
+                                            <span className="text-text-main font-medium">En Proceso</span>
+                                        </div>
+                                        <span className="material-symbols-outlined text-gray-400">expand_more</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button className="w-full group relative flex items-center justify-center gap-3 bg-whatsapp hover:bg-[#1DA851] text-white p-3.5 rounded-xl shadow-lg shadow-green-200 transition-all active:scale-[0.98]">
+                                <span className="material-symbols-outlined">chat</span>
+                                <span className="font-bold">Contactar por WhatsApp</span>
+                            </button>
+                            <button className="w-full flex items-center justify-center bg-primary-light hover:bg-primary-light/90 text-white font-bold p-4 rounded-xl border-b-4 border-secondary shadow-md active:border-b-0 active:translate-y-1 transition-all">
+                                Guardar Cambios
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Screen 3: List View
+        const ListScreen = () => {
+             const navigate = useNavigate();
+
+             return (
+                <div className="bg-background-light dark:bg-background-dark font-display antialiased text-ipuc-dark min-h-screen flex flex-col">
+                    <div className="sticky top-0 z-50 w-full flex flex-col">
+                        <header className="bg-gradient-to-r from-ipuc-dark to-ipuc-light pt-6 pb-0 shadow-md relative z-20">
+                            <div className="px-4 mb-4 flex justify-between items-center">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-white/10 p-2 rounded-xl backdrop-blur-sm border border-white/20 flex items-center justify-center size-10">
+                                        <span className="material-symbols-outlined text-white" style={{fontSize: "24px"}}>church</span>
+                                    </div>
+                                    <div>
+                                        <h1 className="text-white text-xl font-bold tracking-tight">Panel DECOM</h1>
+                                        <p className="text-white/70 text-xs font-medium uppercase tracking-wider">Sistema de Solicitudes</p>
+                                    </div>
+                                </div>
+                                <div className="relative">
+                                    <div className="size-2 bg-red-500 rounded-full absolute top-0 right-0 border-2 border-ipuc-light"></div>
+                                    <span className="material-symbols-outlined text-white">notifications</span>
+                                </div>
+                            </div>
+                            <div className="flex px-4 gap-6 mt-2">
+                                <button className="flex flex-col items-center pb-3 border-b-[3px] border-ipuc-accent text-white transition-all">
+                                    <span className="text-sm font-bold tracking-wide">Lista</span>
+                                </button>
+                                <Link to="/" className="flex flex-col items-center pb-3 border-b-[3px] border-transparent text-white/60 hover:text-white transition-all">
+                                    <span className="text-sm font-bold tracking-wide">Calendario</span>
+                                </Link>
+                            </div>
+                        </header>
+                        <div className="bg-background-light/95 backdrop-blur-sm dark:bg-background-dark/95 py-4 pl-4 border-b border-gray-200/50 relative z-10">
+                            <div className="flex gap-3 overflow-x-auto hide-scrollbar pr-4">
+                                <button className="flex h-9 shrink-0 items-center justify-center px-4 rounded-full bg-ipuc-accent text-white shadow-sm transition-transform active:scale-95">
+                                    <span className="text-sm font-bold">Todas</span>
+                                </button>
+                                <button className="flex h-9 shrink-0 items-center justify-center px-4 rounded-full bg-white border border-ipuc-light/30 text-ipuc-light shadow-sm transition-transform active:scale-95">
+                                    <span className="text-sm font-medium">Pendientes</span>
+                                </button>
+                                <button className="flex h-9 shrink-0 items-center justify-center px-4 rounded-full bg-white border border-ipuc-light/30 text-ipuc-light shadow-sm transition-transform active:scale-95">
+                                    <span className="text-sm font-medium">En proceso</span>
+                                </button>
+                                <button className="flex h-9 shrink-0 items-center justify-center px-4 rounded-full bg-white border border-ipuc-light/30 text-ipuc-light shadow-sm transition-transform active:scale-95">
+                                    <span className="text-sm font-medium">Urgentes</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <main className="flex-1 overflow-x-hidden flex flex-col">
+                        <div className="px-4 pb-20 pt-4 flex flex-col gap-4">
+                            {/* Card 1 */}
+                            <article onClick={() => navigate('/detail')} className="group relative flex flex-col bg-white rounded-xl shadow-card overflow-hidden transition-all hover:-translate-y-1 cursor-pointer">
+                                <div className="absolute left-0 top-0 bottom-0 w-[5px] bg-ipuc-accent"></div>
+                                <div className="p-4 pl-5">
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div className="flex items-center gap-2">
+                                            <div className="size-8 rounded-full bg-ipuc-light/10 flex items-center justify-center text-ipuc-light">
+                                                <span className="material-symbols-outlined text-[18px]">diversity_1</span>
+                                            </div>
+                                            <span className="text-ipuc-dark font-semibold text-sm">Comité de Damas</span>
+                                        </div>
+                                        <span className="bg-red-50 text-red-600 text-[10px] font-bold px-2 py-1 rounded-full border border-red-100 uppercase tracking-wide">Alta</span>
+                                    </div>
+                                    <div className="mb-4">
+                                        <h3 className="text-ipuc-dark text-lg font-bold leading-tight mb-2">Confraternidad Distrital</h3>
+                                        <div className="flex items-center gap-3 flex-wrap">
+                                            <div className="flex items-center gap-1.5 text-gray-500 bg-gray-50 px-2 py-1 rounded-lg">
+                                                <span className="material-symbols-outlined text-ipuc-accent text-[18px]">calendar_month</span>
+                                                <span className="text-xs font-medium pt-0.5">12 Oct 2024</span>
+                                            </div>
+                                            <span className="bg-ipuc-accent text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm">2 días</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                                        <div className="flex items-center gap-2">
+                                            <span className="inline-flex items-center gap-1 bg-green-50 text-status-success px-2.5 py-1 rounded-full text-xs font-bold border border-green-100">
+                                                <span className="size-1.5 rounded-full bg-status-success animate-pulse"></span>
+                                                Aprobado
+                                            </span>
+                                            <div className="size-6 rounded-full bg-gray-50 flex items-center justify-center" title="Tipo: Video">
+                                                <span className="material-symbols-outlined text-ipuc-light text-[14px]">videocam</span>
+                                            </div>
+                                        </div>
+                                        <button className="flex items-center gap-1 text-ipuc-light text-xs font-bold hover:underline decoration-ipuc-light decoration-2 underline-offset-4 transition-all">
+                                            Ver detalle
+                                            <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </article>
+                            {/* Card 2 */}
+                            <article onClick={() => navigate('/detail')} className="group relative flex flex-col bg-white rounded-xl shadow-card overflow-hidden transition-all hover:-translate-y-1 cursor-pointer">
+                                <div className="absolute left-0 top-0 bottom-0 w-[5px] bg-ipuc-light"></div>
+                                <div className="p-4 pl-5">
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div className="flex items-center gap-2">
+                                            <div className="size-8 rounded-full bg-ipuc-light/10 flex items-center justify-center text-ipuc-light">
+                                                <span className="material-symbols-outlined text-[18px]">hiking</span>
+                                            </div>
+                                            <span className="text-ipuc-dark font-semibold text-sm">Comité de Jóvenes</span>
+                                        </div>
+                                        <span className="bg-blue-50 text-ipuc-light text-[10px] font-bold px-2 py-1 rounded-full border border-blue-100 uppercase tracking-wide">Media</span>
+                                    </div>
+                                    <div className="mb-4">
+                                        <h3 className="text-ipuc-dark text-lg font-bold leading-tight mb-2">Campamento Juvenil 2024</h3>
+                                        <div className="flex items-center gap-3 flex-wrap">
+                                            <div className="flex items-center gap-1.5 text-gray-500 bg-gray-50 px-2 py-1 rounded-lg">
+                                                <span className="material-symbols-outlined text-ipuc-accent text-[18px]">calendar_month</span>
+                                                <span className="text-xs font-medium pt-0.5">15 Nov 2024</span>
+                                            </div>
+                                            <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-1 rounded-full border border-gray-200">35 días</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                                        <div className="flex items-center gap-2">
+                                            <span className="inline-flex items-center gap-1 bg-yellow-50 text-status-warning px-2.5 py-1 rounded-full text-xs font-bold border border-yellow-100">
+                                                En Revisión
+                                            </span>
+                                            <div className="size-6 rounded-full bg-gray-50 flex items-center justify-center" title="Tipo: Fotografía">
+                                                <span className="material-symbols-outlined text-ipuc-light text-[14px]">photo_camera</span>
+                                            </div>
+                                        </div>
+                                        <button className="flex items-center gap-1 text-ipuc-light text-xs font-bold hover:underline decoration-ipuc-light decoration-2 underline-offset-4 transition-all">
+                                            Ver detalle
+                                            <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </article>
+                            {/* Card 3 */}
+                            <article onClick={() => navigate('/detail')} className="group relative flex flex-col bg-white rounded-xl shadow-card overflow-hidden transition-all hover:-translate-y-1 cursor-pointer">
+                                <div className="absolute left-0 top-0 bottom-0 w-[5px] bg-status-success"></div>
+                                <div className="p-4 pl-5">
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div className="flex items-center gap-2">
+                                            <div className="size-8 rounded-full bg-ipuc-light/10 flex items-center justify-center text-ipuc-light">
+                                                <span className="material-symbols-outlined text-[18px]">menu_book</span>
+                                            </div>
+                                            <span className="text-ipuc-dark font-semibold text-sm">Escuela Dominical</span>
+                                        </div>
+                                        <span className="bg-green-50 text-status-success text-[10px] font-bold px-2 py-1 rounded-full border border-green-100 uppercase tracking-wide">Baja</span>
+                                    </div>
+                                    <div className="mb-4">
+                                        <h3 className="text-ipuc-dark text-lg font-bold leading-tight mb-2">Material Didáctico - Clase 5</h3>
+                                        <div className="flex items-center gap-3 flex-wrap">
+                                            <div className="flex items-center gap-1.5 text-gray-500 bg-gray-50 px-2 py-1 rounded-lg">
+                                                <span className="material-symbols-outlined text-ipuc-accent text-[18px]">calendar_month</span>
+                                                <span className="text-xs font-medium pt-0.5">20 Nov 2024</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                                        <div className="flex items-center gap-2">
+                                            <span className="inline-flex items-center gap-1 bg-gray-100 text-status-pending px-2.5 py-1 rounded-full text-xs font-bold border border-gray-200">
+                                                Pendiente
+                                            </span>
+                                            <div className="size-6 rounded-full bg-gray-50 flex items-center justify-center" title="Tipo: Diseño">
+                                                <span className="material-symbols-outlined text-ipuc-light text-[14px]">brush</span>
+                                            </div>
+                                        </div>
+                                        <button className="flex items-center gap-1 text-ipuc-light text-xs font-bold hover:underline decoration-ipuc-light decoration-2 underline-offset-4 transition-all">
+                                            Ver detalle
+                                            <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </main>
+                    <button className="fixed bottom-6 right-6 z-50 bg-gradient-to-br from-ipuc-light to-ipuc-dark text-white rounded-full size-14 shadow-xl flex items-center justify-center transition-transform hover:scale-110 active:scale-95">
+                        <span className="material-symbols-outlined text-2xl">add</span>
+                    </button>
+                </div>
+             );
+        };
+
+        // --- App Entry & Routing ---
+        const App = () => {
+            return (
+                <MemoryRouter>
+                    <Routes>
+                        <Route path="/" element={<CalendarScreen />} />
+                        <Route path="/list" element={<ListScreen />} />
+                        <Route path="/detail" element={<DetailScreen />} />
+                    </Routes>
+                </MemoryRouter>
+            );
+        };
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

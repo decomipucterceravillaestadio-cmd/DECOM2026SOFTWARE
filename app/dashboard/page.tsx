@@ -42,9 +42,9 @@ export default function DashboardPage() {
             </Button>
           </Link>
           {userRole === "decom_admin" && (
-            <Link href="/admin/dashboard" className="flex-1 sm:flex-none">
+            <Link href="/admin" className="flex-1 sm:flex-none">
               <Button fullWidth variant="outline" size="sm">
-                📊 Reportes
+                📊 Panel Admin
               </Button>
             </Link>
           )}

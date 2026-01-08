@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Perfil y Configuración</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#15539C",
+                        "primary-dark": "#16233B",
+                        "primary-light": "#15539C",
+                        "secondary": "#F49E2C",
+                        "background-light": "#F5F5F5",
+                        "background-dark": "#111821",
+                        "card-white": "#FFFFFF",
+                        "text-main": "#16233B",
+                        "divider": "#E0E0E0",
+                        "danger": "#D32F2F",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom toggle switch styling */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #F49E2C;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #F49E2C;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body>
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light group/design-root overflow-x-hidden font-display">
+<!-- Header -->
+<div class="flex items-center p-4 pb-4 justify-between bg-gradient-to-r from-primary-dark to-primary-light shadow-sm sticky top-0 z-10">
+<div class="text-white flex size-12 shrink-0 items-center justify-start cursor-pointer">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">Mi Perfil</h2>
+</div>
+<!-- User Profile Section -->
+<div class="flex flex-col items-center pt-8 pb-6 px-4">
+<div class="relative mb-4">
+<div class="w-20 h-20 rounded-full bg-gradient-to-br from-primary-light to-primary-dark border-[3px] border-secondary shadow-lg flex items-center justify-center">
+<span class="text-white text-2xl font-bold tracking-wider">JD</span>
+</div>
+<!-- Abstract alt for accessibility if it were an image: data-alt="User avatar with initials JD on blue gradient background" -->
+</div>
+<div class="flex flex-col items-center justify-center gap-1">
+<p class="text-text-main text-[22px] font-bold leading-tight tracking-[-0.015em] text-center">Juan David</p>
+<p class="text-[#647387] text-sm font-medium leading-normal text-center">juan.david@ipuc.org.co</p>
+<div class="mt-2 bg-secondary/10 border border-secondary/20 rounded-full px-3 py-1">
+<p class="text-secondary text-xs font-bold leading-none text-center uppercase tracking-wide">Comité DECOM</p>
+</div>
+</div>
+</div>
+<!-- Settings List Card -->
+<div class="mx-4 mb-6 flex flex-col rounded-xl bg-white shadow-sm overflow-hidden border border-gray-100">
+<!-- Option 1: Editar información -->
+<div class="flex items-center gap-3 bg-white px-5 py-4 min-h-[60px] justify-between border-b border-divider hover:bg-gray-50 transition-colors cursor-pointer group">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary-light text-[22px]">edit</span>
+<p class="text-text-main text-[15px] font-medium leading-normal flex-1 truncate">Editar información</p>
+</div>
+<div class="shrink-0 text-secondary">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</div>
+<!-- Option 2: Notificaciones (Toggle) -->
+<div class="flex items-center gap-3 bg-white px-5 py-4 min-h-[60px] justify-between border-b border-divider">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary-light text-[22px]">notifications</span>
+<p class="text-text-main text-[15px] font-medium leading-normal flex-1 truncate">Notificaciones</p>
+</div>
+<div class="shrink-0">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+</label>
+</div>
+</div>
+<!-- Option 3: Cambiar contraseña -->
+<div class="flex items-center gap-3 bg-white px-5 py-4 min-h-[60px] justify-between border-b border-divider hover:bg-gray-50 transition-colors cursor-pointer group">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary-light text-[22px]">lock</span>
+<p class="text-text-main text-[15px] font-medium leading-normal flex-1 truncate">Cambiar contraseña</p>
+</div>
+<div class="shrink-0 text-secondary">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</div>
+<!-- Option 4: Historial de solicitudes -->
+<div class="flex items-center gap-3 bg-white px-5 py-4 min-h-[60px] justify-between border-b border-divider hover:bg-gray-50 transition-colors cursor-pointer group">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary-light text-[22px]">schedule</span>
+<p class="text-text-main text-[15px] font-medium leading-normal flex-1 truncate">Historial de solicitudes</p>
+</div>
+<div class="shrink-0 text-secondary">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</div>
+<!-- Option 5: Acerca de DECOM -->
+<div class="flex items-center gap-3 bg-white px-5 py-4 min-h-[60px] justify-between border-b border-divider hover:bg-gray-50 transition-colors cursor-pointer group">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary-light text-[22px]">info</span>
+<p class="text-text-main text-[15px] font-medium leading-normal flex-1 truncate">Acerca de DECOM</p>
+</div>
+<div class="shrink-0 text-secondary">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</div>
+<!-- Option 6: Ayuda y soporte -->
+<div class="flex items-center gap-3 bg-white px-5 py-4 min-h-[60px] justify-between hover:bg-gray-50 transition-colors cursor-pointer group">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary-light text-[22px]">help</span>
+<p class="text-text-main text-[15px] font-medium leading-normal flex-1 truncate">Ayuda y soporte</p>
+</div>
+<div class="shrink-0 text-secondary">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Logout Button -->
+<div class="px-4 pb-8">
+<button class="w-full bg-white border border-danger rounded-xl min-h-[50px] flex items-center justify-center gap-2 shadow-sm active:bg-red-50 transition-colors">
+<span class="material-symbols-outlined text-danger text-[22px]">logout</span>
+<span class="text-danger font-bold text-base">Cerrar sesión</span>
+</button>
+</div>
+</div>
+</body></html>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { LoginInput } from './LoginInput';
 import { LoginButton } from './LoginButton';
 import { BackgroundBeams } from './BackgroundBeams';
@@ -91,9 +92,16 @@ export function AceternitiyLoginForm({
                   duration: 1.5,
                   repeat: Infinity,
                 }}
-                className="w-16 h-16 bg-gradient-to-br from-decom-primary to-decom-primary/80 rounded-2xl flex items-center justify-center"
+                className="w-16 h-16 bg-gradient-to-br from-decom-primary to-decom-primary/80 rounded-2xl flex items-center justify-center overflow-hidden"
               >
-                <span className="text-3xl font-bold text-white">✝</span>
+                <Image
+                  src="/IPUC_COLOR para fondo oscuro (2).png"
+                  alt="Logo IPUC Villa Estadio"
+                  width={56}
+                  height={56}
+                  className="object-contain p-1"
+                  priority
+                />
               </motion.div>
             </div>
 
