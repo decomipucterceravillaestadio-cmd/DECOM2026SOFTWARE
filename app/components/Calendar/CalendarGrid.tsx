@@ -127,12 +127,13 @@ export default function CalendarGrid({ selectedDate, events, onDaySelect, select
                 transition-all duration-200
                 ${isCurrentDay
                     ? 'border-[2px] border-secondary bg-white dark:bg-transparent'
-                    : 'hover:bg-gray-50 dark:hover:bg-white/5'
+                    : 'hover:bg-gray-100 dark:hover:bg-white/10 hover:scale-105'
                   }
                 ${isSelected
-                    ? 'bg-secondary/10 dark:bg-secondary/20 ring-1 ring-inset ring-secondary/30'
+                    ? 'bg-secondary/10 dark:bg-secondary/20 ring-2 ring-inset ring-secondary/50'
                     : ''
                   }
+                ${dayEvents.length > 0 ? 'hover:shadow-md' : ''}
               `}
               >
                 <span
@@ -140,11 +141,17 @@ export default function CalendarGrid({ selectedDate, events, onDaySelect, select
                   text-sm font-medium
                   ${isCurrentDay || isSelected ? 'font-bold' : ''}
                   text-decom-primary dark:text-white
+                  ${dayEvents.length > 0 ? 'group-hover:scale-110 transition-transform' : ''}
                 `}
                 >
                   {format(day, 'd')}
                 </span>
                 {getStatusDots(dayEvents)}
+                {dayEvents.length > 0 && (
+                  <span className="absolute top-1 right-1 text-[10px] font-bold text-decom-primary/60 dark:text-white/60">
+                    {dayEvents.length}
+                  </span>
+                )}
               </button>
             )
           })}

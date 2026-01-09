@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
     // Crear entrada inicial en request_history
     const { error: historyError } = await supabase.from('request_history').insert({
       request_id: requestData.id,
-      old_status: null,
+      old_status: '', // Estado inicial vacío
       new_status: 'Pendiente',
       change_reason: 'Solicitud creada por formulario público',
       changed_by: null, // Solicitud pública, sin usuario

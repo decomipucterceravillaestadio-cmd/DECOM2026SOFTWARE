@@ -91,11 +91,11 @@ export async function PATCH(
 
     // Obtener datos del body
     const body = await request.json()
-    const { status: newStatus, change_reason } = body
+    const { status: newStatus, change_reason, visible_in_public_calendar } = body
 
-    if (!newStatus) {
+    if (!newStatus && visible_in_public_calendar === undefined) {
       return NextResponse.json(
-        { error: 'El nuevo estado es requerido' },
+        { error: 'Se requiere al menos un campo para actualizar' },
         { status: 400 }
       )
     }
@@ -116,13 +116,23 @@ export async function PATCH(
 
     const oldStatus = currentRequest.status
 
-    // Actualizar estado de la solicitud
+    // Preparar datos para actualizar
+    const updateData: Record<string, any> = {
+      updated_at: new Date().toISOString()
+    }
+
+    if (newStatus) {
+      updateData.status = newStatus
+    }
+
+    if (visible_in_public_calendar !== undefined) {
+      updateData.visible_in_public_calendar = visible_in_public_calendar
+    }
+
+    // Actualizar solicitud
     const { error: updateError } = await adminClient
       .from('requests')
-      .update({ 
-        status: newStatus,
-        updated_at: new Date().toISOString()
-      })
+      .update(updateData)
       .eq('id', id)
 
     if (updateError) {
@@ -133,20 +143,22 @@ export async function PATCH(
       )
     }
 
-    // Registrar en historial
-    const { error: historyError } = await adminClient
-      .from('request_history')
-      .insert({
-        request_id: id,
-        old_status: oldStatus,
-        new_status: newStatus,
-        changed_by: user.id,
-        change_reason: change_reason || null,
-        changed_at: new Date().toISOString()
-      })
+    // Registrar en historial solo si cambió el estado
+    if (newStatus && newStatus !== oldStatus) {
+      const { error: historyError } = await adminClient
+        .from('request_history')
+        .insert({
+          request_id: id,
+          old_status: oldStatus,
+          new_status: newStatus,
+          changed_by: user.id,
+          change_reason: change_reason || null,
+          changed_at: new Date().toISOString()
+        })
 
-    if (historyError) {
-      console.error('Error creating history:', historyError)
+      if (historyError) {
+        console.error('Error creating history:', historyError)
+      }
     }
 
     return NextResponse.json({ 

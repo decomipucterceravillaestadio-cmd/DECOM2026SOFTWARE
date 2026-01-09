@@ -49,6 +49,27 @@ export const createRequestSchema = z
     }
   )
 
+// Schema para crear usuario (Admin)
+export const createUserSchema = z.object({
+  email: z.string().email('Email inválido'),
+  full_name: z.string().min(2, 'Mínimo 2 caracteres').max(100, 'Máximo 100 caracteres'),
+  role: z.enum(['admin', 'presidente', 'tesorero', 'secretario', 'vocal', 'decom_admin', 'comite_member']),
+  password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres'),
+})
+
+export type CreateUserInput = z.infer<typeof createUserSchema>
+
+// Schema para actualizar usuario (sin contraseña obligatoria)
+export const updateUserSchema = z.object({
+  email: z.string().email('Email inválido').optional(),
+  full_name: z.string().min(2, 'Mínimo 2 caracteres').max(100, 'Máximo 100 caracteres').optional(),
+  role: z.enum(['admin', 'presidente', 'tesorero', 'secretario', 'vocal', 'decom_admin', 'comite_member']).optional(),
+  is_active: z.boolean().optional(),
+  password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres').optional(),
+})
+
+export type UpdateUserInput = z.infer<typeof updateUserSchema>
+
 export type CreateRequestInput = z.infer<typeof createRequestSchema>
 
 // Alias para compatibilidad con API

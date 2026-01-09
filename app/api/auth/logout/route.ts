@@ -10,7 +10,7 @@ import type { Database } from '../../../types/database'
 export async function POST(request: NextRequest) {
   try {
     // Crear cliente Supabase para server
-    const supabase = createServerClient<Database>(
+    const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

@@ -7,219 +7,191 @@ export type Json =
   | Json[]
 
 export type Database = {
-  __InternalSupabase: {
-    PostgrestVersion: "14.1"
-  }
   public: {
     Tables: {
       committees: {
         Row: {
-          color_badge: string | null
-          created_at: string | null
-          description: string | null
           id: string
           name: string
+          description: string | null
+          color_badge: string | null
+          created_at: string | null
           updated_at: string | null
         }
         Insert: {
-          color_badge?: string | null
-          created_at?: string | null
-          description?: string | null
           id?: string
           name: string
-          updated_at?: string | null
-        }
-        Update: {
+          description?: string | null
           color_badge?: string | null
           created_at?: string | null
-          description?: string | null
-          id?: string
-          name?: string
           updated_at?: string | null
         }
-        Relationships: []
-      }
-      request_history: {
-        Row: {
-          change_reason: string | null
-          changed_at: string | null
-          changed_by: string | null
-          id: string
-          new_status: string
-          old_status: string | null
-          request_id: string
-        }
-        Insert: {
-          change_reason?: string | null
-          changed_at?: string | null
-          changed_by?: string | null
-          id?: string
-          new_status: string
-          old_status?: string | null
-          request_id: string
-        }
         Update: {
-          change_reason?: string | null
-          changed_at?: string | null
-          changed_by?: string | null
           id?: string
-          new_status?: string
-          old_status?: string | null
-          request_id?: string
+          name?: string
+          description?: string | null
+          color_badge?: string | null
+          created_at?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
       requests: {
         Row: {
-          bible_verse_text: string | null
-          committee_id: string
-          contact_whatsapp: string
-          created_at: string | null
-          created_by: string
-          delivery_date: string | null
-          event_date: string
-          event_time: string | null
-          event_info: string
-          event_name: string
           id: string
-          include_bible_verse: boolean | null
+          committee_id: string
+          event_name: string
+          event_description: string | null
+          event_date: string
+          planning_start_date: string
+          delivery_date: string
           material_type: string
-          planning_start_date: string | null
-          priority_score: number | null
+          contact_whatsapp: string | null
+          include_bible_verse: boolean | null
+          bible_verse: string | null
           status: string
-          updated_at: string | null
+          priority_score: number | null
+          created_by_id: string
+          created_at: string
+          updated_at: string
         }
         Insert: {
-          bible_verse_text?: string | null
-          committee_id: string
-          contact_whatsapp: string
-          created_at?: string | null
-          created_by: string
-          delivery_date?: string | null
-          event_date: string
-          event_time?: string | null
-          event_info: string
-          event_name: string
           id?: string
-          include_bible_verse?: boolean | null
+          committee_id: string
+          event_name: string
+          event_description?: string | null
+          event_date: string
+          planning_start_date: string
+          delivery_date: string
           material_type: string
-          planning_start_date?: string | null
-          priority_score?: number | null
+          contact_whatsapp?: string | null
+          include_bible_verse?: boolean | null
+          bible_verse?: string | null
           status?: string
-          updated_at?: string | null
+          priority_score?: number | null
+          created_by_id: string
+          created_at?: string
+          updated_at?: string
         }
         Update: {
-          bible_verse_text?: string | null
-          committee_id?: string
-          contact_whatsapp?: string
-          created_at?: string | null
-          created_by?: string
-          delivery_date?: string | null
-          event_date?: string
-          event_time?: string | null
-          event_info?: string
-          event_name?: string
           id?: string
-          include_bible_verse?: boolean | null
+          committee_id?: string
+          event_name?: string
+          event_description?: string | null
+          event_date?: string
+          planning_start_date?: string
+          delivery_date?: string
           material_type?: string
-          planning_start_date?: string | null
-          priority_score?: number | null
+          contact_whatsapp?: string | null
+          include_bible_verse?: boolean | null
+          bible_verse?: string | null
           status?: string
-          updated_at?: string | null
+          priority_score?: number | null
+          created_by_id?: string
+          created_at?: string
+          updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "requests_committee_id_fkey"
+            columns: ["committee_id"]
+            isOneToOne: false
+            referencedRelation: "committees"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      request_history: {
+        Row: {
+          id: string
+          request_id: string
+          old_status: string
+          new_status: string
+          changed_by_id: string | null
+          changed_at: string | null
+          notes: string | null
+        }
+        Insert: {
+          id?: string
+          request_id: string
+          old_status: string
+          new_status: string
+          changed_by_id?: string | null
+          changed_at?: string | null
+          notes?: string | null
+        }
+        Update: {
+          id?: string
+          request_id?: string
+          old_status?: string
+          new_status?: string
+          changed_by_id?: string | null
+          changed_at?: string | null
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "request_history_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "requests"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       users: {
         Row: {
-          auth_user_id: string | null
-          created_at: string | null
-          email: string
-          full_name: string | null
           id: string
-          is_active: boolean | null
-          preferred_committee_id: string | null
+          email: string
+          name: string
+          phone: string | null
           role: string
+          committee_id: string | null
+          created_at: string | null
           updated_at: string | null
         }
         Insert: {
-          auth_user_id?: string | null
-          created_at?: string | null
-          email: string
-          full_name?: string | null
           id?: string
-          is_active?: boolean | null
-          preferred_committee_id?: string | null
+          email: string
+          name: string
+          phone?: string | null
           role?: string
+          committee_id?: string | null
+          created_at?: string | null
           updated_at?: string | null
         }
         Update: {
-          auth_user_id?: string | null
-          created_at?: string | null
-          email?: string
-          full_name?: string | null
           id?: string
-          is_active?: boolean | null
-          preferred_committee_id?: string | null
+          email?: string
+          name?: string
+          phone?: string | null
           role?: string
+          committee_id?: string | null
+          created_at?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "users_committee_id_fkey"
+            columns: ["committee_id"]
+            isOneToOne: false
+            referencedRelation: "committees"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {
-      v_requests_detailed: {
-        Row: {
-          bible_verse_text: string | null
-          committee_id: string | null
-          committee_name: string | null
-          contact_whatsapp: string | null
-          created_at: string | null
-          created_by: string | null
-          created_by_email: string | null
-          created_by_name: string | null
-          delivery_date: string | null
-          event_date: string | null
-          event_info: string | null
-          event_name: string | null
-          id: string | null
-          include_bible_verse: boolean | null
-          material_type: string | null
-          planning_start_date: string | null
-          priority_score: number | null
-          status: string | null
-          status_change_count: number | null
-          updated_at: string | null
-        }
-        Relationships: []
-      }
-      v_requests_public: {
-        Row: {
-          days_since_created: number | null
-          days_until_delivery: number | null
-          event_date: string | null
-          id: string | null
-          material_type: string | null
-          priority_score: number | null
-          status: string | null
-        }
-        Relationships: []
-      }
-      v_requests_urgent: {
-        Row: {
-          committee_name: string | null
-          days_until_delivery: number | null
-          delivery_date: string | null
-          event_date: string | null
-          event_name: string | null
-          id: string | null
-          priority_score: number | null
-          status: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
-    Functions: {}
-    Enums: {}
-    CompositeTypes: {}
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
 }

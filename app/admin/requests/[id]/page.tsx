@@ -40,7 +40,7 @@ export default function RequestDetailPage() {
   const baseLinks = [
     {
       label: 'Dashboard',
-      href: '/dashboard',
+      href: '/admin',
       icon: <IconLayoutDashboard className="h-5 w-5" />,
     },
     {
@@ -141,7 +141,7 @@ export default function RequestDetailPage() {
               Detalle de Solicitud
             </h1>
             <p className="mt-2 text-neutral-600 dark:text-neutral-400">
-              Información completa de la solicitud
+              Información completa y gestión de la solicitud
             </p>
           </div>
 

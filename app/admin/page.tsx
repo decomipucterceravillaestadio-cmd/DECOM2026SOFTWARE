@@ -9,17 +9,23 @@ import {
   IconLogout,
   IconPlus,
   IconBell,
-  IconCalendar
+  IconCalendar,
+  IconUsers
 } from '@tabler/icons-react'
 import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar'
 import StatsGrid from '@/app/components/Dashboard/StatsGrid'
 import RequestsTable from '@/app/components/Dashboard/RequestsTable'
 import RequestDetailModal from '@/app/components/Dashboard/RequestDetailModal'
+import { RoleBadge } from '@/app/components/Auth'
+import { useAuth, useHasPermission } from '@/app/contexts/AuthContext'
+import { Permission } from '@/app/lib/permissions'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 
 export default function AdminDashboard() {
   const router = useRouter()
+  const { user, loading } = useAuth()
+  const canManageUsers = useHasPermission(Permission.VIEW_USERS)
   const [open, setOpen] = useState(false)
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
@@ -29,7 +35,8 @@ export default function AdminDashboard() {
     setMounted(true)
   }, [])
 
-  const links = [
+  // Base links que todos ven
+  const baseLinks = [
     {
       label: 'Dashboard',
       href: '/admin',
@@ -50,6 +57,20 @@ export default function AdminDashboard() {
       href: '/admin/calendar',
       icon: <IconCalendar className="h-5 w-5" />,
     },
+  ]
+
+  // Link de gestión de usuarios solo para admin/presidente
+  const adminLinks = canManageUsers ? [
+    {
+      label: 'Gestión de Usuarios',
+      href: '/admin/users',
+      icon: <IconUsers className="h-5 w-5" />,
+    }
+  ] : []
+
+  const links = [
+    ...baseLinks,
+    ...adminLinks,
     {
       label: 'Perfil',
       href: '/admin/profile',
@@ -73,7 +94,7 @@ export default function AdminDashboard() {
     return 'Buenas noches'
   }
 
-  if (!mounted) return null
+  if (!mounted || loading) return null
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-white dark:bg-neutral-950 flex-col md:flex-row">
@@ -98,6 +119,7 @@ export default function AdminDashboard() {
               ))}
             </div>
           </div>
+          
           <div>
             <button
               onClick={handleLogout}
@@ -123,8 +145,13 @@ export default function AdminDashboard() {
                   {format(new Date(), "EEEE, d 'de' MMMM", { locale: es })}
                 </p>
                 <h1 className="text-3xl md:text-4xl font-bold text-[#16233B] tracking-tight">
-                  {getGreeting()}, Admin
+                  {getGreeting()}{user ? `, ${user.full_name?.split(' ')[0] || 'Usuario'}` : ''}
                 </h1>
+                {user && (
+                  <div className="mt-2">
+                    <RoleBadge role={user.role} showLevel />
+                  </div>
+                )}
               </div>
               <div className="flex items-center gap-3">
                 <button className="p-2.5 rounded-full bg-white border border-gray-300 text-gray-500 hover:text-[#15539C] transition-colors relative">
@@ -132,7 +159,9 @@ export default function AdminDashboard() {
                   <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
                 </button>
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#15539C] to-[#16233B] flex items-center justify-center border-2 border-white shadow-sm">
-                  <span className="font-bold text-white">A</span>
+                  <span className="font-bold text-white">
+                    {user?.full_name?.charAt(0).toUpperCase() || 'U'}
+                  </span>
                 </div>
               </div>
             </div>

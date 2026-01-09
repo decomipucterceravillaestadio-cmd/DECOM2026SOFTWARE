@@ -354,6 +354,7 @@ SELECT
   (r.delivery_date - CURRENT_DATE) as days_until_delivery
 FROM requests r
 WHERE r.status IN ('Pendiente', 'En_planificacion', 'En_diseño', 'Lista_para_entrega', 'Entregada')
+  AND r.visible_in_public_calendar = true
 ORDER BY r.event_date ASC;
 
 -- RLS Policy: Allow public (unauthenticated) access to public calendar view

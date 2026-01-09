@@ -41,13 +41,14 @@ export async function GET(request: NextRequest) {
     const startDate = startOfMonth(new Date(year, month - 1))
     const endDate = endOfMonth(new Date(year, month - 1))
 
-    // Obtener solo campos públicos
+    // Obtener solo campos públicos y eventos visibles
     const { data, error } = await supabase
       .from('requests')
       .select('id, event_name, event_date, status, priority_score, material_type, planning_start_date, delivery_date, created_at')
       .gte('event_date', format(startDate, 'yyyy-MM-dd'))
       .lte('event_date', format(endDate, 'yyyy-MM-dd'))
       .neq('status', 'rejected') // No mostrar rechazadas
+      .eq('visible_in_public_calendar', true) // Solo eventos visibles públicamente
       .order('event_date', { ascending: true })
 
     if (error) {

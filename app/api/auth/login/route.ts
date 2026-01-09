@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     const cookieStore = await cookies()
 
     // Crear cliente Supabase para server con cookies()
-    const supabase = createServerClient<Database>(
+    const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -72,8 +72,8 @@ export async function POST(request: NextRequest) {
 
     // Verificar que el usuario existe en tabla `users` y tiene rol decom_admin
     // Buscar por auth_user_id, no por id (id es el UUID de public.users, auth_user_id es el de auth.users)
-    let { data: userData, error: userError } = await supabaseAdmin
-      .from('users')
+    let { data: userData, error: userError } = await (supabaseAdmin as any)
+      .from('public.users')
       .select('*')
       .eq('auth_user_id', authData.user.id)
       .single()
@@ -81,8 +81,8 @@ export async function POST(request: NextRequest) {
     // Si no existe, crear el usuario en public.users (para desarrollo/testing)
     if (userError || !userData) {
       const userEmail = authData.user.email || validatedData.email;
-      const { data: newUser, error: createError } = await supabaseAdmin
-        .from('users')
+      const { data: newUser, error: createError } = await (supabaseAdmin as any)
+        .from('public.users')
         .insert({
           auth_user_id: authData.user.id,
           email: userEmail,
@@ -108,13 +108,26 @@ export async function POST(request: NextRequest) {
       userData = newUser
     }
 
-    // Verificar que tiene rol de admin
-    if (userData.role !== 'decom_admin') {
+    // Verificar que el usuario está activo
+    if (!userData.is_active) {
       await supabase.auth.signOut()
       return NextResponse.json(
         {
           success: false,
-          error: 'Usuario no tiene permisos de DECOM Admin',
+          error: 'Usuario desactivado. Contacta al administrador',
+        },
+        { status: 403 }
+      )
+    }
+
+    // Verificar que tiene un rol válido
+    const validRoles = ['admin', 'presidente', 'tesorero', 'secretario', 'vocal', 'decom_admin', 'comite_member']
+    if (!validRoles.includes(userData.role)) {
+      await supabase.auth.signOut()
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Usuario no tiene un rol válido en el sistema',
         },
         { status: 403 }
       )

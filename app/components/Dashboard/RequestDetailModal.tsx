@@ -35,6 +35,7 @@ interface RequestDetail {
   priority_score: number | null
   planning_start_date: string | null
   delivery_date: string | null
+  visible_in_public_calendar: boolean
   committee: {
     id: string
     name: string
@@ -64,6 +65,7 @@ interface RequestDetailModalProps {
   requestId: string | null
   onClose: () => void
   onUpdate: () => void
+  embedded?: boolean // Si es true, no muestra overlay y usa diseño de página
 }
 
 const getStatusColor = (status: string) => {
@@ -98,13 +100,15 @@ const getPriorityColor = (priority: number | null) => {
 export default function RequestDetailModal({
   requestId,
   onClose,
-  onUpdate
+  onUpdate,
+  embedded = false
 }: RequestDetailModalProps) {
   const [request, setRequest] = useState<RequestDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
   const [newStatus, setNewStatus] = useState('')
   const [changeReason, setChangeReason] = useState('')
+  const [visibleInPublicCalendar, setVisibleInPublicCalendar] = useState(true)
 
   useEffect(() => {
     if (!requestId) {
@@ -120,6 +124,7 @@ export default function RequestDetailModal({
           const data = await response.json()
           setRequest(data)
           setNewStatus(data.status)
+          setVisibleInPublicCalendar(data.visible_in_public_calendar ?? true)
         }
       } catch (error) {
         console.error('Error fetching request:', error)
@@ -132,7 +137,7 @@ export default function RequestDetailModal({
   }, [requestId])
 
   const handleUpdateStatus = async () => {
-    if (!request || newStatus === request.status) return
+    if (!request || (newStatus === request.status && visibleInPublicCalendar === request.visible_in_public_calendar)) return
 
     setUpdating(true)
     try {
@@ -141,6 +146,7 @@ export default function RequestDetailModal({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           status: newStatus,
+          visible_in_public_calendar: visibleInPublicCalendar,
           change_reason: changeReason || undefined
         })
       })
@@ -158,9 +164,19 @@ export default function RequestDetailModal({
 
   if (!requestId) return null
 
+  // Contenedor diferente según si está embebido o es modal
+  const Container = embedded ? 'div' : 'div'
+  const containerClasses = embedded 
+    ? "bg-white dark:bg-neutral-900 rounded-2xl shadow-xl w-full flex flex-col border border-neutral-200 dark:border-neutral-800"
+    : "fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+
+  const contentClasses = embedded
+    ? "w-full"
+    : "bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-neutral-200 dark:border-neutral-800"
+
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-neutral-200 dark:border-neutral-800">
+    <div className={containerClasses}>
+      <div className={contentClasses}>
 
         {/* Header */}
         <div className="bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 px-6 py-4 flex items-center justify-between shrink-0">
@@ -174,12 +190,14 @@ export default function RequestDetailModal({
               </span>
             )}
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors text-neutral-500 hover:text-neutral-700"
-          >
-            <IconX className="w-5 h-5" />
-          </button>
+          {!embedded && (
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors text-neutral-500 hover:text-neutral-700"
+            >
+              <IconX className="w-5 h-5" />
+            </button>
+          )}
         </div>
 
         {/* Content - Scrollable */}
@@ -354,6 +372,19 @@ export default function RequestDetailModal({
                         </select>
                       </div>
 
+                      <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-800">
+                        <input
+                          type="checkbox"
+                          id="visibleInPublicCalendar"
+                          checked={visibleInPublicCalendar}
+                          onChange={(e) => setVisibleInPublicCalendar(e.target.checked)}
+                          className="w-4 h-4 text-indigo-600 border-neutral-300 rounded focus:ring-2 focus:ring-indigo-500/20"
+                        />
+                        <label htmlFor="visibleInPublicCalendar" className="text-sm font-medium text-neutral-700 dark:text-neutral-300 cursor-pointer">
+                          Visible en calendario público
+                        </label>
+                      </div>
+
                       <div>
                         <label className="text-xs font-semibold text-neutral-500 mb-1.5 block">
                           Observaciones
@@ -369,7 +400,7 @@ export default function RequestDetailModal({
 
                       <Button
                         onClick={handleUpdateStatus}
-                        disabled={updating || newStatus === request.status}
+                        disabled={updating || (newStatus === request.status && visibleInPublicCalendar === request.visible_in_public_calendar)}
                         fullWidth
                         className="bg-indigo-600 hover:bg-indigo-700 text-white"
                       >
