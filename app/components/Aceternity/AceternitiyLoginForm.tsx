@@ -295,6 +295,19 @@ export function AceternitiyLoginForm({
                 disabled={isLoaderActive}
               />
             </motion.div>
+
+            {/* Error Message */}
+            {externalError && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center"
+              >
+                <p className="text-red-300 text-sm bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-2">
+                  {externalError}
+                </p>
+              </motion.div>
+            )}
           </form>
 
           {/* Footer Links */}

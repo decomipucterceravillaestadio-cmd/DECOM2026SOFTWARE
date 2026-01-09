@@ -24,8 +24,35 @@ export default function LoginPage() {
       })
 
       if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.message || 'Error al iniciar sesión')
+        let errorMessage = 'Error al iniciar sesión'
+        
+        try {
+          const data = await response.json()
+          errorMessage = data.message || errorMessage
+        } catch {
+          // Si no se puede parsear JSON, usar mensaje basado en status
+          switch (response.status) {
+            case 400:
+              errorMessage = 'Datos de entrada inválidos'
+              break
+            case 401:
+              errorMessage = 'Correo electrónico o contraseña incorrectos'
+              break
+            case 403:
+              errorMessage = 'Acceso denegado'
+              break
+            case 429:
+              errorMessage = 'Demasiados intentos. Inténtalo más tarde'
+              break
+            case 500:
+              errorMessage = 'Error interno del servidor. Inténtalo más tarde'
+              break
+            default:
+              errorMessage = `Error ${response.status}: ${response.statusText || 'Desconocido'}`
+          }
+        }
+        
+        throw new Error(errorMessage)
       }
 
       const data = await response.json()
@@ -37,7 +64,18 @@ export default function LoginPage() {
       // Forzar navegación completa (no usar router.push)
       window.location.href = '/admin'
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Error al iniciar sesión'
+      let message = 'Error desconocido al iniciar sesión'
+      
+      if (err instanceof TypeError && err.message.includes('fetch')) {
+        message = 'Error de conexión. Verifica tu conexión a internet e inténtalo de nuevo'
+      } else if (err instanceof Error) {
+        message = err.message
+      } else if (typeof err === 'string') {
+        message = err
+      } else if (err && typeof err === 'object' && 'message' in err) {
+        message = String(err.message)
+      }
+      
       setError(message)
       console.error('Login error:', err)
     } finally {
