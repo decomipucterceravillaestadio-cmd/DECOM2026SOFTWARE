@@ -80,7 +80,7 @@ export default function HomePage() {
                 className="object-contain p-1"
               />
             </div>
-            <span className="font-bold text-xl tracking-tight text-white">DECOM IPUC VILLA ESTADIO</span>
+            <span className="font-bold text-base md:text-xl tracking-tight text-white">DECOM IPUC VILLA ESTADIO</span>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: 20 }}
@@ -119,7 +119,7 @@ export default function HomePage() {
             {/* Main Title */}
             <motion.h1
               variants={fadeInUp}
-              className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4"
+              className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight mb-4"
             >
               <span className="bg-gradient-to-r from-white via-white to-[#F49E2C] bg-clip-text text-transparent">
                 Solicita Material Gráfico
@@ -131,7 +131,7 @@ export default function HomePage() {
             {/* Subtitle - Minimalizado */}
             <motion.p
               variants={fadeInUp}
-              className="text-lg md:text-xl text-white/70 mb-10 max-w-2xl mx-auto"
+              className="text-base md:text-xl text-white/70 mb-10 max-w-2xl mx-auto"
             >
               Agiliza y centraliza tus solicitudes de diseño
             </motion.p>
@@ -179,7 +179,7 @@ export default function HomePage() {
                 <div className="w-12 h-12 rounded-xl bg-[#F49E2C]/20 flex items-center justify-center text-[#F49E2C] mb-4">
                   <IconSend className="w-6 h-6" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">Solicitudes Simplificadas</h3>
+                <h3 className="text-lg md:text-xl font-bold mb-2">Solicitudes Simplificadas</h3>
                 <p className="text-white/70 text-sm">
                   Formularios guiados para asegurar toda la información necesaria
                 </p>
@@ -199,7 +199,7 @@ export default function HomePage() {
                 <div className="w-12 h-12 rounded-xl bg-[#F49E2C]/20 flex items-center justify-center text-[#F49E2C] mb-4">
                   <IconCalendar className="w-6 h-6" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">Agenda Clara</h3>
+                <h3 className="text-lg md:text-xl font-bold mb-2">Agenda Clara</h3>
                 <p className="text-white/70 text-sm">
                   Visualiza la carga de trabajo y planifica con anticipación
                 </p>
@@ -219,7 +219,7 @@ export default function HomePage() {
                 <div className="w-12 h-12 rounded-xl bg-[#F49E2C]/20 flex items-center justify-center text-[#F49E2C] mb-4">
                   <IconPalette className="w-6 h-6" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">Diseño Profesional</h3>
+                <h3 className="text-lg md:text-xl font-bold mb-2">Diseño Profesional</h3>
                 <p className="text-white/70 text-sm">
                   Estándares de calidad consistentes para toda la iglesia
                 </p>
@@ -236,7 +236,7 @@ export default function HomePage() {
             >
               <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay" />
               <div className="relative z-10">
-                <h3 className="text-xl font-bold mb-2">Panel Admin</h3>
+                <h3 className="text-lg md:text-xl font-bold mb-2">Panel Admin</h3>
                 <p className="text-white/70 text-sm mb-4">
                   Gestiona tareas y monitorea progreso
                 </p>
