@@ -117,7 +117,7 @@ export default function RequestHistoryPage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="animate-pulse">
-          <div className="h-16 bg-gradient-to-r from-primary-dark to-primary-light"></div>
+          <div className="h-16 bg-gradient-to-r from-decom-primary to-decom-primary-light"></div>
           <div className="p-4 space-y-4">
             <div className="h-20 bg-gray-300 rounded-lg"></div>
             <div className="h-20 bg-gray-300 rounded-lg"></div>
@@ -131,7 +131,7 @@ export default function RequestHistoryPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="flex items-center p-4 pb-4 justify-between bg-gradient-to-r from-primary-dark to-primary-light shadow-sm sticky top-0 z-10">
+      <div className="flex items-center p-4 pb-4 justify-between bg-gradient-to-r from-decom-primary to-decom-primary-light shadow-sm sticky top-0 z-10">
         <button
           onClick={() => router.back()}
           className="text-white flex size-12 shrink-0 items-center justify-center cursor-pointer hover:bg-white/10 rounded-full transition-colors"
@@ -168,37 +168,37 @@ export default function RequestHistoryPage() {
                   className="cursor-pointer hover:shadow-md transition-shadow"
                   interactive
                 >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <h3 className="font-bold text-gray-900 text-base mb-1">
-                      {request.event_name}
-                    </h3>
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <div className="flex items-center gap-1">
-                        <span className="text-lg">{getMaterialIcon(request.material_type)}</span>
-                        <span>{request.material_type.replace('_', ' ')}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <IconCalendar className="w-4 h-4" />
-                        <span>{formatDate(request.event_date)}</span>
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <h3 className="font-bold text-gray-900 text-base mb-1">
+                        {request.event_name}
+                      </h3>
+                      <div className="flex items-center gap-4 text-sm text-gray-600">
+                        <div className="flex items-center gap-1">
+                          <span className="text-lg">{getMaterialIcon(request.material_type)}</span>
+                          <span>{request.material_type.replace('_', ' ')}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <IconCalendar className="w-4 h-4" />
+                          <span>{formatDate(request.event_date)}</span>
+                        </div>
                       </div>
                     </div>
+                    <Badge variant={getStatusVariant(request.status)}>
+                      {request.status}
+                    </Badge>
                   </div>
-                  <Badge variant={getStatusVariant(request.status)}>
-                    {request.status}
-                  </Badge>
-                </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    {getStatusIcon(request.status)}
-                    <span>Creada: {formatDate(request.created_at)}</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      {getStatusIcon(request.status)}
+                      <span>Creada: {formatDate(request.created_at)}</span>
+                    </div>
+                    <div className="text-decom-primary text-sm font-medium">
+                      Ver detalles →
+                    </div>
                   </div>
-                  <div className="text-primary text-sm font-medium">
-                    Ver detalles →
-                  </div>
-                </div>
-              </Card>
+                </Card>
               </div>
             ))}
           </div>

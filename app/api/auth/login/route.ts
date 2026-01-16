@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
     // Verificar que el usuario existe en tabla `users` y tiene rol decom_admin
     // Buscar por auth_user_id, no por id (id es el UUID de public.users, auth_user_id es el de auth.users)
     let { data: userData, error: userError } = await (supabaseAdmin as any)
-      .from('public.users')
+      .from('users')
       .select('*')
       .eq('auth_user_id', authData.user.id)
       .single()
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
     if (userError || !userData) {
       const userEmail = authData.user.email || validatedData.email;
       const { data: newUser, error: createError } = await (supabaseAdmin as any)
-        .from('public.users')
+        .from('users')
         .insert({
           auth_user_id: authData.user.id,
           email: userEmail,

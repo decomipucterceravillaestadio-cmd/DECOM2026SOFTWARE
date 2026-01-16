@@ -78,20 +78,38 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  console.log('🚀 PATCH /api/admin/requests/[id] started')
   try {
     const { id } = await params
+    console.log('📌 Request ID:', id)
+    
     const supabase = await createServerClient()
-    const adminClient = createAdminClient()
+    console.log('✅ Server client created')
+    
+    let adminClient
+    try {
+      adminClient = createAdminClient()
+      console.log('✅ Admin client created')
+    } catch (adminError) {
+      console.error('❌ Failed to create admin client:', adminError)
+      return NextResponse.json(
+        { error: 'Error de configuración del servidor', details: String(adminError) },
+        { status: 500 }
+      )
+    }
     
     // Verificar autenticación
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
+      console.log('❌ Auth error:', authError)
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
+    console.log('👤 User authenticated:', user.id)
 
     // Obtener datos del body
     const body = await request.json()
     const { status: newStatus, change_reason, visible_in_public_calendar } = body
+    console.log('📝 PATCH body:', { newStatus, change_reason, visible_in_public_calendar })
 
     if (!newStatus && visible_in_public_calendar === undefined) {
       return NextResponse.json(
@@ -108,6 +126,7 @@ export async function PATCH(
       .single()
 
     if (fetchError || !currentRequest) {
+      console.log('❌ Request not found:', fetchError)
       return NextResponse.json(
         { error: 'Solicitud no encontrada' },
         { status: 404 }
@@ -115,6 +134,7 @@ export async function PATCH(
     }
 
     const oldStatus = currentRequest.status
+    console.log('📊 Current status:', { oldStatus, newStatus })
 
     // Preparar datos para actualizar
     const updateData: Record<string, any> = {
@@ -129,22 +149,29 @@ export async function PATCH(
       updateData.visible_in_public_calendar = visible_in_public_calendar
     }
 
+    console.log('🔄 Update data:', updateData)
+
     // Actualizar solicitud
-    const { error: updateError } = await adminClient
+    const { data: updatedData, error: updateError } = await adminClient
       .from('requests')
       .update(updateData)
       .eq('id', id)
+      .select()
+      .single()
 
     if (updateError) {
-      console.error('Error updating request:', updateError)
+      console.error('❌ Error updating request:', updateError)
+      console.error('❌ Full error details:', JSON.stringify(updateError, null, 2))
       return NextResponse.json(
-        { error: 'Error al actualizar solicitud' },
+        { error: 'Error al actualizar solicitud', details: updateError.message, code: updateError.code },
         { status: 500 }
       )
     }
+    console.log('✅ Request updated successfully:', updatedData)
 
     // Registrar en historial solo si cambió el estado
     if (newStatus && newStatus !== oldStatus) {
+      console.log('📋 Creating history entry:', { request_id: id, oldStatus, newStatus, changed_by: user.id })
       const { error: historyError } = await adminClient
         .from('request_history')
         .insert({
@@ -157,10 +184,13 @@ export async function PATCH(
         })
 
       if (historyError) {
-        console.error('Error creating history:', historyError)
+        console.error('❌ Error creating history:', historyError)
+      } else {
+        console.log('✅ History entry created successfully')
       }
     }
 
+    console.log('✨ Request update complete')
     return NextResponse.json({ 
       success: true,
       message: 'Solicitud actualizada correctamente'

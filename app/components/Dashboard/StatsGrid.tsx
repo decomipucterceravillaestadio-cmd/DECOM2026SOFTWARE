@@ -36,27 +36,29 @@ interface StatCardProps {
 }
 
 function StatCard({ title, value, icon, color, delay = 0 }: StatCardProps) {
+  const colors: Record<string, { bg: string, text: string, decoration: string }> = {
+    purple: { bg: 'bg-[#8B5CF6]/10', text: 'text-[#8B5CF6]', decoration: 'decoration-[#8B5CF6]' },
+    orange: { bg: 'bg-[#F49E2C]/10', text: 'text-[#F49E2C]', decoration: 'decoration-[#F49E2C]' },
+    blue: { bg: 'bg-[#15539C]/10', text: 'text-[#15539C]', decoration: 'decoration-[#15539C]' },
+    green: { bg: 'bg-[#10B981]/10', text: 'text-[#10B981]', decoration: 'decoration-[#10B981]' },
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay }}
-      className="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-100 dark:border-neutral-800 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden"
+      className="bg-white/5 backdrop-blur-md rounded-[12px] p-5 border border-white/10 flex flex-col items-center text-center group hover:bg-white/10 transition-all shadow-lg"
     >
-      <div className={`absolute top-0 right-0 w-24 h-24 bg-${color}-500/10 rounded-bl-full -mr-4 -mt-4 transition-transform hover:scale-110`} />
-
-      <div className="relative z-10">
-        <div className={`w-12 h-12 rounded-xl bg-${color}-50 dark:bg-${color}-900/20 flex items-center justify-center mb-4 text-${color}-600 dark:text-${color}-400`}>
-          {icon}
-        </div>
-
-        <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-1">
-          {title}
-        </p>
-        <h3 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
-          {value}
-        </h3>
+      <div className={`w-12 h-12 rounded-full ${colors[color].bg} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform border border-white/5`}>
+        <div className={colors[color].text}>{icon}</div>
       </div>
+      <h3 className="text-[40px] md:text-[48px] font-[700] text-white leading-none mb-2 tabular-nums">
+        {value}
+      </h3>
+      <p className="text-[12px] font-bold text-white/40 uppercase tracking-[0.15em] group-hover:text-white/60 transition-colors">
+        {title}
+      </p>
     </motion.div>
   )
 }
@@ -87,7 +89,7 @@ export default function StatsGrid() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-40 bg-neutral-100 dark:bg-neutral-900 rounded-2xl animate-pulse" />
+          <div key={i} className="h-40 bg-white/5 rounded-[12px] animate-pulse" />
         ))}
       </div>
     )
@@ -97,13 +99,13 @@ export default function StatsGrid() {
 
   return (
     <div className="space-y-8">
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* KPI Section */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="Total Solicitudes"
+          title="Total"
           value={stats.total}
           icon={<IconClipboardList className="w-6 h-6" />}
-          color="violet"
+          color="purple"
           delay={0}
         />
         <StatCard
@@ -121,7 +123,7 @@ export default function StatsGrid() {
           delay={0.2}
         />
         <StatCard
-          title="Finalizadas"
+          title="Completados"
           value={completedTotal}
           icon={<IconCheck className="w-6 h-6" />}
           color="green"
@@ -129,40 +131,42 @@ export default function StatsGrid() {
         />
       </div>
 
-      {/* Committee Breakdown */}
+      {/* Committee Distribution Chart */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-        className="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-100 dark:border-neutral-800 shadow-sm"
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-white/5 backdrop-blur-md rounded-[12px] p-6 border border-white/10 shadow-xl"
       >
-        <div className="flex items-center gap-2 mb-6">
-          <IconChartBar className="w-5 h-5 text-neutral-500" />
-          <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100">
-            Solicitudes por Comité
-          </h3>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h3 className="text-[20px] font-semibold text-white tracking-tight uppercase">Solicitudes por Comité</h3>
+            <p className="text-[14px] text-white/40 mt-1">{stats.total} solicitudes totales</p>
+          </div>
+          <div className="p-2.5 rounded-xl bg-[#F49E2C]/10 text-[#F49E2C] border border-[#F49E2C]/20">
+            <IconChartBar className="w-5 h-5" />
+          </div>
         </div>
 
-        <div className="space-y-4">
-          {stats.byCommittee.map((committee, index) => {
+        <div className="space-y-6">
+          {stats.byCommittee.sort((a, b) => b.count - a.count).map((committee, index) => {
             const percentage = Math.round((committee.count / stats.total) * 100) || 0
-
             return (
-              <div key={committee.id} className="group">
-                <div className="flex items-center justify-between mb-2 text-sm">
-                  <span className="font-medium text-neutral-700 dark:text-neutral-300">
+              <div key={committee.id} className="space-y-2">
+                <div className="flex justify-between items-end">
+                  <span className="text-[14px] font-bold text-white/70 uppercase tracking-widest leading-none">
                     {committee.name}
                   </span>
-                  <span className="text-neutral-500">
-                    {committee.count} ({percentage}%)
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[14px] font-black text-white">{committee.count}</span>
+                    <span className="text-[12px] font-bold text-[#F49E2C] opacity-80">({percentage}%)</span>
+                  </div>
                 </div>
-                <div className="h-2.5 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+                <div className="h-2.5 bg-[#16233B] rounded-full overflow-hidden border border-white/5 shadow-inner">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${percentage}%` }}
-                    transition={{ duration: 1, delay: 0.5 + (index * 0.1) }}
-                    className={`h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 opacity-80 group-hover:opacity-100 transition-opacity`}
+                    transition={{ duration: 1.5, ease: "easeOut", delay: 0.4 + (index * 0.1) }}
+                    className="h-full bg-gradient-to-r from-[#15539C] to-[#F49E2C] rounded-full shadow-[0_0_15px_rgba(244,158,44,0.3)]"
                   />
                 </div>
               </div>
@@ -170,7 +174,10 @@ export default function StatsGrid() {
           })}
 
           {stats.byCommittee.length === 0 && (
-            <p className="text-center text-neutral-500 py-4">No hay datos suficientes</p>
+            <div className="text-center py-10 opacity-30">
+              <IconChartBar className="w-10 h-10 mx-auto mb-2" />
+              <p className="text-xs uppercase tracking-widest font-bold">Sin datos disponibles</p>
+            </div>
           )}
         </div>
       </motion.div>

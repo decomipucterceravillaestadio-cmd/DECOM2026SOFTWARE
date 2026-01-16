@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import {
   IconPlus,
   IconSearch,
@@ -15,14 +15,16 @@ import {
   IconUser,
   IconLogout,
   IconCalendar,
-  IconUsers
+  IconUsers,
+  IconMenu2
 } from '@tabler/icons-react'
-import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar'
+import { cn } from '@/lib/utils'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/app/components/UI/Button'
 import { RoleBadge } from '@/app/components/Auth/RoleBadge'
 import { useAuth, useHasPermission } from '@/app/contexts/AuthContext'
 import { Permission } from '@/app/lib/permissions'
-import type { UserRole, ROLE_LABELS } from '@/app/types/auth'
+import type { UserRole } from '@/app/types/auth'
 
 interface User {
   id: string
@@ -37,61 +39,31 @@ interface User {
 
 export default function AdminUsersPage() {
   const router = useRouter()
+  const pathname = usePathname()
   const { user: currentUser, loading: authLoading } = useAuth()
   const canViewUsers = useHasPermission(Permission.VIEW_USERS)
-  const canCreateUsers = useHasPermission(Permission.CREATE_USERS)
-  const canEditUsers = useHasPermission(Permission.EDIT_USERS)
-  const canDeleteUsers = useHasPermission(Permission.DELETE_USERS)
-  const canManageUsers = useHasPermission(Permission.VIEW_USERS)
-
   const [open, setOpen] = useState(false)
   const [users, setUsers] = useState<User[]>([])
   const [filteredUsers, setFilteredUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [roleFilter, setRoleFilter] = useState<UserRole | 'all'>('all')
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all')
+  const [mounted, setMounted] = useState(false)
 
-  // Links del sidebar
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const baseLinks = [
-    {
-      label: 'Dashboard',
-      href: '/admin',
-      icon: <IconLayoutDashboard className="h-5 w-5" />,
-    },
-    {
-      label: 'Nueva Solicitud',
-      href: '/new-request',
-      icon: <IconPlus className="h-5 w-5" />,
-    },
-    {
-      label: 'Solicitudes',
-      href: '/admin',
-      icon: <IconClipboardList className="h-5 w-5" />,
-    },
-    {
-      label: 'Calendario',
-      href: '/admin/calendar',
-      icon: <IconCalendar className="h-5 w-5" />,
-    },
+    { label: 'Dashboard', href: '/admin', icon: <IconLayoutDashboard className="h-5 w-5" /> },
+    { label: 'Nueva Solicitud', href: '/new-request', icon: <IconPlus className="h-5 w-5" /> },
+    { label: 'Solicitudes', href: '/admin/list', icon: <IconClipboardList className="h-5 w-5" /> },
+    { label: 'Calendario', href: '/admin/calendar', icon: <IconCalendar className="h-5 w-5" /> },
   ]
-
-  const adminLinks = canManageUsers ? [
-    {
-      label: 'Gestión de Usuarios',
-      href: '/admin/users',
-      icon: <IconUsers className="h-5 w-5" />,
-    }
-  ] : []
 
   const links = [
     ...baseLinks,
-    ...adminLinks,
-    {
-      label: 'Perfil',
-      href: '/admin/profile',
-      icon: <IconUser className="h-5 w-5" />,
-    },
+    { label: 'Gestión de Usuarios', href: '/admin/users', icon: <IconUsers className="h-5 w-5" /> },
+    { label: 'Perfil', href: '/admin/profile', icon: <IconUser className="h-5 w-5" /> },
   ]
 
   const handleLogout = async () => {
@@ -99,73 +71,14 @@ export default function AdminUsersPage() {
     router.push('/login')
   }
 
-  // Debug: ver qué está pasando
-  useEffect(() => {
-    console.log('🔍 Admin Users Page Debug:', {
-      currentUser,
-      authLoading,
-      canViewUsers,
-      role: currentUser?.role,
-      role_level: currentUser?.role_level,
-    })
-  }, [currentUser, authLoading, canViewUsers])
-
-  // Cargar usuarios
-  useEffect(() => {
-    // Esperar a que termine de cargar la autenticación
-    if (authLoading) {
-      return
-    }
-
-    // Si no tiene permisos después de cargar, redirigir
-    if (!canViewUsers) {
-      console.error('❌ No tiene permiso VIEW_USERS, redirigiendo...')
-      router.push('/admin')
-      return
-    }
-
-    loadUsers()
-  }, [canViewUsers, router, authLoading])
-
-  // Aplicar filtros
-  useEffect(() => {
-    let filtered = [...users]
-
-    // Filtro por búsqueda
-    if (searchQuery) {
-      filtered = filtered.filter(
-        (user) =>
-          user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          user.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    }
-
-    // Filtro por rol
-    if (roleFilter !== 'all') {
-      filtered = filtered.filter((user) => user.role === roleFilter)
-    }
-
-    // Filtro por estado
-    if (statusFilter === 'active') {
-      filtered = filtered.filter((user) => user.is_active)
-    } else if (statusFilter === 'inactive') {
-      filtered = filtered.filter((user) => !user.is_active)
-    }
-
-    setFilteredUsers(filtered)
-  }, [users, searchQuery, roleFilter, statusFilter])
-
   const loadUsers = async () => {
     try {
       setIsLoading(true)
       const response = await fetch('/api/admin/users')
-      
-      if (!response.ok) {
-        throw new Error('Error al cargar usuarios')
+      if (response.ok) {
+        const data = await response.json()
+        setUsers(data.users || [])
       }
-
-      const data = await response.json()
-      setUsers(data.users || [])
     } catch (error) {
       console.error('Error loading users:', error)
     } finally {
@@ -173,397 +86,203 @@ export default function AdminUsersPage() {
     }
   }
 
-  const handleDeleteUser = async (userId: string) => {
-    if (!canDeleteUsers) {
-      alert('No tienes permisos para desactivar usuarios')
-      return
-    }
+  useEffect(() => {
+    if (mounted && canViewUsers) loadUsers()
+  }, [mounted, canViewUsers])
 
-    if (!confirm('¿Estás seguro de desactivar este usuario? No podrá iniciar sesión.')) {
-      return
-    }
-
-    try {
-      const response = await fetch(`/api/admin/users/${userId}`, {
-        method: 'DELETE',
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Error al desactivar usuario')
-      }
-
-      alert('Usuario desactivado exitosamente')
-      loadUsers()
-    } catch (error: any) {
-      console.error('Error deleting user:', error)
-      alert(error.message || 'Error al desactivar usuario')
-    }
-  }
-
-  const handleActivateUser = async (userId: string) => {
-    if (!canEditUsers) {
-      alert('No tienes permisos para activar usuarios')
-      return
-    }
-
-    try {
-      const response = await fetch(`/api/admin/users/${userId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ is_active: true }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Error al activar usuario')
-      }
-
-      alert('Usuario activado exitosamente')
-      loadUsers()
-    } catch (error) {
-      console.error('Error activating user:', error)
-      alert('Error al activar usuario')
-    }
-  }
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-4 md:p-6 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando...</p>
-        </div>
-      </div>
+  useEffect(() => {
+    let filtered = users.filter(u =>
+      u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (u.full_name?.toLowerCase() || '').includes(searchQuery.toLowerCase())
     )
-  }
+    setFilteredUsers(filtered)
+  }, [users, searchQuery])
 
-  if (!canViewUsers) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-4 md:p-6">
-        <div className="bg-white rounded-lg shadow-sm p-8 max-w-md mx-auto">
-          <div className="text-center">
-            <div className="text-red-600 text-5xl mb-4">🔒</div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Acceso Denegado</h2>
-            <p className="text-gray-600 mb-4">
-              No tienes permisos para acceder a la gestión de usuarios.
-            </p>
-            <p className="text-sm text-gray-500 mb-4">
-              Tu rol: <strong>{currentUser?.role || 'Desconocido'}</strong>
-            </p>
-            <Button
-              variant="primary"
-              onClick={() => router.push('/admin')}
-            >
-              Volver al Dashboard
-            </Button>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  const isActive = (href: string) => pathname === href || (href !== '/admin' && pathname?.startsWith(href))
+
+  if (!mounted || authLoading) return null
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-white dark:bg-neutral-950 flex-col md:flex-row">
-      <Sidebar open={open} setOpen={setOpen}>
-        <SidebarBody className="justify-between gap-10 border-r border-gray-300 bg-white">
-          <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
-            {/* Logo */}
-            <div className="mb-8 pl-1">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#15539C] to-[#16233B] flex items-center justify-center">
-                  <IconLayoutDashboard className="h-5 w-5 text-white" />
-                </div>
-                <span className="text-lg font-bold text-[#16233B] tracking-tight">
-                  DECOM
-                </span>
-              </div>
-            </div>
+    <div className="flex h-screen w-full overflow-hidden bg-[#16233B] text-[#F8FAFC] flex-row font-sans">
 
-            <div className="flex flex-col gap-2">
-              {links.map((link, idx) => (
-                <SidebarLink key={idx} link={link} />
-              ))}
-            </div>
-          </div>
-          
-          <div>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-2 py-2 text-sm font-medium text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors w-full group"
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {open && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] md:hidden"
+            />
+            <motion.nav
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed inset-y-0 left-0 w-72 bg-[#1a2847] shadow-2xl z-[70] md:hidden flex flex-col p-6"
             >
-              <IconLogout className="h-5 w-5 group-hover:stroke-red-600" />
-              <span>Cerrar Sesión</span>
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#15539C] flex items-center justify-center border border-[#F49E2C]/30 shadow-[0_0_15px_rgba(244,158,44,0.1)]">
+                    <IconUsers className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-lg font-bold tracking-tight text-white uppercase mt-0.5">DECOM</span>
+                </div>
+                <button onClick={() => setOpen(false)} className="p-2 text-white/50 hover:text-[#F49E2C] transition-colors">
+                  <IconX className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="flex-1 space-y-2 overflow-y-auto">
+                {links.map((link, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => { router.push(link.href); setOpen(false); }}
+                    className={cn(
+                      "flex items-center gap-4 px-4 py-4 rounded-xl text-sm font-medium transition-all group w-full text-left",
+                      isActive(link.href)
+                        ? "bg-[#15539C]/20 text-[#F49E2C] shadow-sm border border-[#F49E2C]/20"
+                        : "text-white/60 hover:bg-[#15539C]/10 hover:text-white"
+                    )}
+                  >
+                    {link.icon}
+                    <span className="mt-0.5">{link.label}</span>
+                  </button>
+                ))}
+              </div>
+            </motion.nav>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Sidebar - Desktop */}
+      <nav className="hidden md:flex w-64 flex-col bg-[#1a2847] border-r border-white/10 transition-all duration-300 shadow-xl z-30">
+        <div className="h-16 flex items-center gap-3 px-6 border-b border-white/10">
+          <div className="w-8 h-8 rounded-lg bg-[#15539C] flex items-center justify-center border border-[#F49E2C]/30 shadow-[0_0_15px_rgba(244,158,44,0.1)]">
+            <IconUsers className="h-5 w-5 text-white" />
+          </div>
+          <span className="text-lg font-bold tracking-tight text-white uppercase mt-0.5">DECOM</span>
+        </div>
+
+        <div className="flex-1 py-6 px-3 space-y-1 overflow-y-auto">
+          {links.map((link, idx) => (
+            <button
+              key={idx}
+              onClick={() => router.push(link.href)}
+              className={cn(
+                "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group w-full text-left",
+                isActive(link.href)
+                  ? "bg-[#15539C]/20 text-[#F49E2C] shadow-sm border border-[#F49E2C]/20"
+                  : "text-white/60 hover:bg-[#15539C]/10 hover:text-white"
+              )}
+            >
+              <div className={cn("transition-colors", isActive(link.href) ? "text-[#F49E2C]" : "group-hover:text-white")}>
+                {link.icon}
+              </div>
+              <span className="mt-0.5">{link.label}</span>
+              {isActive(link.href) && (
+                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#F49E2C] shadow-[0_0_8px_rgba(244,158,44,0.5)]" />
+              )}
+            </button>
+          ))}
+        </div>
+      </nav>
+
+      {/* Main Container */}
+      <div className="flex flex-1 flex-col overflow-hidden relative">
+        <header className="h-16 shrink-0 bg-[#1a2847]/80 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-4 md:px-8 z-40 transition-colors">
+          <div className="flex items-center gap-4 flex-1">
+            <button onClick={() => setOpen(!open)} className="md:hidden p-2 text-white/50 hover:text-[#F49E2C] transition-colors">
+              <IconMenu2 className="w-6 h-6" />
+            </button>
+            <h2 className="text-white font-bold text-lg hidden sm:block tracking-tight uppercase">Usuarios</h2>
+          </div>
+          <div className="flex items-center gap-5">
+            <div className="relative hidden lg:block">
+              <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+              <input
+                type="text"
+                placeholder="Buscar usuarios..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-10 bg-[#16233B]/50 border border-white/10 rounded-xl pl-10 pr-4 text-sm text-white focus:outline-none focus:border-[#F49E2C]/50 transition-all w-64"
+              />
+            </div>
+            <button
+              onClick={() => router.push('/admin/users/new')}
+              className="px-4 py-2 bg-[#F49E2C] text-[#16233B] rounded-lg font-bold text-xs flex items-center gap-2"
+            >
+              <IconPlus className="w-4 h-4" />
+              NUEVO USUARIO
             </button>
           </div>
-        </SidebarBody>
-      </Sidebar>
+        </header>
 
-      <div className="flex flex-1 flex-col overflow-hidden bg-[#F5F5F5] relative">
-        <div className="flex-1 overflow-y-auto relative z-10">
-          <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-            {/* Header */}
-            <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-              Gestión de Usuarios
-            </h1>
-            <p className="text-gray-600 mt-1">
-              {filteredUsers.length} {filteredUsers.length === 1 ? 'usuario' : 'usuarios'}
-            </p>
-          </div>
-
-          {canCreateUsers && (
-            <Button
-              variant="primary"
-              size="md"
-              onClick={() => router.push('/admin/users/new')}
-            >
-              <IconPlus className="w-5 h-5 mr-2" />
-              Nuevo Usuario
-            </Button>
-          )}
-        </div>
-
-        {/* Filtros */}
-        <div className="bg-white rounded-lg shadow-sm p-4 space-y-4">
-          {/* Búsqueda */}
-          <div className="relative">
-            <IconSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Buscar por nombre o email..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-
-          {/* Filtros de rol y estado */}
-          <div className="flex flex-wrap gap-3">
-            <div className="flex items-center gap-2">
-              <IconFilter className="w-5 h-5 text-gray-500" />
-              <select
-                value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value as any)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">Todos los roles</option>
-                <option value="admin">Admin</option>
-                <option value="presidente">Presidente</option>
-                <option value="tesorero">Tesorero</option>
-                <option value="secretario">Secretario</option>
-                <option value="vocal">Vocal</option>
-                <option value="decom_admin">DECOM Admin (Legacy)</option>
-                <option value="comite_member">Miembro Comité (Legacy)</option>
-              </select>
-            </div>
-
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as any)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">Todos los estados</option>
-              <option value="active">Activos</option>
-              <option value="inactive">Inactivos</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Tabla de usuarios */}
-      {isLoading ? (
-        <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-          <p className="text-gray-600">Cargando usuarios...</p>
-        </div>
-      ) : filteredUsers.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-          <p className="text-gray-600 mb-4">No se encontraron usuarios</p>
-          {canCreateUsers && (
-            <Button
-              variant="primary"
-              size="md"
-              onClick={() => router.push('/admin/users/new')}
-            >
-              <IconPlus className="w-5 h-5 mr-2" />
-              Crear Primer Usuario
-            </Button>
-          )}
-        </div>
-      ) : (
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          {/* Vista móvil: Cards */}
-          <div className="block md:hidden divide-y divide-gray-200">
-            {filteredUsers.map((user) => (
-              <div key={user.id} className="p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">
-                      {user.full_name || 'Sin nombre'}
-                    </h3>
-                    <p className="text-sm text-gray-600">{user.email}</p>
-                  </div>
-                  <div className="ml-2">
-                    {user.is_active ? (
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        <IconCheck className="w-3 h-3 mr-1" />
-                        Activo
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                        <IconX className="w-3 h-3 mr-1" />
-                        Inactivo
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="mb-3">
-                  <RoleBadge role={user.role} size="sm" />
-                </div>
-
-                <div className="flex gap-2">
-                  {canEditUsers && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => router.push(`/admin/users/${user.id}/edit`)}
-                    >
-                      <IconEdit className="w-4 h-4 mr-1" />
-                      Editar
-                    </Button>
-                  )}
-
-                  {canDeleteUsers && user.is_active && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDeleteUser(user.id)}
-                    >
-                      <IconTrash className="w-4 h-4 mr-1" />
-                      Desactivar
-                    </Button>
-                  )}
-
-                  {canEditUsers && !user.is_active && (
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => handleActivateUser(user.id)}
-                    >
-                      <IconCheck className="w-4 h-4 mr-1" />
-                      Activar
-                    </Button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Vista desktop: Tabla */}
-          <div className="hidden md:block overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Usuario
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Rol
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Estado
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Fecha Creación
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Acciones
-                  </th>
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scroll-smooth bg-gradient-to-br from-transparent via-transparent to-[#15539C]/5">
+          <div className="bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-white/5">
+                  <th className="px-6 py-4 text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Usuario</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Rol</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Estado</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-white/30 uppercase tracking-[0.2em] text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredUsers.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold">
-                            {user.full_name?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()}
-                          </div>
+              <tbody className="divide-y divide-white/5">
+                {isLoading ? (
+                  [1, 2, 3].map(i => <tr key={i} className="animate-pulse h-16 bg-white/5"><td colSpan={4}></td></tr>)
+                ) : filteredUsers.map((user, idx) => (
+                  <motion.tr
+                    key={user.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="group hover:bg-white/5 transition-all"
+                  >
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#15539C] to-[#16233B] flex items-center justify-center font-bold text-white border border-white/10">
+                          {(user.full_name || user.email).charAt(0).toUpperCase()}
                         </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {user.full_name || 'Sin nombre'}
-                          </div>
-                          <div className="text-sm text-gray-500">{user.email}</div>
+                        <div>
+                          <p className="text-sm font-bold text-white group-hover:text-[#F49E2C] transition-colors">{user.full_name || 'Sin nombre'}</p>
+                          <p className="text-[10px] text-white/30">{user.email}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4">
                       <RoleBadge role={user.role} size="sm" />
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4">
                       {user.is_active ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          <IconCheck className="w-3 h-3 mr-1" />
-                          Activo
+                        <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-green-500/10 text-green-400 border border-green-500/20">
+                          <IconCheck className="w-3 h-3" /> Activo
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                          <IconX className="w-3 h-3 mr-1" />
-                          Inactivo
+                        <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-red-500/10 text-red-400 border border-red-500/20">
+                          <IconX className="w-3 h-3" /> Inactivo
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(user.created_at).toLocaleDateString('es-CO')}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end gap-2">
-                        {canEditUsers && (
-                          <button
-                            onClick={() => router.push(`/admin/users/${user.id}/edit`)}
-                            className="text-blue-600 hover:text-blue-900"
-                            title="Editar usuario"
-                          >
-                            <IconEdit className="w-5 h-5" />
-                          </button>
-                        )}
-
-                        {canDeleteUsers && user.is_active && (
-                          <button
-                            onClick={() => handleDeleteUser(user.id)}
-                            className="text-red-600 hover:text-red-900"
-                            title="Desactivar usuario"
-                          >
-                            <IconTrash className="w-5 h-5" />
-                          </button>
-                        )}
-
-                        {canEditUsers && !user.is_active && (
-                          <button
-                            onClick={() => handleActivateUser(user.id)}
-                            className="text-green-600 hover:text-green-900"
-                            title="Activar usuario"
-                          >
-                            <IconCheck className="w-5 h-5" />
-                          </button>
-                        )}
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button className="p-2 rounded-lg hover:bg-white/10 text-white/30 hover:text-white transition-all">
+                          <IconEdit className="w-4 h-4" />
+                        </button>
+                        <button className="p-2 rounded-lg hover:bg-red-500/10 text-white/30 hover:text-red-400 transition-all">
+                          <IconTrash className="w-4 h-4" />
+                        </button>
                       </div>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </div>
-      )}
-          </div>
-        </div>
+        </main>
       </div>
     </div>
   )

@@ -78,6 +78,7 @@ export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
   );
 };
 
+
 export const DesktopSidebar = ({
   className,
   children,
@@ -88,7 +89,7 @@ export const DesktopSidebar = ({
     <>
       <motion.div
         className={cn(
-          "h-full px-4 py-4 hidden  md:flex md:flex-col bg-neutral-100 dark:bg-neutral-800 w-[300px] shrink-0",
+          "h-full px-4 py-4 hidden md:flex md:flex-col bg-decom-primary dark:bg-decom-primary w-[300px] shrink-0 border-r border-[#15539C]/30",
           className
         )}
         animate={{
@@ -114,13 +115,13 @@ export const MobileSidebar = ({
     <>
       <div
         className={cn(
-          "h-16 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-white dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700 w-full"
+          "h-16 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-decom-primary dark:bg-decom-primary border-b border-[#15539C]/30 w-full"
         )}
         {...props}
       >
         <div className="flex justify-start z-20 w-full">
           <IconMenu2
-            className="text-neutral-800 dark:text-neutral-200 cursor-pointer"
+            className="text-white dark:text-white cursor-pointer"
             onClick={() => setOpen(!open)}
           />
         </div>
@@ -135,12 +136,12 @@ export const MobileSidebar = ({
                 ease: "easeInOut",
               }}
               className={cn(
-                "fixed h-full w-full inset-0 bg-white dark:bg-neutral-900 p-10 z-[100] flex flex-col justify-between",
+                "fixed h-full w-full inset-0 bg-decom-primary dark:bg-decom-primary p-10 z-[100] flex flex-col justify-between",
                 className
               )}
             >
               <div
-                className="absolute right-10 top-10 z-50 text-neutral-800 dark:text-neutral-200"
+                className="absolute right-10 top-10 z-50 text-white dark:text-white"
                 onClick={() => setOpen(!open)}
               >
                 <IconX />
@@ -167,19 +168,21 @@ export const SidebarLink = ({
     <a
       href={link.href}
       className={cn(
-        "flex items-center justify-start gap-2  group/sidebar py-2",
+        "flex items-center justify-start gap-2 group/sidebar py-2 hover:bg-white/10 rounded-lg px-2 transition-colors",
         className
       )}
       {...props}
     >
-      {link.icon}
+      <div className="text-white/70 group-hover/sidebar:text-decom-secondary transition-colors">
+        {link.icon}
+      </div>
 
       <motion.span
         animate={{
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
-        className="text-neutral-700 dark:text-neutral-200 text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+        className="text-white/80 dark:text-white/90 text-sm group-hover/sidebar:text-white transition duration-150 whitespace-pre inline-block !p-0 !m-0 font-medium"
       >
         {link.label}
       </motion.span>

@@ -102,7 +102,7 @@ export default function EditProfilePage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="animate-pulse">
-          <div className="h-16 bg-gradient-to-r from-primary-dark to-primary-light"></div>
+          <div className="h-16 bg-gradient-to-r from-decom-primary to-decom-primary-light"></div>
           <div className="p-4 space-y-4">
             <div className="h-12 bg-gray-300 rounded"></div>
             <div className="h-12 bg-gray-300 rounded"></div>
@@ -116,7 +116,7 @@ export default function EditProfilePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="flex items-center p-4 pb-4 justify-between bg-gradient-to-r from-primary-dark to-primary-light shadow-sm sticky top-0 z-10">
+      <div className="flex items-center p-4 pb-4 justify-between bg-gradient-to-r from-decom-primary to-decom-primary-light shadow-sm sticky top-0 z-10">
         <button
           onClick={() => router.back()}
           className="text-white flex size-12 shrink-0 items-center justify-center cursor-pointer hover:bg-white/10 rounded-full transition-colors"
@@ -144,12 +144,12 @@ export default function EditProfilePage() {
         {/* Avatar Section */}
         <div className="flex flex-col items-center py-6">
           <div className="relative mb-4">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary-light to-primary-dark border-[3px] border-secondary shadow-lg flex items-center justify-center">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-decom-primary-light to-decom-primary border-[3px] border-decom-secondary shadow-lg flex items-center justify-center">
               <span className="text-white text-2xl font-bold tracking-wider">
                 {user?.name.split(' ').map(word => word.charAt(0)).join('').toUpperCase().slice(0, 2)}
               </span>
             </div>
-            <button className="absolute bottom-0 right-0 w-8 h-8 bg-secondary rounded-full flex items-center justify-center shadow-lg">
+            <button className="absolute bottom-0 right-0 w-8 h-8 bg-decom-secondary rounded-full flex items-center justify-center shadow-lg">
               <IconCheck className="w-4 h-4 text-white" />
             </button>
           </div>

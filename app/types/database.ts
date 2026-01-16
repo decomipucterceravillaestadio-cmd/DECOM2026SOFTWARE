@@ -105,29 +105,29 @@ export type Database = {
         Row: {
           id: string
           request_id: string
-          old_status: string
+          old_status: string | null
           new_status: string
-          changed_by_id: string | null
+          changed_by: string | null
+          change_reason: string | null
           changed_at: string | null
-          notes: string | null
         }
         Insert: {
           id?: string
           request_id: string
-          old_status: string
+          old_status?: string | null
           new_status: string
-          changed_by_id?: string | null
+          changed_by?: string | null
+          change_reason?: string | null
           changed_at?: string | null
-          notes?: string | null
         }
         Update: {
           id?: string
           request_id?: string
-          old_status?: string
+          old_status?: string | null
           new_status?: string
-          changed_by_id?: string | null
+          changed_by?: string | null
+          change_reason?: string | null
           changed_at?: string | null
-          notes?: string | null
         }
         Relationships: [
           {
@@ -136,46 +136,56 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "requests"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "request_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           }
         ]
       }
       users: {
         Row: {
           id: string
+          auth_user_id: string | null
           email: string
-          name: string
-          phone: string | null
+          full_name: string | null
           role: string
-          committee_id: string | null
+          is_active: boolean | null
           created_at: string | null
           updated_at: string | null
+          role_level: number | null
         }
         Insert: {
           id?: string
+          auth_user_id?: string | null
           email: string
-          name: string
-          phone?: string | null
+          full_name?: string | null
           role?: string
-          committee_id?: string | null
+          is_active?: boolean | null
           created_at?: string | null
           updated_at?: string | null
+          role_level?: number | null
         }
         Update: {
           id?: string
+          auth_user_id?: string | null
           email?: string
-          name?: string
-          phone?: string | null
+          full_name?: string | null
           role?: string
-          committee_id?: string | null
+          is_active?: boolean | null
           created_at?: string | null
           updated_at?: string | null
+          role_level?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "users_committee_id_fkey"
-            columns: ["committee_id"]
+            foreignKeyName: "users_auth_user_id_fkey"
+            columns: ["auth_user_id"]
             isOneToOne: false
-            referencedRelation: "committees"
+            referencedRelation: "users"
             referencedColumns: ["id"]
           }
         ]

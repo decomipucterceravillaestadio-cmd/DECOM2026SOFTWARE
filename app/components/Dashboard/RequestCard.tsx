@@ -3,6 +3,23 @@
 import { format, differenceInDays } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
+import {
+  IconVideo,
+  IconCamera,
+  IconBrush,
+  IconDeviceSpeaker,
+  IconBroadcast,
+  IconShare,
+  IconUsers,
+  IconFriends,
+  IconMicrophone,
+  IconBriefcase,
+  IconBook,
+  IconVideoPlus,
+  IconCalendar,
+  IconChevronRight,
+  IconClock
+} from '@tabler/icons-react'
 
 interface Request {
   id: string
@@ -27,31 +44,31 @@ const getStatusConfig = (status: string) => {
   const configs = {
     pending: {
       label: 'Pendiente',
-      color: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-      dotColor: 'bg-yellow-500',
-      barColor: 'bg-yellow-500'
+      color: 'bg-[#F49E2C]/10 text-[#F49E2C] border-[#F49E2C]/20',
+      dotColor: 'bg-[#F49E2C]',
+      barColor: 'bg-[#F49E2C]'
     },
     in_progress: {
       label: 'En proceso',
-      color: 'bg-blue-50 text-blue-700 border-blue-200',
-      dotColor: 'bg-blue-500',
-      barColor: 'bg-blue-500'
+      color: 'bg-[#15539C]/10 text-[#15539C] border-[#15539C]/20',
+      dotColor: 'bg-[#15539C]',
+      barColor: 'bg-[#15539C]'
     },
     approved: {
       label: 'Aprobado',
-      color: 'bg-green-50 text-green-700 border-green-200',
-      dotColor: 'bg-green-500',
-      barColor: 'bg-green-500'
+      color: 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20',
+      dotColor: 'bg-[#10B981]',
+      barColor: 'bg-[#10B981]'
     },
     completed: {
       label: 'Completado',
-      color: 'bg-green-50 text-green-700 border-green-200',
-      dotColor: 'bg-green-500',
-      barColor: 'bg-green-500'
+      color: 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20',
+      dotColor: 'bg-[#10B981]',
+      barColor: 'bg-[#10B981]'
     },
     rejected: {
       label: 'Rechazado',
-      color: 'bg-red-50 text-red-700 border-red-200',
+      color: 'bg-red-500/10 text-red-500 border-red-500/20',
       dotColor: 'bg-red-500',
       barColor: 'bg-red-500'
     }
@@ -65,47 +82,49 @@ const getPriorityConfig = (score: number | null) => {
   if (score >= 8) {
     return {
       label: 'Alta',
-      color: 'bg-red-50 text-red-600 border-red-100'
+      color: 'bg-red-500/20 text-red-400 border-red-500/30'
     }
   } else if (score >= 5) {
     return {
       label: 'Media',
-      color: 'bg-blue-50 text-blue-600 border-blue-100'
+      color: 'bg-[#15539C]/20 text-[#15539C] border-[#15539C]/30'
     }
   } else {
     return {
       label: 'Baja',
-      color: 'bg-green-50 text-green-600 border-green-100'
+      color: 'bg-[#10B981]/20 text-[#10B981] border-[#10B981]/30'
     }
   }
 }
 
 const getMaterialIcon = (type: string) => {
   const icons = {
-    'video': 'videocam',
-    'photo': 'photo_camera',
-    'design': 'brush',
-    'audio': 'speaker',
-    'streaming': 'stream',
-    'social': 'share'
+    'video': IconVideo,
+    'photo': IconCamera,
+    'design': IconBrush,
+    'audio': IconDeviceSpeaker,
+    'streaming': IconBroadcast,
+    'social': IconShare
   }
 
   const key = type.toLowerCase()
-  return icons[key as keyof typeof icons] || 'design_services'
+  const Icon = icons[key as keyof typeof icons] || IconBrush
+  return <Icon className="w-3.5 h-3.5" />
 }
 
 const getCommitteeIcon = (name: string) => {
   const icons = {
-    'damas': 'diversity_1',
-    'jóvenes': 'hiking',
-    'alabanza': 'mic_external_on',
-    'administrativo': 'admin_panel_settings',
-    'dominical': 'menu_book',
-    'multimedia': 'video_camera_front'
+    'damas': IconFriends,
+    'jóvenes': IconUsers,
+    'alabanza': IconMicrophone,
+    'administrativo': IconBriefcase,
+    'dominical': IconBook,
+    'multimedia': IconVideoPlus
   }
 
   const key = name.toLowerCase().split(' ')[1] || name.toLowerCase()
-  return icons[key as keyof typeof icons] || 'groups'
+  const Icon = icons[key as keyof typeof icons] || IconUsers
+  return <Icon className="w-[18px] h-[18px]" />
 }
 
 export default function RequestCard({ request, onClick }: RequestCardProps) {
@@ -125,21 +144,19 @@ export default function RequestCard({ request, onClick }: RequestCardProps) {
   return (
     <article
       onClick={onClick}
-      className="group relative flex flex-col bg-white dark:bg-neutral-900 rounded-xl shadow-sm overflow-hidden transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer border border-gray-100 dark:border-neutral-800"
+      className="group relative flex flex-col bg-white/5 backdrop-blur-md rounded-2xl shadow-xl overflow-hidden transition-all hover:scale-[1.02] hover:bg-white/10 cursor-pointer border border-white/10"
     >
       {/* Barra lateral de color según estado */}
-      <div className={cn("absolute left-0 top-0 bottom-0 w-[5px]", statusConfig.barColor)} />
+      <div className={cn("absolute left-0 top-0 bottom-0 w-[4px]", statusConfig.barColor)} />
 
-      <div className="p-4 pl-5">
+      <div className="p-5 pl-7">
         {/* Header con comité y prioridad */}
-        <div className="flex justify-between items-start mb-3">
-          <div className="flex items-center gap-2">
-            <div className="size-8 rounded-full bg-[#15539C]/10 flex items-center justify-center text-[#15539C]">
-              <span className="material-symbols-outlined text-[18px]">
-                {getCommitteeIcon(request.committee.name)}
-              </span>
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center gap-3">
+            <div className="size-9 rounded-xl bg-[#15539C]/20 flex items-center justify-center text-[#F49E2C] border border-[#F49E2C]/10 shadow-inner">
+              {getCommitteeIcon(request.committee.name)}
             </div>
-            <span className="text-neutral-900 dark:text-neutral-100 font-semibold text-sm">
+            <span className="text-white font-black text-[10px] uppercase tracking-widest leading-none">
               {request.committee.name}
             </span>
           </div>
@@ -147,7 +164,7 @@ export default function RequestCard({ request, onClick }: RequestCardProps) {
           {/* Badge de prioridad */}
           {priorityConfig && (
             <span className={cn(
-              "text-[10px] font-bold px-2 py-1 rounded-full border uppercase tracking-wide",
+              "text-[9px] font-black px-2 py-0.5 rounded-full border uppercase tracking-[0.15em]",
               priorityConfig.color
             )}>
               {priorityConfig.label}
@@ -156,37 +173,41 @@ export default function RequestCard({ request, onClick }: RequestCardProps) {
         </div>
 
         {/* Título del evento */}
-        <div className="mb-4">
-          <h3 className="text-neutral-900 dark:text-neutral-100 text-lg font-bold leading-tight mb-2">
+        <div className="mb-5 pr-2">
+          <h3 className="text-white text-base md:text-lg font-bold leading-tight mb-3 line-clamp-2 group-hover:text-[#F49E2C] transition-colors">
             {request.event_name}
           </h3>
 
           {/* Fecha y días restantes */}
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex items-center gap-1.5 text-gray-500 bg-gray-50 dark:bg-neutral-800 px-2 py-1 rounded-lg">
-              <span className="material-symbols-outlined text-[#F49E2C] text-[18px]">calendar_month</span>
-              <span className="text-xs font-medium pt-0.5">
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1.5 text-white/50 bg-white/5 px-2.5 py-1 rounded-lg border border-white/5">
+              <IconCalendar className="w-3.5 h-3.5 text-[#F49E2C]" />
+              <span className="text-[11px] font-bold">
                 {format(eventDate, 'd MMM yyyy', { locale: es })}
               </span>
             </div>
 
-            <span className={cn(
-              "text-[10px] font-bold px-2 py-1 rounded-full shadow-sm",
+            <div className={cn(
+              "flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[10px] font-bold uppercase tracking-wider",
               daysDiff <= 3 && daysDiff >= 0
-                ? "bg-[#F49E2C] text-white"
-                : "bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-neutral-300"
+                ? "bg-[#F49E2C]/20 text-[#F49E2C] border-[#F49E2C]/30 shadow-[0_0_10px_rgba(244,158,44,0.1)]"
+                : "bg-white/5 text-white/40 border-white/5"
             )}>
-              {getDaysText()}
-            </span>
+              <IconClock className="w-3.5 h-3.5" />
+              <span>{getDaysText()}</span>
+            </div>
           </div>
         </div>
 
+        {/* Separator */}
+        <div className="h-px w-full bg-white/5 mb-4" />
+
         {/* Footer con estado, tipo de material y acción */}
-        <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-neutral-700">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
             {/* Badge de estado */}
             <span className={cn(
-              "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border",
+              "inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm",
               statusConfig.color
             )}>
               <span className={cn("size-1.5 rounded-full animate-pulse", statusConfig.dotColor)} />
@@ -195,20 +216,18 @@ export default function RequestCard({ request, onClick }: RequestCardProps) {
 
             {/* Icono de tipo de material */}
             <div
-              className="size-6 rounded-full bg-gray-50 dark:bg-neutral-800 flex items-center justify-center"
+              className="size-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 group-hover:text-[#F49E2C] transition-colors shadow-inner"
               title={`Tipo: ${request.material_type}`}
             >
-              <span className="material-symbols-outlined text-[#15539C] text-[14px]">
-                {getMaterialIcon(request.material_type)}
-              </span>
+              {getMaterialIcon(request.material_type)}
             </div>
           </div>
 
           {/* Botón ver detalle */}
-          <button className="flex items-center gap-1 text-[#15539C] text-xs font-bold hover:underline decoration-[#15539C] decoration-2 underline-offset-4 transition-all">
-            Ver detalle
-            <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-          </button>
+          <div className="flex items-center gap-1 text-[#F49E2C] opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-2 group-hover:translate-x-0">
+            <span className="text-[10px] font-black uppercase tracking-widest">DETALLE</span>
+            <IconChevronRight className="w-4 h-4" />
+          </div>
         </div>
       </div>
     </article>

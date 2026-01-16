@@ -43,7 +43,7 @@ export default function EditUserPage({ params }: PageProps) {
   const { user: currentUser } = useAuth()
   const canEditUsers = useHasPermission(Permission.EDIT_USERS)
   const canManageUsers = useHasPermission(Permission.VIEW_USERS)
-  
+
   const [open, setOpen] = useState(false)
   const [userId, setUserId] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -130,14 +130,14 @@ export default function EditUserPage({ params }: PageProps) {
     try {
       setIsLoading(true)
       const response = await fetch(`/api/admin/users/${userId}`)
-      
+
       if (!response.ok) {
         throw new Error('Error al cargar usuario')
       }
 
       const data = await response.json()
       setUser(data.user)
-      
+
       // Pre-poblar formulario
       reset({
         email: data.user.email,
@@ -209,15 +209,15 @@ export default function EditUserPage({ params }: PageProps) {
   return (
     <div className="flex h-screen w-full overflow-hidden bg-white dark:bg-neutral-950 flex-col md:flex-row">
       <Sidebar open={open} setOpen={setOpen}>
-        <SidebarBody className="justify-between gap-10 border-r border-gray-300 bg-white">
+        <SidebarBody className="justify-between gap-10">
           <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
             {/* Logo */}
             <div className="mb-8 pl-1">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#15539C] to-[#16233B] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-decom-primary-light to-decom-primary flex items-center justify-center">
                   <IconLayoutDashboard className="h-5 w-5 text-white" />
                 </div>
-                <span className="text-lg font-bold text-[#16233B] tracking-tight">
+                <span className="text-lg font-bold text-white tracking-tight">
                   DECOM
                 </span>
               </div>
@@ -229,194 +229,188 @@ export default function EditUserPage({ params }: PageProps) {
               ))}
             </div>
           </div>
-          
+
           <div>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-2 py-2 text-sm font-medium text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors w-full group"
+              className="flex items-center gap-2 px-2 py-2 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors w-full group"
             >
-              <IconLogout className="h-5 w-5 group-hover:stroke-red-600" />
+              <IconLogout className="h-5 w-5 group-hover:text-red-400" />
               <span>Cerrar Sesión</span>
             </button>
           </div>
         </SidebarBody>
       </Sidebar>
 
-      <div className="flex flex-1 flex-col overflow-hidden bg-[#F5F5F5] relative">
-        <div className="flex-1 overflow-y-auto relative z-10">
-          <div className="max-w-4xl mx-auto px-4 md:px-8 py-8">
-            {/* Header */}
-            <div className="mb-6">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => router.back()}
-          className="mb-4"
-        >
-          <IconArrowLeft className="w-5 h-5 mr-2" />
-          Volver
-        </Button>
-
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-          Editar Usuario
-        </h1>
-        <p className="text-gray-600 mt-1">
-          {user?.email}
-        </p>
-      </div>
-
-      {/* Formulario */}
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl">
-        <div className="bg-white rounded-lg shadow-sm p-6 space-y-6">
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-2">
-              Email
-            </label>
-            <input
-              type="email"
-              {...register('email')}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                errors.email ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="usuario@ejemplo.com"
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-            )}
-          </div>
-
-          {/* Nombre completo */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-2">
-              Nombre Completo
-            </label>
-            <input
-              type="text"
-              {...register('full_name')}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                errors.full_name ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="Juan Pérez"
-            />
-            {errors.full_name && (
-              <p className="mt-1 text-sm text-red-600">{errors.full_name.message}</p>
-            )}
-          </div>
-
-          {/* Rol */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-2">
-              Rol
-            </label>
-            <select
-              {...register('role')}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                errors.role ? 'border-red-500' : 'border-gray-300'
-              }`}
-            >
-              <option value="admin">{ROLE_LABELS.admin}</option>
-              <option value="presidente">{ROLE_LABELS.presidente}</option>
-              <option value="tesorero">{ROLE_LABELS.tesorero}</option>
-              <option value="secretario">{ROLE_LABELS.secretario}</option>
-              <option value="vocal">{ROLE_LABELS.vocal}</option>
-              <option value="decom_admin">{ROLE_LABELS.decom_admin}</option>
-              <option value="comite_member">{ROLE_LABELS.comite_member}</option>
-            </select>
-            {errors.role && (
-              <p className="mt-1 text-sm text-red-600">{errors.role.message}</p>
-            )}
-            <p className="mt-1 text-xs text-gray-500">
-              Selecciona el rol que determinará los permisos del usuario
-            </p>
-          </div>
-
-          {/* Nueva contraseña (opcional) */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-2">
-              Nueva Contraseña (opcional)
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                {...register('password')}
-                className={`w-full px-4 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                  errors.password ? 'border-red-500' : 'border-gray-300'
-                }`}
-                placeholder="Dejar vacío para mantener contraseña actual"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+      <div className="flex flex-1 flex-col overflow-hidden bg-decom-bg-light dark:bg-neutral-950 relative">
+        {/* Header con gradiente IPUC (Fixed) */}
+        <div className="bg-gradient-to-r from-decom-primary to-decom-primary-light pt-6 pb-2 shadow-md relative z-20 shrink-0">
+          <div className="px-4 mb-4 flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => router.back()}
+                className="text-white hover:bg-white/10 p-2 h-auto rounded-xl"
               >
-                {showPassword ? (
-                  <IconEyeOff className="w-5 h-5" />
-                ) : (
-                  <IconEye className="w-5 h-5" />
-                )}
-              </button>
+                <IconArrowLeft className="w-6 h-6" />
+              </Button>
+              <div>
+                <h1 className="text-white text-xl font-bold tracking-tight">Editar Usuario</h1>
+                <p className="text-white/70 text-xs font-medium uppercase tracking-wider">{user?.email}</p>
+              </div>
             </div>
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-            )}
-            <p className="mt-1 text-xs text-gray-500">
-              Solo completa este campo si deseas cambiar la contraseña del usuario
-            </p>
-          </div>
-
-          {/* Estado */}
-          <div>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                {...register('is_active')}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <span className="ml-2 text-sm font-semibold text-gray-900">
-                Usuario activo
-              </span>
-            </label>
-            <p className="mt-1 text-xs text-gray-500">
-              Los usuarios inactivos no podrán iniciar sesión en el sistema
-            </p>
-          </div>
-
-          {/* Botones de acción */}
-          <div className="flex gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              size="lg"
-              onClick={() => router.back()}
-              disabled={isSubmitting}
-              className="flex-1"
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              size="lg"
-              disabled={isSubmitting}
-              className="flex-1"
-            >
-              {isSubmitting ? (
-                <>
-                  <span className="animate-spin mr-2">⏳</span>
-                  Guardando...
-                </>
-              ) : (
-                <>
-                  <IconDeviceFloppy className="w-5 h-5 mr-2" />
-                  Guardar Cambios
-                </>
-              )}
-            </Button>
           </div>
         </div>
-      </form>
-          </div>
+
+        <div className="flex-1 overflow-y-auto relative z-10 p-4 md:p-6">
+          {/* Formulario */}
+          <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl">
+            <div className="bg-white rounded-lg shadow-sm p-6 space-y-6">
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  {...register('email')}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.email ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  placeholder="usuario@ejemplo.com"
+                />
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                )}
+              </div>
+
+              {/* Nombre completo */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                  Nombre Completo
+                </label>
+                <input
+                  type="text"
+                  {...register('full_name')}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.full_name ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  placeholder="Juan Pérez"
+                />
+                {errors.full_name && (
+                  <p className="mt-1 text-sm text-red-600">{errors.full_name.message}</p>
+                )}
+              </div>
+
+              {/* Rol */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                  Rol
+                </label>
+                <select
+                  {...register('role')}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.role ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                >
+                  <option value="admin">{ROLE_LABELS.admin}</option>
+                  <option value="presidente">{ROLE_LABELS.presidente}</option>
+                  <option value="tesorero">{ROLE_LABELS.tesorero}</option>
+                  <option value="secretario">{ROLE_LABELS.secretario}</option>
+                  <option value="vocal">{ROLE_LABELS.vocal}</option>
+                  <option value="decom_admin">{ROLE_LABELS.decom_admin}</option>
+                  <option value="comite_member">{ROLE_LABELS.comite_member}</option>
+                </select>
+                {errors.role && (
+                  <p className="mt-1 text-sm text-red-600">{errors.role.message}</p>
+                )}
+                <p className="mt-1 text-xs text-gray-500">
+                  Selecciona el rol que determinará los permisos del usuario
+                </p>
+              </div>
+
+              {/* Nueva contraseña (opcional) */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                  Nueva Contraseña (opcional)
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    {...register('password')}
+                    className={`w-full px-4 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.password ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    placeholder="Dejar vacío para mantener contraseña actual"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showPassword ? (
+                      <IconEyeOff className="w-5 h-5" />
+                    ) : (
+                      <IconEye className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+                )}
+                <p className="mt-1 text-xs text-gray-500">
+                  Solo completa este campo si deseas cambiar la contraseña del usuario
+                </p>
+              </div>
+
+              {/* Estado */}
+              <div>
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    {...register('is_active')}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <span className="ml-2 text-sm font-semibold text-gray-900">
+                    Usuario activo
+                  </span>
+                </label>
+                <p className="mt-1 text-xs text-gray-500">
+                  Los usuarios inactivos no podrán iniciar sesión en el sistema
+                </p>
+              </div>
+
+              {/* Botones de acción */}
+              <div className="flex gap-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  onClick={() => router.back()}
+                  disabled={isSubmitting}
+                  className="flex-1"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="lg"
+                  disabled={isSubmitting}
+                  className="flex-1"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <span className="animate-spin mr-2">⏳</span>
+                      Guardando...
+                    </>
+                  ) : (
+                    <>
+                      <IconDeviceFloppy className="w-5 h-5 mr-2" />
+                      Guardar Cambios
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>

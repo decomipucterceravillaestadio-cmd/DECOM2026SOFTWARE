@@ -4,34 +4,34 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* DECOM Color Palette (IPUC Villa Estadio 2023) */
-  --color-decom-primary: #16233B; /* Navy Dark */
-  --color-decom-primary-light: #15539C; /* Corporate Blue */
-  --color-decom-secondary: #F49E2C; /* Orange/Gold */
+  /* DECOM Color Palette (Updated Modern Palette) */
+  --color-decom-primary: #16233B; /* Brand Dark Blue */
+  --color-decom-primary-light: #15539C; /* Brand Light Blue */
+  --color-decom-secondary: #F49E2C; /* Brand Orange */
   --color-decom-accent: #FFFFFF;
   --color-decom-text-dark: #16233B;
   --color-decom-text-light: #FFFFFF;
-  --color-decom-background: #F5F5F5;
-  --color-decom-success: #4CAF50;
-  --color-decom-warning: #F49E2C;
-  --color-decom-error: #D32F2F;
-  --color-decom-info: #2196F3;
+  --color-decom-background: #F8FAFC; /* Slate 50 */
+  --color-decom-success: #10B981; /* Emerald 500 */
+  --color-decom-warning: #F59E0B;
+  --color-decom-error: #EF4444; /* Red 500 */
+  --color-decom-info: #3B82F6; /* Blue 500 */
 
   /* Status colors for badges */
-  --color-decom-status-pending: #F49E2C;
-  --color-decom-status-planning: #2196F3;
-  --color-decom-status-design: #15539C;
-  --color-decom-status-ready: #4CAF50;
-  --color-decom-status-delivered: #999999;
+  --color-decom-status-pending: #F59E0B;
+  --color-decom-status-planning: #3B82F6;
+  --color-decom-status-design: #1E293B;
+  --color-decom-status-ready: #10B981;
+  --color-decom-status-delivered: #6B7280; /* Gray 500 */
 
   /* Background colors */
-  --color-decom-bg-light: #F5F5F5;
+  --color-decom-bg-light: #F8FAFC;
   --color-decom-bg-card: #FFFFFF;
-  --color-decom-bg-hover: #E0E0E0;
+  --color-decom-bg-hover: #E2E8F0; /* Slate 200 */
 
   /* Border colors */
-  --color-decom-border: #E5E7EB;
-  --color-decom-border-light: #F3F4F6;
+  --color-decom-border: #CBD5E1; /* Slate 300 */
+  --color-decom-border-light: #F1F5F9; /* Slate 100 */
 
   /* Shadows */
   --shadow-card: 0 4px 6px -1px rgba(22, 35, 59, 0.1), 0 2px 4px -1px rgba(22, 35, 59, 0.06);

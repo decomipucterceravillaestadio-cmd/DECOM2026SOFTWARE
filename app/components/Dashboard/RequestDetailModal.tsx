@@ -21,6 +21,8 @@ import {
   IconSend
 } from '@tabler/icons-react'
 import { generateWhatsAppLink } from '@/app/lib/utils/whatsapp'
+import { useAuth, useHasPermission } from '@/app/contexts/AuthContext'
+import { Permission } from '@/app/lib/permissions'
 
 interface RequestDetail {
   id: string
@@ -103,6 +105,8 @@ export default function RequestDetailModal({
   onUpdate,
   embedded = false
 }: RequestDetailModalProps) {
+  const { user } = useAuth()
+  const canChangeStatus = useHasPermission(Permission.CHANGE_REQUEST_STATUS)
   const [request, setRequest] = useState<RequestDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
@@ -166,7 +170,7 @@ export default function RequestDetailModal({
 
   // Contenedor diferente según si está embebido o es modal
   const Container = embedded ? 'div' : 'div'
-  const containerClasses = embedded 
+  const containerClasses = embedded
     ? "bg-white dark:bg-neutral-900 rounded-2xl shadow-xl w-full flex flex-col border border-neutral-200 dark:border-neutral-800"
     : "fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
 
@@ -348,90 +352,98 @@ export default function RequestDetailModal({
                 <div className="space-y-6 md:space-y-8 lg:sticky lg:top-6 h-fit">
 
                   {/* Actions Card */}
-                  <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 shadow-sm">
-                    <h3 className="font-bold text-neutral-900 dark:text-neutral-100 mb-4 flex items-center gap-2">
-                      <IconSend className="w-5 h-5 text-indigo-600" />
-                      Gestionar Estado
-                    </h3>
+                  {canChangeStatus && (
+                    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 shadow-sm">
+                      <h3 className="font-bold text-neutral-900 dark:text-neutral-100 mb-4 flex items-center gap-2">
+                        <IconSend className="w-5 h-5 text-indigo-600" />
+                        Gestionar Estado
+                      </h3>
 
-                    <div className="space-y-4">
-                      <div>
-                        <label className="text-xs font-semibold text-neutral-500 mb-1.5 block">
-                          Actualizar a
-                        </label>
-                        <select
-                          value={newStatus}
-                          onChange={(e) => setNewStatus(e.target.value)}
-                          className="w-full px-3 py-2.5 text-base border border-neutral-300 dark:border-neutral-700 rounded-xl bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
-                        >
-                          <option value="pending">Pendiente</option>
-                          <option value="in_progress">En Progreso</option>
-                          <option value="completed">Completado</option>
-                          <option value="approved">Aprobado</option>
-                          <option value="rejected">Rechazado</option>
-                        </select>
-                      </div>
-
-                      <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-800">
-                        <input
-                          type="checkbox"
-                          id="visibleInPublicCalendar"
-                          checked={visibleInPublicCalendar}
-                          onChange={(e) => setVisibleInPublicCalendar(e.target.checked)}
-                          className="w-4 h-4 text-indigo-600 border-neutral-300 rounded focus:ring-2 focus:ring-indigo-500/20"
-                        />
-                        <label htmlFor="visibleInPublicCalendar" className="text-sm font-medium text-neutral-700 dark:text-neutral-300 cursor-pointer">
-                          Visible en calendario público
-                        </label>
-                      </div>
-
-                      <div>
-                        <label className="text-xs font-semibold text-neutral-500 mb-1.5 block">
-                          Observaciones
-                        </label>
-                        <textarea
-                          value={changeReason}
-                          onChange={(e) => setChangeReason(e.target.value)}
-                          rows={3}
-                          className="w-full px-3 py-2.5 text-base border border-neutral-300 dark:border-neutral-700 rounded-xl bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all resize-none"
-                          placeholder="Motivo del cambio..."
-                        />
-                      </div>
-
-                      <Button
-                        onClick={handleUpdateStatus}
-                        disabled={updating || (newStatus === request.status && visibleInPublicCalendar === request.visible_in_public_calendar)}
-                        fullWidth
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white"
-                      >
-                        {updating ? 'Actualizando...' : 'Guardar Cambios'}
-                      </Button>
-                    </div>
-
-                    <div className="mt-6 pt-6 border-t border-neutral-100 dark:border-neutral-800 space-y-4">
-                      <h4 className="font-bold text-sm text-neutral-900 dark:text-neutral-100">
-                        Comunicación
-                      </h4>
-                      <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/10 rounded-xl border border-green-100 dark:border-green-800">
-                        <div className="flex items-center gap-3">
-                          <IconBrandWhatsapp className="w-5 h-5 text-green-600" />
-                          <div className="flex flex-col">
-                            <span className="text-xs font-bold text-green-800 dark:text-green-300">WhatsApp</span>
-                            <span className="text-xs text-green-700 dark:text-green-400 font-mono truncate max-w-[120px]">
-                              {request.contact_whatsapp}
-                            </span>
-                          </div>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-xs font-semibold text-neutral-500 mb-1.5 block">
+                            Actualizar a
+                          </label>
+                          <select
+                            value={newStatus}
+                            onChange={(e) => setNewStatus(e.target.value)}
+                            className="w-full px-3 py-2.5 text-base border border-neutral-300 dark:border-neutral-700 rounded-xl bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
+                          >
+                            <option value="pending">Pendiente</option>
+                            <option value="in_progress">En Progreso</option>
+                            <option value="completed">Completado</option>
+                            <option value="approved">Aprobado</option>
+                            <option value="rejected">Rechazado</option>
+                          </select>
                         </div>
+
+                        <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-800">
+                          <input
+                            type="checkbox"
+                            id="visibleInPublicCalendar"
+                            checked={visibleInPublicCalendar}
+                            onChange={(e) => setVisibleInPublicCalendar(e.target.checked)}
+                            className="w-4 h-4 text-indigo-600 border-neutral-300 rounded focus:ring-2 focus:ring-indigo-500/20"
+                          />
+                          <label htmlFor="visibleInPublicCalendar" className="text-sm font-medium text-neutral-700 dark:text-neutral-300 cursor-pointer">
+                            Visible en calendario público
+                          </label>
+                        </div>
+
+                        <div>
+                          <label className="text-xs font-semibold text-neutral-500 mb-1.5 block">
+                            Observaciones
+                          </label>
+                          <textarea
+                            value={changeReason}
+                            onChange={(e) => setChangeReason(e.target.value)}
+                            rows={3}
+                            className="w-full px-3 py-2.5 text-base border border-neutral-300 dark:border-neutral-700 rounded-xl bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all resize-none"
+                            placeholder="Motivo del cambio..."
+                          />
+                        </div>
+
                         <Button
-                          size="sm"
-                          onClick={() => window.open(generateWhatsAppLink(request.contact_whatsapp, request.event_name), '_blank')}
-                          className="bg-green-600 hover:bg-green-700 text-white text-xs px-3 h-8"
+                          onClick={handleUpdateStatus}
+                          disabled={updating || (newStatus === request.status && visibleInPublicCalendar === request.visible_in_public_calendar)}
+                          fullWidth
+                          className="bg-indigo-600 hover:bg-indigo-700 text-white"
                         >
-                          Ir al Chat
+                          {updating ? 'Actualizando...' : 'Guardar Cambios'}
                         </Button>
                       </div>
+
+                      <div className="mt-6 pt-6 border-t border-neutral-100 dark:border-neutral-800 space-y-4">
+                        <h4 className="font-bold text-sm text-neutral-900 dark:text-neutral-100">
+                          Comunicación
+                        </h4>
+                        <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/10 rounded-xl border border-green-100 dark:border-green-800">
+                          <div className="flex items-center gap-3">
+                            <IconBrandWhatsapp className="w-5 h-5 text-green-600" />
+                            <div className="flex flex-col">
+                              <span className="text-xs font-bold text-green-800 dark:text-green-300">WhatsApp</span>
+                              <span className="text-xs text-green-700 dark:text-green-400 font-mono truncate max-w-[120px]">
+                                {request.contact_whatsapp}
+                              </span>
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            onClick={() => window.open(generateWhatsAppLink(request.contact_whatsapp, {
+                              eventName: request.event_name,
+                              committeeName: request.committee.name,
+                              eventDate: format(new Date(request.event_date), 'dd MMM yyyy', { locale: es }),
+                              statusLabel: getStatusLabel(request.status),
+                              materialType: request.material_type
+                            }), '_blank')}
+                            className="bg-green-600 hover:bg-green-700 text-white text-xs px-3 h-8"
+                          >
+                            Ir al Chat
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Timeline Dates Card */}
                   <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 shadow-sm">

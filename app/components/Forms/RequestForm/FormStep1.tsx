@@ -155,8 +155,12 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
   }
 
   const handleInputBlur = () => {
-    // Delay to allow click on options
-    setTimeout(() => setIsDropdownOpen(false), 200)
+    // Delay to allow click on options, pero mantener dropdown abierto si hay opciones
+    setTimeout(() => {
+      if (!selectedCommittee) {
+        setIsDropdownOpen(false)
+      }
+    }, 100)
   }
 
   const onSubmit = (data: Step1Data) => {
@@ -224,19 +228,28 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
                   className="w-full px-3 md:px-4 py-3 text-base border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#15539C]/20 focus:border-[#15539C] bg-white text-gray-900 transition-all hover:border-gray-400 font-medium"
                 />
                 {isDropdownOpen && filteredCommittees.length > 0 && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                  <div 
+                    className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-xl shadow-lg max-h-60 overflow-y-auto"
+                    onMouseDown={(e) => e.preventDefault()}
+                  >
                     {filteredCommittees.map((committee) => (
-                      <div
+                      <button
                         key={committee.id}
+                        type="button"
                         onClick={() => handleSelectCommittee(committee)}
-                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-900"
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-900 border-b border-gray-100 last:border-b-0"
                       >
                         {committee.name}
-                      </div>
+                      </button>
                     ))}
                   </div>
                 )}
-                <input type="hidden" {...register('committee_id')} />
+                {!selectedCommittee && (
+                  <input type="hidden" {...register('committee_id')} />
+                )}
+                {selectedCommittee && (
+                  <input type="hidden" {...register('committee_id')} value={selectedCommittee.id} />
+                )}
               </div>
             )}
           </FormField>

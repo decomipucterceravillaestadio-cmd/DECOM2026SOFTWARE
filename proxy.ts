@@ -44,7 +44,8 @@ export async function proxy(request: NextRequest) {
   const { data: { session } } = await supabase.auth.getSession()
   const path = request.nextUrl.pathname
 
-  // Rutas que NO requieren autenticación
+  // Rutas que NO requieren autenticación en el proxy
+  // Las rutas de API verifican la autenticación internamente
   const publicPaths = [
     '/login',
     '/new-request', 
@@ -55,23 +56,25 @@ export async function proxy(request: NextRequest) {
     '/api/auth',
     '/api/committees',
     '/api/requests',
-    '/api/public'
+    '/api/public',
+    '/api/admin', // Los endpoints API verifican la autenticación internamente
+    '/api/test-update'
   ]
   
-  const isPublicPath = publicPaths.some(path => 
-    request.nextUrl.pathname === path || 
-    request.nextUrl.pathname.startsWith(path + '/')
+  const isPublicPath = publicPaths.some(p => 
+    path === p || 
+    path.startsWith(p + '/')
   )
 
-  // Si es ruta pública, dejar pasar
+  // Si es ruta pública o API, dejar pasar
   if (isPublicPath) {
     return response
   }
 
-  // Rutas protegidas (admin)
-  const protectedPaths = ['/admin', '/dashboard', '/requests', '/api/admin']
-  const isProtectedPath = protectedPaths.some(path =>
-    request.nextUrl.pathname.startsWith(path)
+  // Rutas protegidas (páginas de admin, no APIs)
+  const protectedPaths = ['/admin', '/dashboard', '/requests']
+  const isProtectedPath = protectedPaths.some(p =>
+    path.startsWith(p)
   )
 
   // Si es ruta protegida y no hay sesión, redirigir

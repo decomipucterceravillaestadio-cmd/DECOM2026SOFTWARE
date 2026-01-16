@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { format, addMonths, subMonths } from 'date-fns'
+import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addDays, startOfWeek, endOfWeek } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import {
   IconChevronLeft,
   IconChevronRight,
@@ -17,13 +17,16 @@ import {
   IconEdit,
   IconEye,
   IconTrash,
-  IconDots
+  IconDots,
+  IconBell,
+  IconMenu2,
+  IconX,
+  IconSearch
 } from '@tabler/icons-react'
-import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar'
-import CalendarGrid from '@/app/components/Calendar/CalendarGrid'
-import { Badge } from '@/app/components/UI/Badge'
-import { Button } from '@/app/components/UI/Button'
-import { EmptyState } from '@/app/components/UI'
+import { cn } from '@/lib/utils'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useAuth, useHasPermission } from '@/app/contexts/AuthContext'
+import { Permission } from '@/app/lib/permissions'
 
 interface CalendarEvent {
   id: string
@@ -46,48 +49,21 @@ interface DayEvents {
 
 export default function AdminCalendarPage() {
   const router = useRouter()
+  const pathname = usePathname()
+  const { user, loading: authLoading } = useAuth()
+  const canManageUsers = useHasPermission(Permission.VIEW_USERS)
+
   const [currentDate, setCurrentDate] = useState(new Date())
   const [events, setEvents] = useState<DayEvents[]>([])
   const [selectedDayEvents, setSelectedDayEvents] = useState<CalendarEvent[]>([])
   const [selectedDay, setSelectedDay] = useState<Date | null>(null)
   const [loading, setLoading] = useState(true)
   const [open, setOpen] = useState(false)
-  const [canManageUsers, setCanManageUsers] = useState(false)
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
+  const [mounted, setMounted] = useState(false)
 
-  // Suprimir errores de extension listeners
   useEffect(() => {
-    const handleMessage = (request: any, sender: any, sendResponse: any) => {
-      sendResponse({ received: true })
-      return false
-    }
-
-    if (typeof window !== 'undefined' && (window as any).chrome?.runtime) {
-      (window as any).chrome.runtime.onMessage.addListener(handleMessage)
-
-      return () => {
-        if ((window as any).chrome?.runtime?.onMessage?.removeListener) {
-          (window as any).chrome.runtime.onMessage.removeListener(handleMessage)
-        }
-      }
-    }
-  }, [])
-
-  // Verificar permisos del usuario
-  useEffect(() => {
-    const checkPermissions = async () => {
-      try {
-        const response = await fetch('/api/auth/me')
-        if (response.ok) {
-          const data = await response.json()
-          // Admin o Presidente pueden gestionar usuarios
-          setCanManageUsers(data.user?.role_level >= 4)
-        }
-      } catch (error) {
-        console.error('Error checking permissions:', error)
-      }
-    }
-    checkPermissions()
+    setMounted(true)
   }, [])
 
   const baseLinks = [
@@ -141,7 +117,6 @@ export default function AdminCalendarPage() {
     try {
       const year = currentDate.getFullYear()
       const month = currentDate.getMonth() + 1
-
       const response = await fetch(`/api/admin/calendar?year=${year}&month=${month}`)
       if (response.ok) {
         const data = await response.json()
@@ -155,286 +130,320 @@ export default function AdminCalendarPage() {
   }
 
   useEffect(() => {
-    fetchCalendar()
-  }, [currentDate])
+    if (mounted) fetchCalendar()
+  }, [currentDate, mounted])
 
-  const handlePreviousMonth = () => {
-    setCurrentDate(prev => subMonths(prev, 1))
-  }
+  const handlePreviousMonth = () => setCurrentDate(prev => subMonths(prev, 1))
+  const handleNextMonth = () => setCurrentDate(prev => addMonths(prev, 1))
 
-  const handleNextMonth = () => {
-    setCurrentDate(prev => addMonths(prev, 1))
-  }
+  const isActive = (href: string) => pathname === href || (href !== '/admin' && pathname?.startsWith(href))
 
-  const handleDaySelect = (date: Date, dayEvents: CalendarEvent[]) => {
-    setSelectedDayEvents(dayEvents)
-    setSelectedDay(date)
-  }
+  if (!mounted || authLoading) return null
 
-  const getStatusBadge = (status: string) => {
-    const statusMap: Record<string, { label: string; variant: any }> = {
-      pending: { label: 'Pendiente', variant: 'warning' },
-      in_progress: { label: 'En Progreso', variant: 'info' },
-      completed: { label: 'Completado', variant: 'success' },
-      approved: { label: 'Aprobado', variant: 'success' },
-      rejected: { label: 'Rechazado', variant: 'error' },
-    }
-    const config = statusMap[status] || { label: status, variant: 'default' }
-    return <Badge variant={config.variant}>{config.label}</Badge>
+  // Calendar Logic
+  const monthStart = startOfMonth(currentDate)
+  const monthEnd = endOfMonth(monthStart)
+  const startDate = startOfWeek(monthStart)
+  const endDate = endOfWeek(monthEnd)
+  const calendarDays = eachDayOfInterval({ start: startDate, end: endDate })
+
+  const getDayEvents = (day: Date) => {
+    const dateStr = format(day, 'yyyy-MM-dd')
+    return events.find(e => e.date === dateStr)?.events || []
   }
 
   return (
-    <div className="flex flex-col md:flex-row h-screen w-full overflow-hidden bg-[#F5F5F5]">
-      <Sidebar open={open} setOpen={setOpen}>
-        <SidebarBody className="justify-between gap-10">
-          <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
-            <div className="mb-8">
-              <div className="flex items-center gap-2 px-2">
-                <IconCalendar className="h-7 w-7 text-[#15539C]" />
-                <span className="text-xl font-bold text-[#16233B]">
-                  DECOM
+    <div className="flex h-screen w-full overflow-hidden bg-[#16233B] text-[#F8FAFC] flex-row font-sans">
+
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {open && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] md:hidden"
+            />
+            <motion.nav
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed inset-y-0 left-0 w-72 bg-[#1a2847] shadow-2xl z-[70] md:hidden flex flex-col p-6"
+            >
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#15539C] flex items-center justify-center border border-[#F49E2C]/30 shadow-[0_0_15px_rgba(244,158,44,0.1)]">
+                    <IconCalendar className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-lg font-bold tracking-tight text-white uppercase mt-0.5">DECOM</span>
+                </div>
+                <button onClick={() => setOpen(false)} className="p-2 text-white/50 hover:text-[#F49E2C] transition-colors">
+                  <IconX className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="flex-1 space-y-2 overflow-y-auto">
+                {links.map((link, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => { router.push(link.href); setOpen(false); }}
+                    className={cn(
+                      "flex items-center gap-4 px-4 py-4 rounded-xl text-sm font-medium transition-all group w-full text-left",
+                      isActive(link.href)
+                        ? "bg-[#15539C]/20 text-[#F49E2C] shadow-sm border border-[#F49E2C]/20"
+                        : "text-white/60 hover:bg-[#15539C]/10 hover:text-white"
+                    )}
+                  >
+                    {link.icon}
+                    <span className="mt-0.5">{link.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="pt-6 border-t border-white/10 mt-auto">
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-4 px-4 py-4 text-sm font-medium text-white/60 hover:text-red-400 hover:bg-red-500/5 rounded-xl transition-all w-full"
+                >
+                  <IconLogout className="h-5 w-5" />
+                  <span>Cerrar Sesión</span>
+                </button>
+              </div>
+            </motion.nav>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Sidebar - Desktop */}
+      <nav className="hidden md:flex w-64 flex-col bg-[#1a2847] border-r border-white/10 transition-all duration-300 shadow-xl z-30">
+        <div className="h-16 flex items-center gap-3 px-6 border-b border-white/10">
+          <div className="w-8 h-8 rounded-lg bg-[#15539C] flex items-center justify-center border border-[#F49E2C]/30 shadow-[0_0_15px_rgba(244,158,44,0.1)]">
+            <IconCalendar className="h-5 w-5 text-white" />
+          </div>
+          <span className="text-lg font-bold tracking-tight text-white uppercase mt-0.5">DECOM</span>
+        </div>
+
+        <div className="flex-1 py-6 px-3 space-y-1 overflow-y-auto">
+          {links.map((link, idx) => (
+            <button
+              key={idx}
+              onClick={() => router.push(link.href)}
+              className={cn(
+                "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group w-full text-left",
+                isActive(link.href)
+                  ? "bg-[#15539C]/20 text-[#F49E2C] shadow-sm border border-[#F49E2C]/20"
+                  : "text-white/60 hover:bg-[#15539C]/10 hover:text-white"
+              )}
+            >
+              <div className={cn("transition-colors", isActive(link.href) ? "text-[#F49E2C]" : "group-hover:text-white")}>
+                {link.icon}
+              </div>
+              <span className="mt-0.5">{link.label}</span>
+              {isActive(link.href) && (
+                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#F49E2C] shadow-[0_0_8px_rgba(244,158,44,0.5)]" />
+              )}
+            </button>
+          ))}
+        </div>
+
+        <div className="p-4 border-t border-white/10">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-white/60 hover:text-red-400 hover:bg-red-500/5 rounded-xl transition-all w-full"
+          >
+            <IconLogout className="h-5 w-5" />
+            <span>Cerrar Sesión</span>
+          </button>
+        </div>
+      </nav>
+
+      {/* Main Container */}
+      <div className="flex flex-1 flex-col overflow-hidden relative">
+        {/* Top Header Bar */}
+        <header className="h-16 shrink-0 bg-[#1a2847]/80 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-4 md:px-8 z-40 transition-colors">
+          <div className="flex items-center gap-4 flex-1">
+            <button onClick={() => setOpen(!open)} className="md:hidden p-2 text-white/50 hover:text-[#F49E2C] transition-colors" aria-label="Menu">
+              <IconMenu2 className="w-6 h-6" />
+            </button>
+            <h2 className="text-white font-bold text-lg hidden sm:block tracking-tight uppercase">Calendario</h2>
+
+            {/* Global Search */}
+            <div className="max-w-md w-full ml-4 relative hidden lg:block">
+              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <IconSearch className="w-4 h-4 text-white/30" />
+              </div>
+              <input
+                type="text"
+                placeholder="Buscar eventos..."
+                className="w-full h-10 bg-[#16233B]/80 border border-white/10 rounded-xl pl-10 pr-4 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#F49E2C]/50 focus:ring-1 focus:ring-[#F49E2C]/30 transition-all"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 md:gap-5">
+            <div className="flex items-center bg-white/5 rounded-xl p-1 border border-white/10">
+              <button
+                onClick={handlePreviousMonth}
+                className="w-8 h-8 flex items-center justify-center text-white hover:bg-[#F49E2C]/20 hover:text-[#F49E2C] rounded-lg transition-all"
+              >
+                <IconChevronLeft className="w-4 h-4" />
+              </button>
+              <div className="px-4 min-w-[140px] text-center">
+                <span className="text-white font-bold text-xs capitalize tracking-wider">
+                  {format(currentDate, 'MMMM yyyy', { locale: es })}
                 </span>
               </div>
+              <button
+                onClick={handleNextMonth}
+                className="w-8 h-8 flex items-center justify-center text-white hover:bg-[#F49E2C]/20 hover:text-[#F49E2C] rounded-lg transition-all"
+              >
+                <IconChevronRight className="w-4 h-4" />
+              </button>
             </div>
 
-            <div className="flex flex-col gap-2">
-              {links.map((link, idx) => (
-                <SidebarLink key={idx} link={link} />
-              ))}
+            <div className="h-6 w-[1px] bg-white/10 mx-1 hidden sm:block" />
+
+            <div className="flex items-center gap-3 p-1 pl-2 rounded-xl hover:bg-white/5 transition-all cursor-pointer group">
+              <div className="hidden sm:text-right">
+                <p className="text-xs font-bold text-white leading-tight group-hover:text-[#F49E2C] transition-colors">{user?.full_name}</p>
+              </div>
+              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#15539C] to-[#16233B] flex items-center justify-center font-black text-sm text-white shadow-lg ring-2 ring-white/10 group-hover:ring-[#F49E2C]/30 transition-all">
+                {user?.full_name?.charAt(0).toUpperCase() || 'U'}
+              </div>
             </div>
           </div>
-          <div>
+        </header>
+
+        {/* Scrollable Main Area */}
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scroll-smooth bg-gradient-to-br from-transparent via-transparent to-[#15539C]/5">
+
+          <div className="flex items-center justify-between">
+            <nav className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#F49E2C]">
+              <span onClick={() => router.push('/admin')} className="hover:underline cursor-pointer">Dashboard</span>
+              <span className="text-white/10">/</span>
+              <span className="text-white/40 font-medium">Calendario</span>
+            </nav>
             <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-2 py-2 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-800 rounded-lg transition-colors w-full"
+              onClick={() => router.push('/new-request')}
+              className="px-4 py-2 bg-[#F49E2C] text-[#16233B] rounded-lg font-bold text-xs flex items-center gap-2 hover:scale-105 transition-transform shadow-lg shadow-[#F49E2C]/20"
             >
-              <IconLogout className="h-5 w-5" />
-              Cerrar Sesión
+              <IconPlus className="w-4 h-4" />
+              NUEVO EVENTO
             </button>
           </div>
-        </SidebarBody>
-      </Sidebar>
 
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-            {/* Header */}
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
-                Calendario de Solicitudes
-              </h1>
-              <p className="mt-2 text-neutral-600 dark:text-neutral-400">
-                Vista mensual de todas las solicitudes por fecha de evento
-              </p>
-            </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full min-h-[600px]">
+            {/* Calendar Grid Section */}
+            <div className="lg:col-span-8 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden shadow-2xl flex flex-col">
+              <div className="grid grid-cols-7 border-b border-white/10">
+                {['DOM', 'LUN', 'MAR', 'MIE', 'JUE', 'VIE', 'SAB'].map(day => (
+                  <div key={day} className="py-3 text-center text-[10px] font-black text-white/30 tracking-widest">{day}</div>
+                ))}
+              </div>
 
-            {/* Controles del calendario */}
-            <div className="p-2 sm:p-4">
-              <div className="bg-gradient-to-r from-decom-primary to-[#1e2e4a] rounded-xl shadow-lg p-1 flex items-center justify-between relative overflow-hidden">
-                {/* Decorative element */}
-                <div className="absolute right-0 top-0 h-full w-2 bg-secondary/80 skew-x-[-10deg] translate-x-1"></div>
-                <button
-                  onClick={handlePreviousMonth}
-                  className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-lg transition-colors z-10 touch-manipulation"
-                >
-                  <IconChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-                </button>
+              <div className="flex-1 grid grid-cols-7">
+                {calendarDays.map((day, idx) => {
+                  const dayEvents = getDayEvents(day)
+                  const isCurrentMonth = isSameMonth(day, monthStart)
+                  const isToday = isSameDay(day, new Date())
+                  const isSelected = selectedDay && isSameDay(day, selectedDay)
 
-                <h2 className="text-white text-sm sm:text-lg font-bold tracking-wide z-10 capitalize">
-                  {format(currentDate, 'MMMM yyyy', { locale: es })}
-                </h2>
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => {
+                        setSelectedDay(day)
+                        setSelectedDayEvents(dayEvents)
+                      }}
+                      className={cn(
+                        "min-h-[100px] p-2 border-r border-b border-white/5 cursor-pointer transition-all hover:bg-white/5 group relative",
+                        !isCurrentMonth && "opacity-20",
+                        isSelected && "bg-[#15539C]/20 ring-1 ring-inset ring-[#F49E2C]/30"
+                      )}
+                    >
+                      <span className={cn(
+                        "text-xs font-bold",
+                        isToday ? "bg-[#F49E2C] text-[#16233B] px-2 py-1 rounded-md" : "text-white/40"
+                      )}>
+                        {format(day, 'd')}
+                      </span>
 
-                <button
-                  onClick={handleNextMonth}
-                  className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-lg transition-colors z-10 touch-manipulation"
-                >
-                  <IconChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                </button>
+                      <div className="mt-2 space-y-1">
+                        {dayEvents.slice(0, 3).map(event => (
+                          <div key={event.id} className="text-[10px] bg-[#15539C]/40 border border-[#15539C]/20 rounded-md p-1 truncate text-white/80 font-medium">
+                            {event.event_name}
+                          </div>
+                        ))}
+                        {dayEvents.length > 3 && (
+                          <div className="text-[9px] text-[#F49E2C] font-black pl-1 italic">+{dayEvents.length - 3} más</div>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             </div>
 
-            {/* Calendario */}
-            <div className="px-2 sm:px-4 pb-4">
-              {loading ? (
-                <div className="h-64 sm:h-96 bg-neutral-200 dark:bg-neutral-800 rounded-xl animate-pulse" />
-              ) : (
-                <CalendarGrid
-                  selectedDate={currentDate}
-                  events={events}
-                  onDaySelect={handleDaySelect}
-                  selectedDay={selectedDayEvents.length > 0 ? selectedDay : null}
-                />
-              )}\n            </div>
-
-            {/* Estado vacío cuando no hay eventos */}
-            {!loading && events.length === 0 && (
-              <div className="mt-8">
-                <EmptyState
-                  title="Calendario vacío"
-                  description="No hay eventos programados para este mes. Los eventos aparecerán aquí cuando se aprueben las solicitudes de material gráfico."
-                  actionLabel="Ver Todas las Solicitudes"
-                  onAction={() => router.push('/admin')}
-                  variant="default"
-                />
-              </div>
-            )}
-
-            {/* Panel de eventos del día seleccionado */}
-            {selectedDayEvents.length > 0 && (
-              <>
-                {/* Overlay with gradient fade */}
-                <div className="fixed bottom-0 left-0 w-full h-[50vh] bg-gradient-to-t from-black/40 to-transparent pointer-events-none z-20" />
-
-                {/* Bottom Sheet */}
-                <div className="fixed bottom-0 left-0 w-full z-30 pointer-events-none md:left-[280px] md:w-[calc(100%-280px)]">
-                  <div className="bg-white dark:bg-[#1e1e2d] rounded-t-3xl shadow-[0_-5px_30px_-10px_rgba(0,0,0,0.1)] w-full h-auto min-h-[300px] max-h-[70vh] pointer-events-auto transform transition-transform relative flex flex-col">
-                    {/* Drag Handle */}
-                    <div className="w-full flex items-center justify-center pt-3 pb-1 cursor-grab active:cursor-grabbing touch-manipulation">
-                      <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="px-3 sm:px-5 pt-2 pb-safe pb-4 sm:pb-8 flex-1 flex flex-col gap-3 overflow-hidden">
-                      {/* Date Header */}
-                      <div className="flex flex-col gap-1 border-b border-gray-100 dark:border-gray-700 pb-2 shrink-0">
-                        <h3 className="text-base sm:text-lg font-bold text-decom-primary dark:text-white">
-                          Eventos del día {selectedDay ? format(selectedDay, 'd MMMM', { locale: es }) : ''}
-                        </h3>
-                        <div className="h-1 w-12 bg-secondary rounded-full"></div>
-                      </div>
-
-                      {/* Events List */}
-                      <div className="flex flex-col gap-2 sm:gap-3 overflow-y-auto flex-1">
-                        {selectedDayEvents.map((event) => {
-                          const statusConfig = {
-                            pending: { label: 'Pendiente', color: 'decom-secondary', bgColor: 'bg-decom-secondary/10', borderColor: 'border-decom-secondary/20', dotColor: 'bg-decom-secondary' },
-                            in_progress: { label: 'En Proceso', color: 'decom-primary-light', bgColor: 'bg-decom-primary-light/10', borderColor: 'border-decom-primary-light/20', dotColor: 'bg-decom-primary-light' },
-                            completed: { label: 'Listo', color: 'decom-success', bgColor: 'bg-decom-success/10', borderColor: 'border-decom-success/20', dotColor: 'bg-decom-success' },
-                            approved: { label: 'Aprobado', color: 'decom-success', bgColor: 'bg-decom-success/10', borderColor: 'border-decom-success/20', dotColor: 'bg-decom-success' },
-                            rejected: { label: 'Rechazado', color: 'error', bgColor: 'bg-red-500/10', borderColor: 'border-red-500/20', dotColor: 'bg-red-500' },
-                          }[event.status] || { label: event.status, color: 'gray', bgColor: 'bg-gray-100', borderColor: 'border-gray-200', dotColor: 'bg-gray-400' }
-
-                          const isInProgress = event.status === 'in_progress'
-
-                          return (
-                            <div
-                              key={event.id}
-                              className={`
-                                bg-white dark:bg-[#252538] border border-gray-100 dark:border-gray-700 rounded-lg sm:rounded-xl p-2 sm:p-3 shadow-sm 
-                                flex items-start gap-2 sm:gap-3 relative
-                                ${isInProgress ? 'relative' : ''}
-                                ${openMenuId === event.id ? 'z-20' : ''}
-                              `}
-                            >
-                              {isInProgress && (
-                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-decom-primary-light rounded-l-lg sm:rounded-l-xl"></div>
-                              )}
-
-                              <div
-                                onClick={() => router.push(`/admin/requests/${event.id}`)}
-                                className="flex-1 flex items-start gap-2 sm:gap-3 cursor-pointer hover:opacity-80 transition-opacity active:opacity-60 touch-manipulation"
-                              >
-                                <div className={`flex flex-col items-center justify-center min-w-[40px] sm:min-w-[50px] pt-1 ${isInProgress ? 'pl-1' : ''}`}>
-                                  <span className="text-[10px] sm:text-xs text-gray-400 font-semibold mb-1">HORA</span>
-                                  <span className="text-xs sm:text-sm font-bold text-decom-primary dark:text-white">
-                                    {event.event_date ? format(new Date(event.event_date), 'HH:mm') : 'TBD'}
-                                  </span>
-                                  <span className="text-[10px] sm:text-xs text-gray-500">
-                                    {event.event_date ? (parseInt(format(new Date(event.event_date), 'H')) >= 12 ? 'PM' : 'AM') : ''}
-                                  </span>
-                                </div>
-
-                                <div className="w-[1px] h-10 sm:h-12 bg-gray-200 dark:bg-gray-600 self-center"></div>
-
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex justify-between items-start mb-1">
-                                    <h4 className="font-bold text-decom-primary dark:text-white text-xs sm:text-sm truncate pr-2">
-                                      {event.event_name}
-                                    </h4>
-                                    <span className={`inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-bold ${statusConfig.bgColor} text-${statusConfig.color} border ${statusConfig.borderColor} whitespace-nowrap`}>
-                                      {statusConfig.label}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center gap-1.5 mb-1">
-                                    <span className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${statusConfig.dotColor}`}></span>
-                                    <p className="text-[10px] sm:text-xs text-gray-500 font-medium truncate">
-                                      {event.committee.name}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Menú de acciones */}
-                              <div className="relative shrink-0">
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    setOpenMenuId(openMenuId === event.id ? null : event.id)
-                                  }}
-                                  className="p-1.5 sm:p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors active:scale-95 touch-manipulation"
-                                >
-                                  <IconDots className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
-                                </button>
-
-                                {openMenuId === event.id && (
-                                  <>
-                                    <div
-                                      className="fixed inset-0 z-40"
-                                      onClick={() => setOpenMenuId(null)}
-                                    />
-                                    <div className="absolute right-0 top-full mt-1 w-44 sm:w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-1 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation()
-                                          router.push(`/admin/requests/${event.id}`)
-                                        }}
-                                        className="w-full px-3 sm:px-4 py-2.5 sm:py-2 text-left text-xs sm:text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 touch-manipulation flex items-center gap-2"
-                                      >
-                                        <IconEye className="w-4 h-4 shrink-0" />
-                                        <span className="truncate">Ver detalle completo</span>
-                                      </button>
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation()
-                                          // Aquí puedes agregar modal de edición rápida
-                                          alert('Función de edición rápida - próximamente')
-                                          setOpenMenuId(null)
-                                        }}
-                                        className="w-full px-3 sm:px-4 py-2.5 sm:py-2 text-left text-xs sm:text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 touch-manipulation flex items-center gap-2"
-                                      >
-                                        <IconEdit className="w-4 h-4 shrink-0" />
-                                        <span className="truncate">Editar estado</span>
-                                      </button>
-                                      <div className="h-px bg-gray-200 dark:bg-gray-700 my-1" />
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation()
-                                          if (confirm(`¿Estás seguro de eliminar "${event.event_name}"?`)) {
-                                            // Aquí puedes agregar lógica de eliminación
-                                            alert('Función de eliminación - próximamente')
-                                          }
-                                          setOpenMenuId(null)
-                                        }}
-                                        className="w-full px-3 sm:px-4 py-2.5 sm:py-2 text-left text-xs sm:text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 active:bg-red-100 dark:active:bg-red-900/30 touch-manipulation flex items-center gap-2"
-                                      >
-                                        <IconTrash className="w-4 h-4 shrink-0" />
-                                        <span className="truncate">Eliminar solicitud</span>
-                                      </button>
-                                    </div>
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  </div>
+            {/* Day Details Section */}
+            <div className="lg:col-span-4 space-y-4 flex flex-col h-full">
+              <div className="bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 p-6 flex-1 flex flex-col shadow-xl">
+                <div className="mb-6">
+                  <h3 className="text-sm font-black text-[#F49E2C] uppercase tracking-[0.2em] mb-1">
+                    {selectedDay ? format(selectedDay, "eeee, d 'de' MMMM", { locale: es }) : 'Selecciona un día'}
+                  </h3>
+                  <div className="h-1 w-12 bg-[#F49E2C] rounded-full" />
                 </div>
-              </>
-            )}
+
+                <div className="flex-1 overflow-y-auto space-y-3 pr-1">
+                  {loading ? (
+                    [1, 2, 3].map(i => <div key={i} className="h-20 bg-white/5 rounded-xl animate-pulse" />)
+                  ) : selectedDayEvents.length > 0 ? (
+                    selectedDayEvents.map(event => (
+                      <div
+                        key={event.id}
+                        onClick={() => router.push(`/admin/requests/${event.id}`)}
+                        className="p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-[#15539C]/20 group transition-all cursor-pointer relative overflow-hidden"
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="text-[9px] font-black text-[#F49E2C] uppercase tracking-widest">{event.committee.name}</span>
+                          <div className="size-1.5 rounded-full bg-[#10B981]" />
+                        </div>
+                        <h4 className="text-xs font-bold text-white group-hover:text-[#F49E2C] transition-colors">{event.event_name}</h4>
+                        <div className="mt-2 flex items-center gap-3 text-white/40 text-[10px]">
+                          <span className="flex items-center gap-1 font-bold">
+                            <IconCalendar className="w-3 h-3" />
+                            {format(new Date(event.event_date), 'HH:mm')}
+                          </span>
+                          <span className="uppercase font-bold tracking-tighter">{event.material_type}</span>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full opacity-20 text-center py-20">
+                      <IconCalendar className="w-16 h-16 mb-4" />
+                      <p className="text-xs font-black uppercase tracking-widest">Sin eventos programados</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Quick Summary Card */}
+              <div className="p-5 bg-gradient-to-br from-[#15539C] to-[#16233B] rounded-2xl border border-white/10 shadow-lg">
+                <p className="text-[10px] font-black text-[#F49E2C] uppercase tracking-widest mb-1">Resumen del Mes</p>
+                <div className="flex items-end justify-between">
+                  <div className="text-2xl font-black text-white">{events.reduce((acc, curr) => acc + curr.count, 0)}</div>
+                  <div className="text-[10px] font-bold text-white/50 mb-1">TOTAL SOLICITUDES</div>
+                </div>
+                <div className="h-1.5 w-full bg-white/10 rounded-full mt-3 overflow-hidden">
+                  <div className="h-full bg-[#F49E2C] w-[65%]" />
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   )

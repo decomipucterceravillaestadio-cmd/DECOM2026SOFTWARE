@@ -1,20 +1,29 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import {
   IconLayoutDashboard,
   IconCalendar,
-  IconSettings,
   IconLogout,
   IconPlus,
-  IconBell
+  IconBell,
+  IconClipboardList,
+  IconUsers,
+  IconUser,
+  IconSearch,
+  IconMenu2,
+  IconX,
+  IconBuildingChurch,
+  IconFilter
 } from '@tabler/icons-react'
-import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar'
+import { cn } from '@/lib/utils'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useAuth, useHasPermission } from '@/app/contexts/AuthContext'
+import { Permission } from '@/app/lib/permissions'
 import RequestCard from '@/app/components/Dashboard/RequestCard'
 import FilterChips from '@/app/components/UI/FilterChips'
-import FloatingActionButton from '@/app/components/UI/FloatingActionButton'
 
 interface Request {
   id: string
@@ -34,57 +43,80 @@ type FilterType = 'all' | 'pending' | 'in_progress' | 'urgent'
 
 export default function AdminListPage() {
   const router = useRouter()
-  const [open, setOpen] = useState(false)
+  const pathname = usePathname()
+  const { user, loading: authLoading } = useAuth()
+  const canManageUsers = useHasPermission(Permission.VIEW_USERS)
+
   const [requests, setRequests] = useState<Request[]>([])
   const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState<FilterType>('all')
+  const [open, setOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
 
-  const links = [
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const baseLinks = [
     {
       label: 'Dashboard',
       href: '/admin',
       icon: <IconLayoutDashboard className="h-5 w-5" />,
     },
     {
-      label: 'Lista',
+      label: 'Nueva Solicitud',
+      href: '/new-request',
+      icon: <IconPlus className="h-5 w-5" />,
+    },
+    {
+      label: 'Solicitudes',
       href: '/admin/list',
-      icon: <IconLayoutDashboard className="h-5 w-5" />,
+      icon: <IconClipboardList className="h-5 w-5" />,
     },
     {
       label: 'Calendario',
       href: '/admin/calendar',
       icon: <IconCalendar className="h-5 w-5" />,
     },
+  ]
+
+  const adminLinks = canManageUsers ? [
     {
-      label: 'Configuración',
-      href: '/admin/settings',
-      icon: <IconSettings className="h-5 w-5" />,
+      label: 'Gestión de Usuarios',
+      href: '/admin/users',
+      icon: <IconUsers className="h-5 w-5" />,
+    }
+  ] : []
+
+  const links = [
+    ...baseLinks,
+    ...adminLinks,
+    {
+      label: 'Perfil',
+      href: '/admin/profile',
+      icon: <IconUser className="h-5 w-5" />,
     },
   ]
 
-  const filters = [
-    { id: 'all' as FilterType, label: 'Todas', count: requests.length },
-    { id: 'pending' as FilterType, label: 'Pendientes', count: requests.filter(r => r.status === 'pending').length },
-    { id: 'in_progress' as FilterType, label: 'En proceso', count: requests.filter(r => r.status === 'in_progress').length },
-    { id: 'urgent' as FilterType, label: 'Urgentes', count: requests.filter(r => r.priority_score && r.priority_score >= 8).length },
-  ]
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' })
+    router.push('/login')
+  }
+
+  const getNormalizedStatus = (status: string) => {
+    const s = status?.toLowerCase().trim()
+    if (['in_progress', 'approved', 'completed', 'rejected'].includes(s)) return s
+    return 'pending'
+  }
 
   const fetchRequests = async () => {
     setLoading(true)
     try {
-      const params = new URLSearchParams()
-      if (activeFilter !== 'all') {
-        if (activeFilter === 'urgent') {
-          params.set('filter', 'urgent')
-        } else {
-          params.set('status', activeFilter)
-        }
-      }
-
-      const response = await fetch(`/api/admin/requests?${params.toString()}`)
+      const response = await fetch('/api/admin/requests?limit=100')
       if (response.ok) {
         const data = await response.json()
-        setRequests(data)
+        setRequests(data.requests || [])
       }
     } catch (error) {
       console.error('Error fetching requests:', error)
@@ -94,142 +126,264 @@ export default function AdminListPage() {
   }
 
   useEffect(() => {
-    fetchRequests()
-  }, [activeFilter])
+    if (mounted) fetchRequests()
+  }, [mounted])
 
   const filteredRequests = requests.filter(request => {
-    switch (activeFilter) {
-      case 'pending':
-        return request.status === 'pending'
-      case 'in_progress':
-        return request.status === 'in_progress'
-      case 'urgent':
-        return request.priority_score && request.priority_score >= 8
-      default:
-        return true
-    }
+    const matchesFilter = (() => {
+      switch (activeFilter) {
+        case 'pending':
+          return getNormalizedStatus(request.status) === 'pending'
+        case 'in_progress':
+          return getNormalizedStatus(request.status) === 'in_progress'
+        case 'urgent':
+          return request.priority_score && request.priority_score >= 8
+        default:
+          return true
+      }
+    })()
+
+    const matchesSearch = searchTerm.trim() === '' || 
+      request.event_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      request.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      request.committee.name.toLowerCase().includes(searchTerm.toLowerCase())
+
+    return matchesFilter && matchesSearch
   })
 
-  const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' })
-    router.push('/login')
-  }
+  const filters = [
+    { id: 'all' as FilterType, label: 'Todas', count: requests.length },
+    { id: 'pending' as FilterType, label: 'Pendientes', count: requests.filter(r => getNormalizedStatus(r.status) === 'pending').length },
+    { id: 'in_progress' as FilterType, label: 'En proceso', count: requests.filter(r => getNormalizedStatus(r.status) === 'in_progress').length },
+    { id: 'urgent' as FilterType, label: 'Urgentes', count: requests.filter(r => r.priority_score && r.priority_score >= 8).length },
+  ]
 
-  const handleRequestClick = (requestId: string) => {
-    router.push(`/admin/requests/${requestId}`)
-  }
+  const isActive = (href: string) => pathname === href || (href !== '/admin' && pathname?.startsWith(href))
+
+  if (!mounted || authLoading) return null
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-neutral-100 dark:bg-neutral-950">
-      <Sidebar open={open} setOpen={setOpen}>
-        <SidebarBody className="justify-between gap-10">
-          <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
-            <div className="mb-8">
-              <div className="flex items-center gap-2 px-2">
-                <IconLayoutDashboard className="h-7 w-7 text-violet-500" />
-                <span className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
-                  DECOM
-                </span>
-              </div>
-            </div>
+    <div className="flex h-screen w-full overflow-hidden bg-[#16233B] text-[#F8FAFC] flex-row font-sans">
 
-            <div className="flex flex-col gap-2">
-              {links.map((link, idx) => (
-                <SidebarLink key={idx} link={link} />
-              ))}
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {open && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] md:hidden"
+            />
+            <motion.nav
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed inset-y-0 left-0 w-72 bg-[#1a2847] shadow-2xl z-[70] md:hidden flex flex-col p-6"
+            >
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#15539C] flex items-center justify-center border border-[#F49E2C]/30 shadow-[0_0_15px_rgba(244,158,44,0.1)]">
+                    <IconBuildingChurch className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-lg font-bold tracking-tight text-white uppercase mt-0.5">DECOM</span>
+                </div>
+                <button onClick={() => setOpen(false)} className="p-2 text-white/50 hover:text-[#F49E2C] transition-colors">
+                  <IconX className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="flex-1 space-y-2 overflow-y-auto">
+                {links.map((link, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => { router.push(link.href); setOpen(false); }}
+                    className={cn(
+                      "flex items-center gap-4 px-4 py-4 rounded-xl text-sm font-medium transition-all group w-full text-left",
+                      isActive(link.href)
+                        ? "bg-[#15539C]/20 text-[#F49E2C] shadow-sm border border-[#F49E2C]/20"
+                        : "text-white/60 hover:bg-[#15539C]/10 hover:text-white"
+                    )}
+                  >
+                    {link.icon}
+                    <span className="mt-0.5">{link.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="pt-6 border-t border-white/10 mt-auto">
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-4 px-4 py-4 text-sm font-medium text-white/60 hover:text-red-400 hover:bg-red-500/5 rounded-xl transition-all w-full"
+                >
+                  <IconLogout className="h-5 w-5" />
+                  <span>Cerrar Sesión</span>
+                </button>
+              </div>
+            </motion.nav>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Sidebar - Desktop */}
+      <nav className="hidden md:flex w-64 flex-col bg-[#1a2847] border-r border-white/10 transition-all duration-300 shadow-xl z-30">
+        <div className="h-16 flex items-center gap-3 px-6 border-b border-white/10">
+          <div className="w-8 h-8 rounded-lg bg-[#15539C] flex items-center justify-center border border-[#F49E2C]/30 shadow-[0_0_15px_rgba(244,158,44,0.1)]">
+            <IconBuildingChurch className="h-5 w-5 text-white" />
+          </div>
+          <span className="text-lg font-bold tracking-tight text-white uppercase mt-0.5">DECOM</span>
+        </div>
+
+        <div className="flex-1 py-6 px-3 space-y-1 overflow-y-auto">
+          {links.map((link, idx) => (
+            <button
+              key={idx}
+              onClick={() => router.push(link.href)}
+              className={cn(
+                "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group w-full text-left",
+                isActive(link.href)
+                  ? "bg-[#15539C]/20 text-[#F49E2C] shadow-sm border border-[#F49E2C]/20"
+                  : "text-white/60 hover:bg-[#15539C]/10 hover:text-white"
+              )}
+            >
+              <div className={cn("transition-colors", isActive(link.href) ? "text-[#F49E2C]" : "group-hover:text-white")}>
+                {link.icon}
+              </div>
+              <span className="mt-0.5">{link.label}</span>
+              {isActive(link.href) && (
+                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#F49E2C] shadow-[0_0_8px_rgba(244,158,44,0.5)]" />
+              )}
+            </button>
+          ))}
+        </div>
+
+        <div className="p-4 border-t border-white/10">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-white/60 hover:text-red-400 hover:bg-red-500/5 rounded-xl transition-all w-full"
+          >
+            <IconLogout className="h-5 w-5" />
+            <span>Cerrar Sesión</span>
+          </button>
+        </div>
+      </nav>
+
+      {/* Main Container */}
+      <div className="flex flex-1 flex-col overflow-hidden relative">
+        {/* Top Header Bar */}
+        <header className="h-16 shrink-0 bg-[#1a2847]/80 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-4 md:px-8 z-40 transition-colors">
+          <div className="flex items-center gap-4 flex-1">
+            <button onClick={() => setOpen(!open)} className="md:hidden p-2 text-white/50 hover:text-[#F49E2C] transition-colors" aria-label="Menu">
+              <IconMenu2 className="w-6 h-6" />
+            </button>
+            <h2 className="text-white font-bold text-lg hidden sm:block tracking-tight uppercase">Solicitudes</h2>
+
+            {/* Global Search */}
+            <div className="max-w-md w-full ml-4 relative hidden lg:block">
+              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <IconSearch className="w-4 h-4 text-white/30" />
+              </div>
+              <input
+                type="text"
+                placeholder="Buscar en solicitudes..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full h-10 bg-[#16233B]/80 border border-white/10 rounded-xl pl-10 pr-4 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#F49E2C]/50 focus:ring-1 focus:ring-[#F49E2C]/30 transition-all"
+              />
             </div>
           </div>
-          <div>
+
+          <div className="flex items-center gap-2 md:gap-5">
+            <button className="relative p-2.5 rounded-xl text-white/50 hover:text-[#F49E2C] hover:bg-white/5 transition-all group" aria-label="Notificaciones">
+              <IconBell className="w-5 h-5" />
+              <span className="absolute top-2 right-2 w-2 h-2 bg-[#F49E2C] rounded-full border-2 border-[#1a2847] shadow-[0_0_8px_rgba(244,158,44,0.5)]" />
+            </button>
+
+            <div className="h-6 w-[1px] bg-white/10 mx-1 hidden sm:block" />
+
+            <div className="flex items-center gap-3 p-1 pl-2 rounded-xl hover:bg-white/5 transition-all cursor-pointer group">
+              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#15539C] to-[#16233B] flex items-center justify-center font-black text-sm text-white shadow-lg ring-2 ring-white/10 group-hover:ring-[#F49E2C]/30 transition-all">
+                {user?.full_name?.charAt(0).toUpperCase() || 'U'}
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Scrollable Main Area */}
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scroll-smooth bg-gradient-to-br from-transparent via-transparent to-[#15539C]/5">
+
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <nav className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#F49E2C]">
+                <span onClick={() => router.push('/admin')} className="hover:underline cursor-pointer">Dashboard</span>
+                <span className="text-white/10">/</span>
+                <span className="text-white/40 font-medium tracking-normal capitalize">Lista de Solicitudes</span>
+              </nav>
+              <h1 className="text-2xl font-bold text-white tracking-tight">Todas las Solicitudes</h1>
+            </div>
             <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-2 py-2 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-800 rounded-lg transition-colors w-full"
+              onClick={() => router.push('/new-request')}
+              className="px-5 py-2.5 bg-[#F49E2C] text-[#16233B] rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-[#F49E2C]/20 shrink-0"
             >
-              <IconLogout className="h-5 w-5" />
-              <span>Cerrar Sesión</span>
+              <IconPlus className="w-5 h-5" />
+              NUEVA SOLICITUD
             </button>
           </div>
-        </SidebarBody>
-      </Sidebar>
 
-      <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Header con gradiente IPUC */}
-        <div className="bg-gradient-to-r from-[#16233B] to-[#15539C] pt-6 pb-0 shadow-md relative z-20">
-          <div className="px-4 mb-4 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <div className="bg-white/10 p-2 rounded-xl backdrop-blur-sm border border-white/20 flex items-center justify-center size-10">
-                <span className="material-symbols-outlined text-white text-[24px]">church</span>
+          {/* Filters Bar */}
+          <div className="bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 p-4 shadow-xl flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <div className="bg-[#15539C]/20 p-2 rounded-lg text-[#F49E2C]">
+                <IconFilter className="w-4 h-4" />
               </div>
-              <div>
-                <h1 className="text-white text-xl font-bold tracking-tight">Panel DECOM</h1>
-                <p className="text-white/70 text-xs font-medium uppercase tracking-wider">Sistema de Solicitudes</p>
-              </div>
+              <FilterChips
+                filters={filters}
+                activeFilter={activeFilter}
+                onFilterChange={(filterId) => setActiveFilter(filterId as FilterType)}
+              />
             </div>
-            <div className="relative">
-              <div className="size-2 bg-red-500 rounded-full absolute top-0 right-0 border-2 border-[#15539C]"></div>
-              <IconBell className="text-white text-[24px]" />
+            <div className="text-[10px] font-black text-white/30 uppercase tracking-widest bg-white/5 px-3 py-2 rounded-full border border-white/5">
+              {filteredRequests.length} RESULTADOS ENCONTRADOS
             </div>
           </div>
 
-          {/* Tabs Lista/Calendario */}
-          <div className="flex px-4 gap-6 mt-2">
-            <Link
-              href="/admin/list"
-              className="flex flex-col items-center pb-3 border-b-[3px] border-[#F49E2C] text-white transition-all"
-            >
-              <span className="text-sm font-bold tracking-wide">Lista</span>
-            </Link>
-            <Link
-              href="/admin/calendar"
-              className="flex flex-col items-center pb-3 border-b-[3px] border-transparent text-white/60 hover:text-white transition-all"
-            >
-              <span className="text-sm font-bold tracking-wide">Calendario</span>
-            </Link>
-          </div>
-        </div>
-
-        {/* Filtros horizontales */}
-        <div className="bg-neutral-100/95 dark:bg-neutral-900/95 backdrop-blur-sm py-4 pl-4 border-b border-gray-200/50 dark:border-gray-700/50 relative z-10">
-          <FilterChips
-            filters={filters}
-            activeFilter={activeFilter}
-            onFilterChange={(filterId) => setActiveFilter(filterId as FilterType)}
-          />
-        </div>
-
-        {/* Contenido principal */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="px-4 py-6">
+          {/* Results Grid */}
+          <div className="space-y-4 pb-20">
             {loading ? (
-              <div className="space-y-4">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className="h-32 bg-neutral-200 dark:bg-neutral-800 rounded-xl animate-pulse" />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[1, 2, 3, 4, 5, 6].map(i => (
+                  <div key={i} className="h-40 bg-white/5 rounded-2xl animate-pulse border border-white/5" />
                 ))}
               </div>
             ) : filteredRequests.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-neutral-500 dark:text-neutral-400">
-                  No hay solicitudes {activeFilter !== 'all' ? `con filtro "${filters.find(f => f.id === activeFilter)?.label}"` : ''}
-                </p>
+              <div className="flex flex-col items-center justify-center py-32 text-center opacity-30">
+                <div className="size-20 bg-white/5 rounded-full flex items-center justify-center mb-6">
+                  <IconClipboardList className="w-10 h-10" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">No se encontraron resultados</h3>
+                <p className="text-sm">Intenta ajustar los filtros para encontrar lo que buscas.</p>
               </div>
             ) : (
-              <div className="space-y-4">
-                {filteredRequests.map((request) => (
-                  <RequestCard
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                {filteredRequests.map((request, idx) => (
+                  <motion.div
                     key={request.id}
-                    request={request}
-                    onClick={() => handleRequestClick(request.id)}
-                  />
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                  >
+                    <RequestCard
+                      request={request}
+                      onClick={() => router.push(`/admin/requests/${request.id}`)}
+                    />
+                  </motion.div>
                 ))}
               </div>
             )}
           </div>
-        </div>
-
-        {/* FAB para nueva solicitud */}
-        <FloatingActionButton
-          onClick={() => router.push('/new-request')}
-          icon={<IconPlus className="h-6 w-6" />}
-        />
+        </main>
       </div>
     </div>
   )

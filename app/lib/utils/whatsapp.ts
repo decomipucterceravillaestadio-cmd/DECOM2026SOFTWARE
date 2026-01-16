@@ -1,33 +1,42 @@
+interface WhatsAppMessageData {
+  eventName: string
+  committeeName: string
+  eventDate: string
+  statusLabel: string
+  materialType: string
+}
+
 /**
- * Genera un enlace de WhatsApp con mensaje predefinido
- * @param phoneNumber - Número de teléfono (puede incluir +57 o solo 10 dígitos)
- * @param eventName - Nombre del evento para personalizar el mensaje
- * @returns URL completa de WhatsApp con mensaje codificado
+ * Genera un enlace de WhatsApp con mensaje detallado
+ * @param phoneNumber - Número de teléfono
+ * @param data - Objeto con datos de la solicitud
+ * @returns URL completa
  */
 export function generateWhatsAppLink(
   phoneNumber: string,
-  eventName: string
+  data: WhatsAppMessageData
 ): string {
-  // Limpiar número: remover espacios, guiones, paréntesis
-  let cleanNumber = phoneNumber.replace(/[\s\-\(\)]/g, '')
-  
-  // Remover el símbolo + si existe
+  // Limpiar número
+  let cleanNumber = phoneNumber?.replace(/[\s\-\(\)]/g, '') || ''
+
   if (cleanNumber.startsWith('+')) {
     cleanNumber = cleanNumber.substring(1)
   }
-  
-  // Asegurar que tenga el código de país 57
-  if (!cleanNumber.startsWith('57')) {
-    if (cleanNumber.length === 10 && cleanNumber.startsWith('3')) {
-      cleanNumber = `57${cleanNumber}`
-    }
+  if (!cleanNumber.startsWith('57') && cleanNumber.length === 10) {
+    cleanNumber = `57${cleanNumber}`
   }
-  
-  // Mensaje predefinido
-  const message = `Hola, tu material para "${eventName}" está listo para entrega. ¡Bendiciones! 🙏`
-  const encodedMessage = encodeURIComponent(message)
-  
-  return `https://wa.me/${cleanNumber}?text=${encodedMessage}`
+
+  const message = `Hola, actualización sobre tu solicitud DECOM:
+
+📅 *Evento:* ${data.eventName}
+👥 *Comité:* ${data.committeeName}
+📆 *Fecha:* ${data.eventDate}
+📹 *Material:* ${data.materialType}
+📊 *Estado actual:* ${data.statusLabel}
+
+¡Estamos pendientes! 🙏`
+
+  return `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`
 }
 
 /**
@@ -37,9 +46,9 @@ export function generateWhatsAppLink(
  */
 export function isValidWhatsAppNumber(phoneNumber: string): boolean {
   const cleanNumber = phoneNumber.replace(/[\s\-\(\)]/g, '')
-  
+
   // Regex para validar formato colombiano
   const regex = /^\+?57[3]\d{9}$/
-  
+
   return regex.test(cleanNumber)
 }

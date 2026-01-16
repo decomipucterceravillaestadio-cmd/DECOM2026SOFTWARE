@@ -15,22 +15,22 @@ export default function AboutDecomPage() {
 
   const features = [
     {
-      icon: <IconPalette className="w-8 h-8 text-primary" />,
+      icon: <IconPalette className="w-8 h-8 text-decom-primary" />,
       title: 'Material Gráfico Profesional',
       description: 'Creamos flyers, banners, videos y contenido para redes sociales con la más alta calidad.'
     },
     {
-      icon: <IconUsers className="w-8 h-8 text-primary" />,
+      icon: <IconUsers className="w-8 h-8 text-decom-primary" />,
       title: 'Equipo Especializado',
       description: 'Contamos con diseñadores gráficos y productores audiovisuales comprometidos con la visión de IPUC.'
     },
     {
-      icon: <IconTarget className="w-8 h-8 text-primary" />,
+      icon: <IconTarget className="w-8 h-8 text-decom-primary" />,
       title: 'Enfoque en Resultados',
       description: 'Cada material está diseñado para comunicar efectivamente el mensaje y lograr los objetivos propuestos.'
     },
     {
-      icon: <IconHeart className="w-8 h-8 text-primary" />,
+      icon: <IconHeart className="w-8 h-8 text-decom-primary" />,
       title: 'Apoyo a Ministerios',
       description: 'Apoyamos todos los ministerios y eventos de la iglesia con materiales que reflejan nuestros valores.'
     }
@@ -39,7 +39,7 @@ export default function AboutDecomPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="flex items-center p-4 pb-4 justify-between bg-gradient-to-r from-primary-dark to-primary-light shadow-sm sticky top-0 z-10">
+      <div className="flex items-center p-4 pb-4 justify-between bg-gradient-to-r from-decom-primary to-decom-primary-light shadow-sm sticky top-0 z-10">
         <button
           onClick={() => router.back()}
           className="text-white flex size-12 shrink-0 items-center justify-center cursor-pointer hover:bg-white/10 rounded-full transition-colors"
@@ -55,7 +55,7 @@ export default function AboutDecomPage() {
       <div className="p-4 space-y-6">
         {/* Hero Section */}
         <div className="text-center py-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-primary-light to-primary-dark rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-gradient-to-br from-decom-primary-light to-decom-primary rounded-full flex items-center justify-center mx-auto mb-4">
             <IconPalette className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
