@@ -69,9 +69,12 @@ function ConfirmationContent() {
   }
 
   return (
-    <div className="min-h-screen bg-dashboard-bg py-12 px-4 flex items-center justify-center">
+    <div className="min-h-screen bg-dashboard-bg py-12 px-4 flex items-center justify-center relative overflow-hidden">
+      {/* Dark Mode Ambient Background Glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-decom-primary-light/20 rounded-full blur-[120px] pointer-events-none opacity-0 dark:opacity-50"></div>
+
       <motion.div
-        className="max-w-3xl w-full mx-auto space-y-8"
+        className="max-w-3xl w-full mx-auto space-y-8 relative z-10"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
@@ -82,16 +85,16 @@ function ConfirmationContent() {
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
-            className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-decom-success to-emerald-600 shadow-2xl shadow-decom-success/30 ring-4 ring-white dark:ring-dashboard-card mb-2"
+            className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-decom-success to-emerald-600 shadow-2xl shadow-decom-success/30 ring-4 ring-white dark:ring-white/10 mb-2"
           >
             <IconCheck className="w-12 h-12 text-white" strokeWidth={3} />
           </motion.div>
 
           <div className="space-y-2">
-            <h1 className="text-4xl font-black text-decom-primary dark:text-white tracking-tight">
+            <h1 className="text-4xl font-black text-[#16233B] dark:text-white tracking-tight">
               ¡Solicitud Recibida!
             </h1>
-            <p className="text-lg text-dashboard-text-secondary dark:text-dashboard-text-muted max-w-lg mx-auto font-medium">
+            <p className="text-lg text-dashboard-text-secondary dark:text-blue-100/70 max-w-lg mx-auto font-medium">
               Hemos registrado tu solicitud correctamente en el sistema.
             </p>
           </div>
@@ -99,12 +102,12 @@ function ConfirmationContent() {
 
         {/* Status Timeline Card */}
         <motion.div variants={itemVariants}>
-          <div className="bg-dashboard-card border border-dashboard-card-border rounded-3xl p-6 md:p-8 shadow-xl shadow-decom-primary/5 dark:shadow-none overflow-hidden relative backdrop-blur-sm">
+          <div className="bg-dashboard-card dark:bg-slate-800/40 border border-dashboard-card-border dark:border-white/10 rounded-3xl p-6 md:p-8 shadow-xl shadow-decom-primary/5 dark:shadow-2xl overflow-hidden relative backdrop-blur-xl">
             {/* Background Pattern */}
-            <div className="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-decom-primary-light/5 dark:bg-decom-primary-light/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-decom-primary-light/5 dark:bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-            <h3 className="text-lg font-black text-decom-primary dark:text-white mb-6 flex items-center gap-2">
-              <span className="bg-decom-primary-light/10 dark:bg-decom-primary-light/20 p-2 rounded-lg text-decom-primary-light dark:text-blue-300">
+            <h3 className="text-lg font-black text-[#16233B] dark:text-white mb-6 flex items-center gap-2">
+              <span className="bg-decom-primary-light/10 dark:bg-blue-500/20 p-2 rounded-lg text-decom-primary-light dark:text-blue-300">
                 <IconClock size={20} />
               </span>
               Próximos Pasos
@@ -117,21 +120,21 @@ function ConfirmationContent() {
               {/* Step 1: Registered (Completed) */}
               <div className="relative flex gap-6 pb-8 group z-10">
                 <div className="shrink-0 relative">
-                  <div className="w-10 h-10 rounded-full bg-decom-status-ready border-4 border-white dark:border-dashboard-card shadow-lg flex items-center justify-center relative z-10">
+                  <div className="w-10 h-10 rounded-full bg-decom-status-ready border-4 border-white dark:border-slate-800 shadow-lg flex items-center justify-center relative z-10">
                     <IconCheck size={20} className="text-white" strokeWidth={3} />
                   </div>
                 </div>
                 <div className="flex-1 pt-1">
-                  <div className="bg-white/50 dark:bg-white/5 border border-decom-status-ready/20 dark:border-decom-status-ready/10 rounded-xl p-4 shadow-sm backdrop-blur-sm hover:bg-white dark:hover:bg-white/10 hover:shadow-md transition-all duration-300">
+                  <div className="bg-white/50 dark:bg-slate-700/50 border border-decom-status-ready/20 dark:border-emerald-500/20 rounded-xl p-4 shadow-sm backdrop-blur-sm hover:bg-white dark:hover:bg-slate-700/80 hover:shadow-md transition-all duration-300">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
-                      <h4 className="font-bold text-decom-primary dark:text-white text-lg">Solicitud Registrada</h4>
-                      <span className="self-start sm:self-auto text-[10px] font-black uppercase tracking-wider text-decom-status-ready bg-decom-status-ready/10 px-2 py-1 rounded-md border border-decom-status-ready/20">
+                      <h4 className="font-bold text-[#16233B] dark:text-white text-lg">Solicitud Registrada</h4>
+                      <span className="self-start sm:self-auto text-[10px] font-black uppercase tracking-wider text-decom-status-ready bg-decom-status-ready/10 dark:bg-emerald-500/20 dark:text-emerald-400 px-2 py-1 rounded-md border border-decom-status-ready/20 dark:border-emerald-500/20">
                         Completado
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-dashboard-text-secondary dark:text-gray-400">
+                    <div className="flex items-center gap-2 text-sm text-dashboard-text-secondary dark:text-blue-200/70">
                       <span>Tu número de referencia es:</span>
-                      <code className="bg-decom-primary/5 dark:bg-black/20 text-decom-primary dark:text-blue-200 px-2 py-0.5 rounded-md font-mono font-bold border border-decom-primary/10 dark:border-white/10 select-all">
+                      <code className="bg-[#16233B]/5 dark:bg-[#0F172A] text-[#16233B] dark:text-blue-200 px-2 py-0.5 rounded-md font-mono font-bold border border-[#16233B]/10 dark:border-blue-500/30 select-all">
                         {requestId?.slice(0, 8) || '...'}
                       </code>
                     </div>
@@ -142,13 +145,13 @@ function ConfirmationContent() {
               {/* Step 2: Evaluation (Active/Pending) */}
               <div className="relative flex gap-6 pb-8 group z-10">
                 <div className="shrink-0 relative">
-                  <div className="w-10 h-10 rounded-full bg-white dark:bg-gray-800 border-2 border-decom-status-pending shadow-lg shadow-decom-status-pending/20 flex items-center justify-center relative z-10">
+                  <div className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border-2 border-decom-status-pending shadow-lg shadow-decom-status-pending/20 flex items-center justify-center relative z-10">
                     <div className="w-3 h-3 rounded-full bg-decom-status-pending animate-pulse"></div>
                   </div>
                 </div>
                 <div className="flex-1 pt-1">
-                  <div className="bg-white dark:bg-gray-800/50 border-l-4 border-l-decom-status-pending border-y border-r border-gray-100 dark:border-gray-700/50 rounded-r-xl rounded-l-md p-4 shadow-sm hover:shadow-md transition-all">
-                    <h4 className="font-bold text-decom-primary dark:text-white mb-1">Revisión del Equipo</h4>
+                  <div className="bg-white dark:bg-slate-800 border-l-4 border-l-decom-status-pending border-y border-r border-gray-100 dark:border-slate-700/50 rounded-r-xl rounded-l-md p-4 shadow-sm hover:shadow-md transition-all">
+                    <h4 className="font-bold text-[#16233B] dark:text-white mb-1">Revisión del Equipo</h4>
                     <p className="text-sm text-dashboard-text-secondary dark:text-gray-400 leading-relaxed">
                       El equipo DECOM analizará tu requerimiento y verificará la disponibilidad en la agenda.
                     </p>
@@ -159,7 +162,7 @@ function ConfirmationContent() {
               {/* Step 3: Contact (Future) */}
               <div className="relative flex gap-6 group z-10 opacity-60">
                 <div className="shrink-0 relative">
-                  <div className="w-10 h-10 rounded-full bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center relative z-10">
+                  <div className="w-10 h-10 rounded-full bg-gray-50 dark:bg-slate-800 border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center relative z-10">
                     <IconBrandWhatsapp size={20} className="text-gray-400 dark:text-gray-500" />
                   </div>
                 </div>
@@ -179,13 +182,13 @@ function ConfirmationContent() {
 
         {/* Workload Stats Card - Styled nicely */}
         <motion.div variants={itemVariants}>
-          <div className="bg-gradient-to-br from-white to-orange-50/50 dark:from-dashboard-card dark:to-dashboard-card/50 border border-orange-100 dark:border-orange-500/10 rounded-3xl p-6 md:p-8 shadow-sm">
+          <div className="bg-gradient-to-br from-white to-orange-50/50 dark:from-slate-800/80 dark:to-slate-900/80 border border-orange-100 dark:border-white/10 rounded-3xl p-6 md:p-8 shadow-sm backdrop-blur-md">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-gradient-to-br from-decom-secondary to-orange-600 rounded-lg text-white shadow-lg shadow-decom-secondary/20">
                 <IconAlertTriangle size={24} />
               </div>
               <div>
-                <h3 className="text-lg font-black text-decom-primary dark:text-white">Carga de Trabajo Actual</h3>
+                <h3 className="text-lg font-black text-[#16233B] dark:text-white">Carga de Trabajo Actual</h3>
                 <p className="text-xs font-bold text-decom-secondary uppercase tracking-wider">Estado del Sistema</p>
               </div>
             </div>
@@ -197,22 +200,22 @@ function ConfirmationContent() {
             {statsLoading ? (
               <div className="grid grid-cols-3 gap-4">
                 {[1, 2, 3].map(i => (
-                  <div key={i} className="h-24 bg-dashboard-card dark:bg-gray-800 animate-pulse rounded-2xl"></div>
+                  <div key={i} className="h-24 bg-dashboard-card dark:bg-slate-800 animate-pulse rounded-2xl"></div>
                 ))}
               </div>
             ) : stats ? (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <motion.div
                   whileHover={{ y: -3 }}
-                  className="bg-white dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm flex flex-col items-center justify-center text-center gap-1"
+                  className="bg-white dark:bg-slate-700/30 p-4 rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm flex flex-col items-center justify-center text-center gap-1"
                 >
-                  <span className="text-3xl font-black text-decom-primary dark:text-white">{stats.total_active}</span>
+                  <span className="text-3xl font-black text-[#16233B] dark:text-white">{stats.total_active}</span>
                   <span className="text-[10px] uppercase tracking-wider font-bold text-dashboard-text-muted">Solicitudes Activas</span>
                 </motion.div>
 
                 <motion.div
                   whileHover={{ y: -3 }}
-                  className="bg-white dark:bg-white/5 p-4 rounded-2xl border border-orange-100 dark:border-orange-500/20 shadow-sm flex flex-col items-center justify-center text-center gap-1 relative overflow-hidden"
+                  className="bg-white dark:bg-slate-700/30 p-4 rounded-2xl border border-orange-100 dark:border-white/5 shadow-sm flex flex-col items-center justify-center text-center gap-1 relative overflow-hidden"
                 >
                   <div className="absolute top-0 right-0 w-12 h-12 bg-orange-500/10 rounded-bl-full -mr-2 -mt-2"></div>
                   <span className="text-3xl font-black text-decom-status-pending">{stats.pending}</span>
@@ -221,33 +224,33 @@ function ConfirmationContent() {
 
                 <motion.div
                   whileHover={{ y: -3 }}
-                  className="bg-white dark:bg-white/5 p-4 rounded-2xl border border-blue-100 dark:border-blue-500/20 shadow-sm flex flex-col items-center justify-center text-center gap-1"
+                  className="bg-white dark:bg-slate-700/30 p-4 rounded-2xl border border-blue-100 dark:border-white/5 shadow-sm flex flex-col items-center justify-center text-center gap-1"
                 >
                   <span className="text-3xl font-black text-decom-status-planning">{stats.in_progress}</span>
                   <span className="text-[10px] uppercase tracking-wider font-bold text-dashboard-text-muted">En Diseño</span>
                 </motion.div>
               </div>
             ) : (
-              <div className="text-center p-4 text-sm text-gray-500">No disponible</div>
+              <div className="text-center p-4 text-sm text-gray-500 dark:text-gray-400">No disponible</div>
             )}
           </div>
         </motion.div>
 
         {/* Upcoming Events Preview - Keeping it compact */}
         {stats && stats.upcoming_events?.length > 0 && (
-          <motion.div variants={itemVariants} className="bg-dashboard-card border border-dashboard-card-border rounded-2xl p-6 overflow-hidden">
+          <motion.div variants={itemVariants} className="bg-dashboard-card dark:bg-slate-800/60 border border-dashboard-card-border dark:border-white/10 rounded-2xl p-6 overflow-hidden backdrop-blur-md">
             <h4 className="text-sm font-black uppercase tracking-widest text-dashboard-text-muted mb-4 flex items-center gap-2">
               <IconCalendar size={16} /> Próximos Eventos
             </h4>
             <div className="space-y-3">
               {stats.upcoming_events.slice(0, 3).map((event, idx) => (
-                <div key={idx} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-800 last:border-0">
+                <div key={idx} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
                   <div className="flex flex-col">
-                    <span className="text-sm font-bold text-decom-primary dark:text-white">{event.event_name}</span>
+                    <span className="text-sm font-bold text-[#16233B] dark:text-white">{event.event_name}</span>
                     <span className="text-xs text-dashboard-text-secondary dark:text-gray-400">{event.committee?.name}</span>
                   </div>
                   <div className="text-right">
-                    <span className="text-xs font-bold text-decom-primary dark:text-blue-300 block">
+                    <span className="text-xs font-bold text-[#16233B] dark:text-blue-300 block">
                       {new Date(event.event_date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
                     </span>
                   </div>
@@ -261,8 +264,8 @@ function ConfirmationContent() {
         <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
           <Link href="/calendar" className="w-full">
             <Button variant="outline" fullWidth className="h-14 border-2 rounded-2xl hover:bg-white dark:hover:bg-white/10 hover:border-decom-primary/30 dark:hover:border-white/30 dark:bg-transparent dark:text-white dark:border-white/20 group">
-              <span className="flex items-center gap-2 font-bold text-decom-primary dark:text-white">
-                <IconCalendar className="text-dashboard-text-muted group-hover:text-decom-primary dark:group-hover:text-white transition-colors" />
+              <span className="flex items-center gap-2 font-bold text-[#16233B] dark:text-white">
+                <IconCalendar className="text-dashboard-text-muted group-hover:text-[#16233B] dark:group-hover:text-white transition-colors" />
                 Ver Calendario Público
               </span>
             </Button>
@@ -295,8 +298,8 @@ export default function ConfirmationPage() {
       <Suspense fallback={
         <div className="min-h-screen bg-dashboard-bg flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
-            <div className="w-12 h-12 border-4 border-decom-primary border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-decom-primary font-bold animate-pulse">Cargando...</p>
+            <div className="w-12 h-12 border-4 border-decom-primary dark:border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-decom-primary dark:text-white font-bold animate-pulse">Cargando...</p>
           </div>
         </div>
       }>
