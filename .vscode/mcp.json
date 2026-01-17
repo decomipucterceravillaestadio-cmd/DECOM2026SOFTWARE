@@ -12,18 +12,21 @@
 				"SUPABASE_ACCESS_TOKEN": "sbp_2f7fce1d23ea07fd76143b6b29a8317b74075731"
 			}
 		},
-
-		"mcpContext7": {	
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp"]
-    },
-	
-	 "mcpAceternityui": {
-      "command": "npx",
-      "args": ["aceternityui-mcp"]
-    }
-		
+		"mcpContext7": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"@upstash/context7-mcp"
+			]
+		},
+		"mcpAceternityui": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"aceternityui-mcp"
+			]
+		}
 	},
 	"inputs": []
 }

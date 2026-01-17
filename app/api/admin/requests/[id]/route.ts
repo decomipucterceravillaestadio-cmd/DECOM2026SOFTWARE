@@ -204,3 +204,100 @@ export async function PATCH(
     )
   }
 }
+
+/**
+ * DELETE /api/admin/requests/[id]
+ * Elimina una solicitud específica
+ */
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    const supabase = await createServerClient()
+
+    // Verificar autenticación
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    }
+
+    // Verificar permisos - obtener rol del usuario
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('role')
+      .eq('auth_user_id', user.id)
+      .single()
+
+    if (userError || !userData) {
+      return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 403 })
+    }
+
+    // Verificar si tiene permisos para eliminar solicitudes
+    const userRole = userData.role
+    const hasPermission = userRole === 'admin' || userRole === 'presidente'
+
+    if (!hasPermission) {
+      return NextResponse.json(
+        { error: 'No tienes permisos para eliminar solicitudes' },
+        { status: 403 }
+      )
+    }
+
+    // Verificar que la solicitud existe
+    const { data: existingRequest, error: checkError } = await supabase
+      .from('requests')
+      .select('id, event_name')
+      .eq('id', id)
+      .single()
+
+    if (checkError || !existingRequest) {
+      return NextResponse.json(
+        { error: 'Solicitud no encontrada' },
+        { status: 404 }
+      )
+    }
+
+    // Eliminar el historial de la solicitud primero (por restricciones de clave foránea)
+    const { error: historyDeleteError } = await supabase
+      .from('request_history')
+      .delete()
+      .eq('request_id', id)
+
+    if (historyDeleteError) {
+      console.error('Error deleting request history:', historyDeleteError)
+      return NextResponse.json(
+        { error: 'Error al eliminar el historial de la solicitud' },
+        { status: 500 }
+      )
+    }
+
+    // Eliminar la solicitud
+    const { error: deleteError } = await supabase
+      .from('requests')
+      .delete()
+      .eq('id', id)
+
+    if (deleteError) {
+      console.error('Error deleting request:', deleteError)
+      return NextResponse.json(
+        { error: 'Error al eliminar la solicitud' },
+        { status: 500 }
+      )
+    }
+
+    console.log(`🗑️ Request "${existingRequest.event_name}" deleted successfully`)
+    return NextResponse.json({
+      success: true,
+      message: 'Solicitud eliminada correctamente'
+    })
+
+  } catch (error) {
+    console.error('Error in DELETE /api/admin/requests/[id]:', error)
+    return NextResponse.json(
+      { error: 'Error interno del servidor' },
+      { status: 500 }
+    )
+  }
+}

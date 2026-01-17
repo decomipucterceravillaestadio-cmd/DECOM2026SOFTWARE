@@ -42,38 +42,38 @@ interface RequestCardProps {
 
 const getStatusConfig = (status: string) => {
   const configs = {
-    pending: {
+    'Pendiente': {
       label: 'Pendiente',
       color: 'bg-[#F49E2C]/10 text-[#F49E2C] border-[#F49E2C]/20',
       dotColor: 'bg-[#F49E2C]',
       barColor: 'bg-[#F49E2C]'
     },
-    in_progress: {
-      label: 'En proceso',
+    'En planificación': {
+      label: 'En Planificación',
       color: 'bg-[#15539C]/10 text-[#15539C] border-[#15539C]/20',
       dotColor: 'bg-[#15539C]',
       barColor: 'bg-[#15539C]'
     },
-    approved: {
-      label: 'Aprobado',
+    'En diseño': {
+      label: 'En Diseño',
+      color: 'bg-[#9333EA]/10 text-[#9333EA] border-[#9333EA]/20',
+      dotColor: 'bg-[#9333EA]',
+      barColor: 'bg-[#9333EA]'
+    },
+    'Lista para entrega': {
+      label: 'Lista para Entrega',
       color: 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20',
       dotColor: 'bg-[#10B981]',
       barColor: 'bg-[#10B981]'
     },
-    completed: {
-      label: 'Completado',
-      color: 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20',
-      dotColor: 'bg-[#10B981]',
-      barColor: 'bg-[#10B981]'
-    },
-    rejected: {
-      label: 'Rechazado',
-      color: 'bg-red-500/10 text-red-500 border-red-500/20',
-      dotColor: 'bg-red-500',
-      barColor: 'bg-red-500'
+    'Entregada': {
+      label: 'Entregada',
+      color: 'bg-gray-500/10 text-gray-500 border-gray-500/20',
+      dotColor: 'bg-gray-500',
+      barColor: 'bg-gray-500'
     }
   }
-  return configs[status as keyof typeof configs] || configs.pending
+  return configs[status as keyof typeof configs] || configs['Pendiente']
 }
 
 const getPriorityConfig = (score: number | null) => {

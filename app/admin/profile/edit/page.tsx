@@ -21,7 +21,7 @@ import { FormField, FormSection } from '@/app/components/Forms/FormComponents'
 
 export default function EditProfilePage() {
   const router = useRouter()
-  const { user } = useAuth()
+  const { user, refreshUser } = useAuth()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -29,6 +29,10 @@ export default function EditProfilePage() {
   })
   const [isSaving, setIsSaving] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    refreshUser()
+  }, [refreshUser])
 
   useEffect(() => {
     if (user) {

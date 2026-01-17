@@ -27,7 +27,7 @@ interface Request {
   created_at: string
 }
 
-type FilterType = 'all' | 'pending' | 'in_progress' | 'urgent'
+type FilterType = 'all' | 'Pendiente' | 'En planificación' | 'En diseño' | 'Lista para entrega' | 'Entregada' | 'urgent'
 
 export default function AdminListPage() {
   const router = useRouter()
@@ -37,12 +37,6 @@ export default function AdminListPage() {
   const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState<FilterType>('all')
   const [searchTerm, setSearchTerm] = useState('')
-
-  const getNormalizedStatus = (status: string) => {
-    const s = status?.toLowerCase().trim()
-    if (['in_progress', 'approved', 'completed', 'rejected'].includes(s)) return s
-    return 'pending'
-  }
 
   const fetchRequests = async () => {
     setLoading(true)
@@ -66,10 +60,16 @@ export default function AdminListPage() {
   const filteredRequests = requests.filter(request => {
     const matchesFilter = (() => {
       switch (activeFilter) {
-        case 'pending':
-          return getNormalizedStatus(request.status) === 'pending'
-        case 'in_progress':
-          return getNormalizedStatus(request.status) === 'in_progress'
+        case 'Pendiente':
+          return request.status === 'Pendiente'
+        case 'En planificación':
+          return request.status === 'En planificación'
+        case 'En diseño':
+          return request.status === 'En diseño'
+        case 'Lista para entrega':
+          return request.status === 'Lista para entrega'
+        case 'Entregada':
+          return request.status === 'Entregada'
         case 'urgent':
           return request.priority_score && request.priority_score >= 8
         default:
@@ -87,8 +87,10 @@ export default function AdminListPage() {
 
   const filters = [
     { id: 'all' as FilterType, label: 'Todas', count: requests.length },
-    { id: 'pending' as FilterType, label: 'Pendientes', count: requests.filter(r => getNormalizedStatus(r.status) === 'pending').length },
-    { id: 'in_progress' as FilterType, label: 'En proceso', count: requests.filter(r => getNormalizedStatus(r.status) === 'in_progress').length },
+    { id: 'Pendiente' as FilterType, label: 'Pendientes', count: requests.filter(r => r.status === 'Pendiente').length },
+    { id: 'En planificación' as FilterType, label: 'En Planificación', count: requests.filter(r => r.status === 'En planificación').length },
+    { id: 'En diseño' as FilterType, label: 'En Diseño', count: requests.filter(r => r.status === 'En diseño').length },
+    { id: 'Lista para entrega' as FilterType, label: 'Listas', count: requests.filter(r => r.status === 'Lista para entrega').length },
     { id: 'urgent' as FilterType, label: 'Urgentes', count: requests.filter(r => r.priority_score && r.priority_score >= 8).length },
   ]
 
@@ -118,56 +120,60 @@ export default function AdminListPage() {
       </div>
 
       {/* Filters Bar */}
-      <div className="bg-dashboard-card backdrop-blur-md rounded-2xl border border-dashboard-card-border p-4 shadow-xl flex flex-wrap items-center justify-between gap-4 transition-all duration-300">
-        <div className="flex items-center gap-2">
-          <div className="bg-decom-primary/10 p-2 rounded-lg text-[#F49E2C]">
-            <IconFilter className="w-4 h-4" />
+      <div className="bg-dashboard-card backdrop-blur-md rounded-2xl border border-dashboard-card-border p-3 md:p-4 shadow-xl transition-all duration-300">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 md:gap-4">
+          <div className="flex items-center gap-2 overflow-hidden min-w-0 flex-1">
+            <div className="bg-decom-primary/10 p-2 rounded-lg text-[#F49E2C] shrink-0">
+              <IconFilter className="w-4 h-4" />
+            </div>
+            <div className="min-w-0 flex-1 overflow-hidden">
+              <FilterChips
+                filters={filters}
+                activeFilter={activeFilter}
+                onFilterChange={(filterId) => setActiveFilter(filterId as FilterType)}
+              />
+            </div>
           </div>
-          <FilterChips
-            filters={filters}
-            activeFilter={activeFilter}
-            onFilterChange={(filterId) => setActiveFilter(filterId as FilterType)}
-          />
-        </div>
-        <div className="text-[10px] font-black text-dashboard-text-muted uppercase tracking-widest bg-dashboard-bg px-3 py-2 rounded-full border border-dashboard-card-border transition-colors duration-300">
-          {filteredRequests.length} RESULTADOS ENCONTRADOS
+          <div className="text-[9px] md:text-[10px] font-black text-dashboard-text-muted uppercase tracking-widest bg-dashboard-bg px-2.5 md:px-3 py-1.5 md:py-2 rounded-full border border-dashboard-card-border transition-colors duration-300 whitespace-nowrap shrink-0 self-start sm:self-auto">
+            {filteredRequests.length} RESULTADO{filteredRequests.length !== 1 ? 'S' : ''}
+          </div>
         </div>
       </div>
 
-      {/* Results Grid */}
-      <div className="space-y-4 pb-20">
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="h-40 bg-dashboard-card-border/10 rounded-2xl animate-pulse border border-dashboard-card-border" />
-            ))}
-          </div>
-        ) : filteredRequests.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-32 text-center opacity-30">
-            <div className="size-20 bg-dashboard-card-border/10 rounded-full flex items-center justify-center mb-6">
-              <IconClipboardList className="w-10 h-10" />
-            </div>
-            <h3 className="text-xl font-bold text-dashboard-text-primary mb-2">No se encontraron resultados</h3>
-            <p className="text-sm">Intenta ajustar los filtros para encontrar lo que buscas.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredRequests.map((request, idx) => (
-              <motion.div
-                key={request.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
-              >
-                <RequestCard
-                  request={request}
-                  onClick={() => router.push(`/admin/requests/${request.id}`)}
-                />
-              </motion.div>
-            ))}
-          </div>
-        )}
+      {/* Results Grid */ }
+  <div className="space-y-4 pb-20">
+    {loading ? (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[1, 2, 3, 4, 5, 6].map(i => (
+          <div key={i} className="h-40 bg-dashboard-card-border/10 rounded-2xl animate-pulse border border-dashboard-card-border" />
+        ))}
       </div>
-    </DashboardLayout>
+    ) : filteredRequests.length === 0 ? (
+      <div className="flex flex-col items-center justify-center py-32 text-center opacity-30">
+        <div className="size-20 bg-dashboard-card-border/10 rounded-full flex items-center justify-center mb-6">
+          <IconClipboardList className="w-10 h-10" />
+        </div>
+        <h3 className="text-xl font-bold text-dashboard-text-primary mb-2">No se encontraron resultados</h3>
+        <p className="text-sm">Intenta ajustar los filtros para encontrar lo que buscas.</p>
+      </div>
+    ) : (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        {filteredRequests.map((request, idx) => (
+          <motion.div
+            key={request.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.05 }}
+          >
+            <RequestCard
+              request={request}
+              onClick={() => router.push(`/admin/requests/${request.id}`)}
+            />
+          </motion.div>
+        ))}
+      </div>
+    )}
+  </div>
+    </DashboardLayout >
   )
 }

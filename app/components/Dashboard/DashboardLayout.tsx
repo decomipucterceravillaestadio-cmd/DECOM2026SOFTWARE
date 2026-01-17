@@ -10,10 +10,10 @@ import {
     IconPlus,
     IconBell,
     IconCalendar,
-    IconUsers,
     IconSearch,
     IconMenu2,
-    IconX
+    IconX,
+    IconUsers
 } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -42,6 +42,7 @@ export function DashboardLayout({
     const pathname = usePathname()
     const { user, loading } = useAuth()
     const canManageUsers = useHasPermission(Permission.VIEW_USERS)
+    const canManageCommittees = useHasPermission(Permission.EDIT_COMMITTEES)
     const [open, setOpen] = useState(false)
     const [mounted, setMounted] = useState(false)
 
@@ -56,8 +57,9 @@ export function DashboardLayout({
         { label: 'Calendario', href: '/admin/calendar', icon: <IconCalendar className="h-5 w-5" /> },
     ]
 
-    const adminLinks = canManageUsers ? [
-        { label: 'Gestión de Usuarios', href: '/admin/users', icon: <IconUsers className="h-5 w-5" /> }
+    const adminLinks = canManageUsers || canManageCommittees ? [
+        ...(canManageUsers ? [{ label: 'Gestión de Usuarios', href: '/admin/users', icon: <IconUsers className="h-5 w-5" /> }] : []),
+        ...(canManageCommittees ? [{ label: 'Gestión de Comités', href: '/admin/committees', icon: <IconUsers className="h-5 w-5" /> }] : [])
     ] : []
 
     const links = [

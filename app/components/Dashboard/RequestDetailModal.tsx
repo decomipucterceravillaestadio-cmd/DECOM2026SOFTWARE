@@ -18,7 +18,8 @@ import {
   IconInfoCircle,
   IconFlag,
   IconPalette,
-  IconSend
+  IconSend,
+  IconTrash
 } from '@tabler/icons-react'
 import { generateWhatsAppLink } from '@/app/lib/utils/whatsapp'
 import { useAuth, useHasPermission } from '@/app/contexts/AuthContext'
@@ -72,24 +73,18 @@ interface RequestDetailModalProps {
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'pending': return 'bg-yellow-100 text-yellow-700 border-yellow-200'
-    case 'in_progress': return 'bg-blue-100 text-blue-700 border-blue-200'
-    case 'completed': return 'bg-green-100 text-green-700 border-green-200'
-    case 'approved': return 'bg-purple-100 text-purple-700 border-purple-200'
-    case 'rejected': return 'bg-red-100 text-red-700 border-red-200'
+    case 'Pendiente': return 'bg-yellow-100 text-yellow-700 border-yellow-200'
+    case 'En planificación': return 'bg-blue-100 text-blue-700 border-blue-200'
+    case 'En diseño': return 'bg-purple-100 text-purple-700 border-purple-200'
+    case 'Lista para entrega': return 'bg-green-100 text-green-700 border-green-200'
+    case 'Entregada': return 'bg-gray-100 text-gray-700 border-gray-200'
     default: return 'bg-gray-100 text-gray-700 border-gray-200'
   }
 }
 
 const getStatusLabel = (status: string) => {
-  switch (status) {
-    case 'pending': return 'Pendiente'
-    case 'in_progress': return 'En Progreso'
-    case 'completed': return 'Completado'
-    case 'approved': return 'Aprobado'
-    case 'rejected': return 'Rechazado'
-    default: return status
-  }
+  // Los valores ya vienen en español de la base de datos
+  return status
 }
 
 const getPriorityColor = (priority: number | null) => {
@@ -107,12 +102,14 @@ export default function RequestDetailModal({
 }: RequestDetailModalProps) {
   const { user } = useAuth()
   const canChangeStatus = useHasPermission(Permission.CHANGE_REQUEST_STATUS)
+  const canDeleteRequests = useHasPermission(Permission.DELETE_REQUESTS)
   const [request, setRequest] = useState<RequestDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
   const [newStatus, setNewStatus] = useState('')
   const [changeReason, setChangeReason] = useState('')
   const [visibleInPublicCalendar, setVisibleInPublicCalendar] = useState(true)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     if (!requestId) {
@@ -163,6 +160,36 @@ export default function RequestDetailModal({
       console.error('Error updating request:', error)
     } finally {
       setUpdating(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!request) return
+
+    const confirmed = confirm(
+      `¿Estás seguro de que quieres eliminar la solicitud "${request.event_name}"?\n\nEsta acción no se puede deshacer y eliminará permanentemente la solicitud.`
+    )
+
+    if (!confirmed) return
+
+    setDeleting(true)
+    try {
+      const response = await fetch(`/api/admin/requests/${request.id}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        onUpdate()
+        onClose()
+      } else {
+        const errorData = await response.json()
+        alert(`Error al eliminar la solicitud: ${errorData.error || 'Error desconocido'}`)
+      }
+    } catch (error) {
+      console.error('Error deleting request:', error)
+      alert('Error al eliminar la solicitud. Inténtalo de nuevo.')
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -369,11 +396,11 @@ export default function RequestDetailModal({
                             onChange={(e) => setNewStatus(e.target.value)}
                             className="w-full px-3 py-2.5 text-base border border-neutral-300 dark:border-neutral-700 rounded-xl bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
                           >
-                            <option value="pending">Pendiente</option>
-                            <option value="in_progress">En Progreso</option>
-                            <option value="completed">Completado</option>
-                            <option value="approved">Aprobado</option>
-                            <option value="rejected">Rechazado</option>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="En planificación">En planificación</option>
+                            <option value="En diseño">En diseño</option>
+                            <option value="Lista para entrega">Lista para entrega</option>
+                            <option value="Entregada">Entregada</option>
                           </select>
                         </div>
 
@@ -441,6 +468,52 @@ export default function RequestDetailModal({
                             Ir al Chat
                           </Button>
                         </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Delete Request Card */}
+                  {canDeleteRequests && (
+                    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 shadow-sm">
+                      <h3 className="font-bold text-neutral-900 dark:text-neutral-100 mb-4 flex items-center gap-2">
+                        <IconTrash className="w-5 h-5 text-red-500" />
+                        Eliminar Solicitud
+                      </h3>
+
+                      <div className="space-y-4">
+                        <div className="p-4 bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-100 dark:border-red-800">
+                          <div className="flex items-start gap-3">
+                            <IconInfoCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+                            <div className="flex-1">
+                              <h4 className="text-sm font-semibold text-red-800 dark:text-red-300 mb-1">
+                                Acción Irreversible
+                              </h4>
+                              <p className="text-sm text-red-700 dark:text-red-400">
+                                Eliminar esta solicitud la removerá permanentemente del sistema. Esta acción no se puede deshacer.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <Button
+                          onClick={handleDelete}
+                          disabled={deleting}
+                          fullWidth
+                          variant="outline"
+                          className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/10"
+                        >
+                          {deleting ? (
+                            <div className="flex items-center justify-center gap-2">
+                              <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                              Eliminando...
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-center gap-2">
+                              <IconTrash className="w-4 h-4" />
+                              Eliminar Solicitud
+                            </div>
+                          )}
+                        </Button>
                       </div>
                     </div>
                   )}

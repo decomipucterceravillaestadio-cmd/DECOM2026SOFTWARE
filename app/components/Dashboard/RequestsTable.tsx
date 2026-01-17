@@ -76,11 +76,11 @@ export default function RequestsTable({ onSelectRequest, searchTerm = '' }: Requ
 
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { label: string; class: string }> = {
-      pending: { label: 'Pendiente', class: 'bg-[#F49E2C]/10 text-[#F49E2C] border-[#F49E2C]/20' },
-      in_progress: { label: 'En Progreso', class: 'bg-[#15539C]/10 text-[#15539C] border-[#15539C]/20' },
-      completed: { label: 'Completado', class: 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20' },
-      approved: { label: 'Aprobado', class: 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20' },
-      rejected: { label: 'Rechazado', class: 'bg-red-500/10 text-red-500 border-red-500/20' },
+      'Pendiente': { label: 'Pendiente', class: 'bg-[#F49E2C]/10 text-[#F49E2C] border-[#F49E2C]/20' },
+      'En planificación': { label: 'En Planificación', class: 'bg-[#15539C]/10 text-[#15539C] border-[#15539C]/20' },
+      'En diseño': { label: 'En Diseño', class: 'bg-[#9333EA]/10 text-[#9333EA] border-[#9333EA]/20' },
+      'Lista para entrega': { label: 'Lista para Entrega', class: 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20' },
+      'Entregada': { label: 'Entregada', class: 'bg-gray-500/10 text-gray-500 border-gray-500/20' },
     }
     const config = statusMap[status] || { label: status, class: 'bg-dashboard-card-border/10 text-dashboard-text-muted border-dashboard-card-border/20' }
     return (
@@ -92,9 +92,10 @@ export default function RequestsTable({ onSelectRequest, searchTerm = '' }: Requ
 
   const tabs = [
     { title: 'TODAS', value: 'all' },
-    { title: 'PENDIENTES', value: 'pending' },
-    { title: 'EN PROGRESO', value: 'in_progress' },
-    { title: 'COMPLETADOS', value: 'completed' },
+    { title: 'PENDIENTES', value: 'Pendiente' },
+    { title: 'EN PLANIFICACIÓN', value: 'En planificación' },
+    { title: 'EN DISEÑO', value: 'En diseño' },
+    { title: 'LISTAS', value: 'Lista para entrega' },
   ]
 
   return (

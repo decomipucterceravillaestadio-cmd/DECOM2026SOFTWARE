@@ -59,11 +59,11 @@ export default function CalendarGrid({ selectedDate, events, onDaySelect, select
     if (dayEvents.length === 0) return null
 
     const statusColors: Record<string, string> = {
-      pending: 'bg-decom-secondary shadow-[0_0_5px_rgba(244,158,44,0.5)]',
-      in_progress: 'bg-decom-primary-light shadow-[0_0_5px_rgba(21,83,156,0.5)]',
-      completed: 'bg-decom-success shadow-[0_0_5px_rgba(16,185,129,0.5)]',
-      approved: 'bg-decom-success shadow-[0_0_5px_rgba(16,185,129,0.5)]',
-      rejected: 'bg-decom-error shadow-[0_0_5px_rgba(239,68,68,0.5)]',
+      'Pendiente': 'bg-decom-secondary shadow-[0_0_5px_rgba(244,158,44,0.5)]',
+      'En planificación': 'bg-decom-primary-light shadow-[0_0_5px_rgba(21,83,156,0.5)]',
+      'En diseño': 'bg-purple-500 shadow-[0_0_5px_rgba(147,51,234,0.5)]',
+      'Lista para entrega': 'bg-decom-success shadow-[0_0_5px_rgba(16,185,129,0.5)]',
+      'Entregada': 'bg-gray-500 shadow-[0_0_5px_rgba(107,114,128,0.5)]',
     }
 
     // Mostrar máximo 3 dots
