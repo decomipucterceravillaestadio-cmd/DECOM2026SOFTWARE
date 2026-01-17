@@ -208,8 +208,8 @@ export function AceternitiyLoginForm({
                   }}
                   disabled={isLoaderActive}
                   className={`w-full px-4 py-3 pl-12 rounded-lg bg-white/10 backdrop-blur-sm text-white placeholder-white/50 border-2 ${errors.email
-                      ? "border-red-400/50"
-                      : "border-white/20 group-focus-within:border-[#F49E2C]"
+                    ? "border-red-400/50"
+                    : "border-white/20 group-focus-within:border-[#F49E2C]"
                     } focus:outline-none focus:ring-2 focus:ring-[#F49E2C]/30 transition-all duration-300 disabled:opacity-50`}
                 />
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#15539C] group-focus-within:text-[#F49E2C] transition-colors">
@@ -247,8 +247,8 @@ export function AceternitiyLoginForm({
                   }}
                   disabled={isLoaderActive}
                   className={`w-full px-4 py-3 pl-12 pr-12 rounded-lg bg-white/10 backdrop-blur-sm text-white placeholder-white/50 border-2 ${errors.password
-                      ? "border-red-400/50"
-                      : "border-white/20 group-focus-within:border-[#F49E2C]"
+                    ? "border-red-400/50"
+                    : "border-white/20 group-focus-within:border-[#F49E2C]"
                     } focus:outline-none focus:ring-2 focus:ring-[#F49E2C]/30 transition-all duration-300 disabled:opacity-50`}
                 />
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#15539C] group-focus-within:text-[#F49E2C] transition-colors">
@@ -328,6 +328,9 @@ export function AceternitiyLoginForm({
             <div className="pt-4 border-t border-white/10">
               <p className="text-xs text-white/50">
                 © 2026 IPUC Villa Estado • Sistema DECOM
+              </p>
+              <p className="text-[9px] text-white/5 mt-1 hover:text-white/20 transition-colors cursor-default select-none">
+                Software by Juan Aguilar
               </p>
             </div>
           </motion.div>

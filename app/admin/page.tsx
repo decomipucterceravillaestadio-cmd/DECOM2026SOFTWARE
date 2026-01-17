@@ -7,6 +7,8 @@ import {
   IconPlus,
   IconCalendar,
   IconUsers,
+  IconArrowRight,
+  IconSparkles
 } from '@tabler/icons-react'
 import StatsGrid from '@/app/components/Dashboard/StatsGrid'
 import RequestsTable from '@/app/components/Dashboard/RequestsTable'
@@ -16,6 +18,7 @@ import { Permission } from '@/app/lib/permissions'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { DashboardLayout } from '@/app/components/Dashboard/DashboardLayout'
+import { motion } from 'framer-motion'
 
 export default function AdminDashboard() {
   const router = useRouter()
@@ -44,74 +47,93 @@ export default function AdminDashboard() {
       onSearchChange={setSearchTerm}
     >
       {/* Welcome Section */}
-      <div className="space-y-1">
-        <h1 className="text-3xl md:text-[32px] font-bold text-dashboard-text-primary tracking-tight">
-          {getGreeting()}, <span className="font-extrabold text-[#F49E2C]">{user?.full_name?.split(' ')[0] || 'Administrador'}</span>
-        </h1>
-        <div className="flex items-center justify-between">
-          <p className="text-dashboard-text-secondary text-sm font-medium">
-            {format(new Date(), "eeee, d 'de' MMMM", { locale: es })}
-          </p>
-          {/* Breadcrumbs */}
-          <nav className="hidden md:flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-dashboard-text-muted">
-            <span className="hover:text-[#F49E2C] cursor-pointer transition-colors">Home</span>
-            <span className="text-dashboard-card-border">/</span>
-            <span className="text-[#F49E2C]/80">Dashboard</span>
-          </nav>
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#15539C] to-[#15539C]/80 p-8 shadow-2xl mb-8">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 blur-[100px] rounded-full pointer-events-none -translate-y-1/2 translate-x-1/2" />
+        <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-2">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white/90 text-xs font-medium backdrop-blur-sm"
+            >
+              <IconSparkles className="w-3 h-3 text-[#F49E2C]" />
+              <span>Panel de Control</span>
+            </motion.div>
+            <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
+              {getGreeting()}, <span className="text-[#F49E2C]">{user?.full_name?.split(' ')[0] || 'Administrador'}</span>
+            </h1>
+            <p className="text-blue-100 text-lg font-medium max-w-xl">
+              Bienvenido de nuevo. Aquí tienes un resumen de la actividad reciente y las tareas pendientes.
+            </p>
+          </div>
+          <div className="flex flex-col items-start md:items-end gap-1">
+            <p className="text-blue-200 text-sm font-medium uppercase tracking-wider">Hoy es</p>
+            <p className="text-white text-xl font-bold capitalize">
+              {format(new Date(), "eeee, d 'de' MMMM", { locale: es })}
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Quick Action Grid */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { label: 'Nueva Solicitud', icon: <IconPlus className="w-10 h-10" />, href: '/new-request' },
-          { label: 'Calendario', icon: <IconCalendar className="w-10 h-10" />, href: '/admin/calendar' },
-          { label: 'Lista Completa', icon: <IconClipboardList className="w-10 h-10" />, href: '/admin/list' },
-          { label: 'Usuarios', icon: <IconUsers className="w-10 h-10" />, href: '/admin/users' }
-        ].filter(item => item.label !== 'Usuarios' || canManageUsers).map((action, i) => (
-          <button
-            key={i}
-            onClick={() => router.push(action.href)}
-            className="group relative flex items-center gap-5 p-5 bg-dashboard-card backdrop-blur-md border border-dashboard-card-border rounded-[12px] transition-all duration-300 hover:bg-decom-primary/10 hover:scale-[1.02] hover:shadow-2xl hover:shadow-black/20 active:scale-95 text-left overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity translate-x-4 -translate-y-4">
-              {action.icon}
-            </div>
-            <div className="p-3 rounded-xl bg-dashboard-bg text-[#F49E2C] group-hover:bg-[#F49E2C] group-hover:text-white transition-all shadow-inner group-hover:scale-110 border border-dashboard-card-border">
-              <div className="w-6 h-6 flex items-center justify-center">
+      <section className="mb-8">
+        <div className="flex items-center justify-between mb-4 px-2">
+          <h2 className="text-lg font-bold text-slate-800 dark:text-white tracking-tight">Accesos Rápidos</h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { label: 'Nueva Solicitud', icon: <IconPlus className="w-6 h-6" />, href: '/new-request', color: 'bg-blue-500', text: 'text-blue-500' },
+            { label: 'Calendario', icon: <IconCalendar className="w-6 h-6" />, href: '/admin/calendar', color: 'bg-orange-500', text: 'text-orange-500' },
+            { label: 'Lista Completa', icon: <IconClipboardList className="w-6 h-6" />, href: '/admin/list', color: 'bg-purple-500', text: 'text-purple-500' },
+            { label: 'Usuarios', icon: <IconUsers className="w-6 h-6" />, href: '/admin/users', color: 'bg-emerald-500', text: 'text-emerald-500' }
+          ].filter(item => item.label !== 'Usuarios' || canManageUsers).map((action, i) => (
+            <button
+              key={i}
+              onClick={() => router.push(action.href)}
+              className="group relative flex items-center gap-4 p-4 bg-white dark:bg-[#0F172A]/40 backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1 text-left overflow-hidden"
+            >
+              <div className={`p-3 rounded-xl bg-slate-50 dark:bg-white/5 ${action.text} group-hover:scale-110 transition-transform duration-300 border border-slate-100 dark:border-white/10`}>
                 {action.icon}
               </div>
-            </div>
-            <div className="z-10">
-              <p className="text-dashboard-text-primary font-bold text-lg leading-tight tracking-tight group-hover:text-[#F49E2C] transition-colors">{action.label}</p>
-              <p className="text-[10px] text-dashboard-text-muted font-bold uppercase tracking-widest mt-0.5">Acceso Rápido</p>
-            </div>
-          </button>
-        ))}
+              <div className="flex-1 z-10">
+                <p className="text-slate-700 dark:text-slate-200 font-bold text-base leading-tight group-hover:text-blue-600 dark:group-hover:text-white transition-colors">{action.label}</p>
+                <div className="flex items-center gap-1 mt-1 text-xs font-medium text-slate-400 group-hover:text-blue-500 transition-colors">
+                  <span>Ir ahora</span>
+                  <IconArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
       </section>
 
-      <div className="grid grid-cols-12 gap-6 pb-10">
+      <div className="grid grid-cols-12 gap-8 pb-10">
         {/* Stats area */}
         <section className="col-span-12" key={`stats-${refreshKey}`}>
           <StatsGrid />
         </section>
 
         {/* Recent Requests Table Section */}
-        <section className="col-span-12 space-y-4" key={`table-${refreshKey}`}>
+        <section className="col-span-12 space-y-5" key={`table-${refreshKey}`}>
           <div className="flex items-center justify-between px-2">
-            <h2 className="text-[20px] font-bold text-dashboard-text-primary tracking-tight flex items-center gap-3">
-              <div className="w-1 h-5 bg-[#F49E2C] rounded-full" />
-              Solicitudes Recientes
-            </h2>
+            <div>
+              <h2 className="text-xl font-bold text-slate-800 dark:text-white tracking-tight flex items-center gap-3">
+                <span className="w-1.5 h-6 bg-[#F49E2C] rounded-full inline-block shadow-sm shadow-orange-200 dark:shadow-none"></span>
+                Solicitudes Recientes
+              </h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 pl-4">Gestione las últimas solicitudes recibidas</p>
+            </div>
+
             <button
               onClick={() => router.push('/admin/list')}
-              className="px-5 py-2 rounded-[10px] bg-dashboard-card border border-dashboard-card-border text-dashboard-text-secondary text-xs font-bold hover:bg-decom-primary hover:text-white hover:border-[#F49E2C]/50 transition-all active:scale-95 shadow-lg shadow-black/10"
+              className="group flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white dark:bg-[#0F172A]/40 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 text-sm font-bold hover:bg-slate-50 dark:hover:bg-white/5 transition-all active:scale-95 shadow-sm"
             >
-              VER TODAS
+              <span>Ver todas</span>
+              <IconArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </button>
           </div>
 
-          <div className="bg-dashboard-card backdrop-blur-md rounded-[16px] border border-dashboard-card-border shadow-2xl overflow-hidden p-1">
+          <div className="bg-white dark:bg-[#0F172A]/40 backdrop-blur-xl rounded-3xl border border-slate-200 dark:border-white/5 shadow-xl overflow-hidden p-1">
             <RequestsTable onSelectRequest={setSelectedRequestId} searchTerm={searchTerm} />
           </div>
         </section>

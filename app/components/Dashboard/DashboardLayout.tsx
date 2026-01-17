@@ -22,6 +22,7 @@ import { Permission } from '@/app/lib/permissions'
 import { ThemeToggle } from '../ThemeToggle'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
+import Image from 'next/image'
 
 interface DashboardLayoutProps {
     children: React.ReactNode
@@ -95,46 +96,71 @@ export function DashboardLayout({
                             animate={{ x: 0 }}
                             exit={{ x: '-100%' }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="fixed inset-y-0 left-0 w-72 bg-dashboard-sidebar shadow-2xl z-[70] md:hidden flex flex-col p-6 transition-colors duration-300"
+                            className="fixed inset-y-0 left-0 w-80 bg-white/95 dark:bg-[#0F172A]/95 backdrop-blur-xl shadow-2xl z-[70] md:hidden flex flex-col transition-colors duration-300 border-r border-slate-200/50 dark:border-white/5"
                         >
-                            <div className="flex items-center justify-between mb-8">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-[#15539C] flex items-center justify-center border border-[#F49E2C]/30 shadow-[0_0_15px_rgba(244,158,44,0.1)]">
-                                        <IconLayoutDashboard className="h-5 w-5 text-white" />
+                            <div className="p-8 border-b border-slate-100 dark:border-white/5 bg-gradient-to-br from-[#15539C]/5 to-transparent">
+                                <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center gap-3">
+                                        <div className="relative w-12 h-12 bg-gradient-to-br from-[#15539C] to-[#1e6ac2] rounded-xl flex items-center justify-center border border-white/20 shadow-lg shadow-blue-500/20 overflow-hidden">
+                                            <Image
+                                                src="/favicon.png"
+                                                alt="DECOM Logo"
+                                                fill
+                                                className="object-contain p-2"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-xl font-black tracking-tighter text-[#15539C] dark:text-white uppercase leading-none">DECOM</span>
+                                        </div>
                                     </div>
-                                    <span className="text-lg font-bold tracking-tight text-dashboard-text-primary uppercase mt-0.5">DECOM</span>
+                                    <button onClick={() => setOpen(false)} className="p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-orange-50 hover:text-[#F49E2C] dark:hover:bg-orange-500/10 transition-all">
+                                        <IconX className="w-5 h-5" />
+                                    </button>
                                 </div>
-                                <button onClick={() => setOpen(false)} className="p-2 text-dashboard-text-secondary hover:text-[#F49E2C] transition-colors">
-                                    <IconX className="w-6 h-6" />
-                                </button>
                             </div>
 
-                            <div className="flex-1 space-y-2 overflow-y-auto">
+                            <div className="flex-1 px-4 py-8 space-y-2 overflow-y-auto">
                                 {links.map((link, idx) => (
                                     <button
                                         key={idx}
                                         onClick={() => { router.push(link.href); setOpen(false); }}
                                         className={cn(
-                                            "flex items-center gap-4 px-4 py-4 rounded-xl text-sm font-medium transition-all group w-full text-left",
+                                            "flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-bold transition-all group w-full text-left relative overflow-hidden",
                                             isActive(link.href)
-                                                ? "bg-[#15539C]/20 text-[#F49E2C] shadow-sm border border-[#F49E2C]/20"
-                                                : "text-dashboard-text-secondary hover:bg-decom-primary/10 hover:text-dashboard-text-primary"
+                                                ? "bg-gradient-to-r from-[#15539C] to-[#1e6ac2] text-white shadow-xl shadow-blue-500/30 active:scale-95"
+                                                : "text-slate-500 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-white/5 hover:text-[#15539C] dark:hover:text-white active:scale-95"
                                         )}
                                     >
-                                        {link.icon}
-                                        <span className="mt-0.5">{link.label}</span>
+                                        <div className={cn(
+                                            "transition-transform duration-300 group-hover:scale-110",
+                                            isActive(link.href) ? "text-white" : "group-hover:text-[#15539C] dark:group-hover:text-[#F49E2C]"
+                                        )}>
+                                            {link.icon}
+                                        </div>
+                                        <span className="mt-0.5 relative z-10">{link.label}</span>
+                                        {isActive(link.href) && (
+                                            <motion.div layoutId="activeIndicatorMobile" className="absolute right-4 w-1.5 h-6 rounded-full bg-white/30" />
+                                        )}
                                     </button>
                                 ))}
                             </div>
 
-                            <div className="pt-6 border-t border-dashboard-card-border mt-auto">
+                            <div className="p-6 border-t border-slate-100 dark:border-white/5 mt-auto bg-slate-50/50 dark:bg-transparent">
                                 <button
                                     onClick={handleLogout}
-                                    className="flex items-center gap-4 px-4 py-4 text-sm font-medium text-dashboard-text-secondary hover:text-red-400 hover:bg-red-500/5 rounded-xl transition-all w-full"
+                                    className="flex items-center gap-4 px-5 py-4 text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-2xl transition-all w-full group overflow-hidden"
                                 >
-                                    <IconLogout className="h-5 w-5" />
+                                    <div className="p-2 rounded-lg bg-white dark:bg-white/5 shadow-sm group-hover:bg-red-100 dark:group-hover:bg-red-500/20 transition-colors">
+                                        <IconLogout className="h-5 w-5 transition-transform group-hover:-translate-x-1" />
+                                    </div>
                                     <span>Cerrar Sesión</span>
                                 </button>
+                                {/* Subtle Signature Mobile */}
+                                <div className="mt-8 text-center pb-4">
+                                    <p className="text-[10px] text-slate-400/40 dark:text-white/20 font-medium select-none">
+                                        Software by Juan Aguilar
+                                    </p>
+                                </div>
                             </div>
                         </motion.nav>
                     </>
@@ -142,45 +168,65 @@ export function DashboardLayout({
             </AnimatePresence>
 
             {/* Sidebar - Desktop */}
-            <nav className="hidden md:flex w-64 flex-col bg-dashboard-sidebar border-r border-dashboard-card-border transition-all duration-300 shadow-xl z-30">
-                <div className="h-16 flex items-center gap-3 px-6 border-b border-dashboard-card-border">
-                    <div className="w-8 h-8 rounded-lg bg-[#15539C] flex items-center justify-center border border-[#F49E2C]/30 shadow-[0_0_15px_rgba(244,158,44,0.1)]">
-                        <IconLayoutDashboard className="h-5 w-5 text-white" />
+            <nav className="hidden md:flex w-72 flex-col bg-white dark:bg-[#0F172A] border-r border-slate-200 dark:border-white/5 transition-all duration-300 shadow-[20px_0_40px_rgba(0,0,0,0.02)] z-30">
+                <div className="h-24 flex items-center gap-4 px-8 border-b border-slate-100 dark:border-white/5 bg-gradient-to-br from-[#15539C]/5 to-transparent">
+                    <div className="relative w-11 h-11 rounded-xl bg-gradient-to-br from-[#15539C] to-[#1e6ac2] flex items-center justify-center border border-white/20 shadow-lg shadow-blue-500/20 transition-transform hover:rotate-3 duration-300 overflow-hidden">
+                        <Image
+                            src="/favicon.png"
+                            alt="DECOM Logo"
+                            fill
+                            className="object-contain p-2"
+                        />
                     </div>
-                    <span className="text-lg font-bold tracking-tight text-dashboard-text-primary uppercase mt-0.5">DECOM</span>
+                    <div className="flex flex-col">
+                        <span className="text-2xl font-black tracking-tighter text-[#15539C] dark:text-white uppercase leading-none">DECOM</span>
+                    </div>
                 </div>
 
-                <div className="flex-1 py-6 px-3 space-y-1 overflow-y-auto">
+                <div className="flex-1 py-8 px-4 space-y-1.5 overflow-y-auto mt-2">
+                    <div className="px-5 mb-4 text-[10px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-[0.2em]">Navegación Principal</div>
                     {links.map((link, idx) => (
                         <button
                             key={idx}
                             onClick={() => router.push(link.href)}
                             className={cn(
-                                "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group w-full text-left",
+                                "flex items-center gap-3.5 px-5 py-3.5 rounded-2xl text-[13px] font-bold transition-all group w-full text-left relative overflow-hidden",
                                 isActive(link.href)
-                                    ? "bg-[#15539C]/20 text-[#F49E2C] shadow-sm border border-[#F49E2C]/20"
-                                    : "text-dashboard-text-secondary hover:bg-decom-primary/10 hover:text-dashboard-text-primary"
+                                    ? "bg-gradient-to-r from-[#15539C] to-[#1e6ac2] text-white shadow-xl shadow-blue-500/25 active:scale-95"
+                                    : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-[#15539C] dark:hover:text-white active:scale-95 hover:pl-6"
                             )}
                         >
-                            <div className={cn("transition-colors", isActive(link.href) ? "text-[#F49E2C]" : "group-hover:text-white")}>
+                            <div className={cn(
+                                "transition-all duration-300 group-hover:scale-110",
+                                isActive(link.href) ? "text-white" : "group-hover:text-[#15539C] dark:group-hover:text-[#F49E2C]"
+                            )}>
                                 {link.icon}
                             </div>
-                            <span className="mt-0.5">{link.label}</span>
+                            <span className="mt-0.5 relative z-10">{link.label}</span>
                             {isActive(link.href) && (
-                                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#F49E2C] shadow-[0_0_8px_rgba(244,158,44,0.5)]" />
+                                <motion.div layoutId="activeIndicator" className="ml-auto w-2 h-2 rounded-full bg-[#F49E2C] shadow-[0_0_12px_#F49E2C]" />
                             )}
                         </button>
                     ))}
                 </div>
 
-                <div className="p-4 border-t border-dashboard-card-border">
+                <div className="p-6 border-t border-slate-100 dark:border-white/5 bg-slate-50/30 dark:bg-transparent">
                     <button
                         onClick={handleLogout}
-                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-dashboard-text-secondary hover:text-red-400 hover:bg-red-500/5 rounded-xl transition-all w-full"
+                        className="flex items-center gap-4 px-5 py-4 text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-2xl transition-all w-full group overflow-hidden"
                     >
-                        <IconLogout className="h-5 w-5" />
+                        <div className="p-2.5 rounded-xl bg-white dark:bg-white/5 shadow-sm group-hover:bg-red-100 dark:group-hover:bg-red-500/20 transition-colors">
+                            <IconLogout className="h-5 w-5 transition-transform group-hover:-translate-x-1" />
+                        </div>
                         <span>Cerrar Sesión</span>
                     </button>
+                </div>
+
+                {/* Subtle Signature */}
+                <div className="px-8 pb-6 text-center">
+                    <p className="text-[10px] text-slate-400/30 dark:text-white/10 font-medium hover:text-slate-500 dark:hover:text-white/30 transition-colors cursor-default select-none">
+                        Software by Juan Aguilar
+                    </p>
                 </div>
             </nav>
 
@@ -243,6 +289,13 @@ export function DashboardLayout({
                 {/* Scrollable Main Area */}
                 <main className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 scroll-smooth bg-gradient-to-br from-transparent via-transparent to-[#15539C]/5">
                     {children}
+
+                    {/* Subtle Signature in Main Area */}
+                    <div className="pt-8 text-center opacity-0 hover:opacity-100 transition-opacity duration-500">
+                        <p className="text-[10px] text-slate-400/20 dark:text-white/5 font-medium select-none">
+                            Software by Juan Aguilar
+                        </p>
+                    </div>
                 </main>
             </div>
         </div>

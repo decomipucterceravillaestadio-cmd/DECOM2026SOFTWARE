@@ -135,6 +135,9 @@ export function Layout({
       <footer className="border-t border-dashboard-card-border bg-dashboard-card/30 backdrop-blur-md py-8 px-4 text-center relative z-10 transition-colors duration-300">
         <p className="text-[10px] font-black uppercase tracking-widest text-dashboard-text-muted">Sistema DECOM &copy; 2026</p>
         <p className="text-[9px] font-bold text-[#F49E2C]/40 mt-1 uppercase tracking-tighter">Iglesia Pentecostal Unida • IPUC Villa Estadio</p>
+        <p className="text-[8px] text-dashboard-text-muted/10 mt-2 hover:text-dashboard-text-muted transition-colors cursor-default select-none uppercase tracking-[0.2em]">
+          Software by Juan Aguilar
+        </p>
       </footer>
     </div>
   );

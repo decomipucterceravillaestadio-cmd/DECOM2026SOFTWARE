@@ -46,7 +46,7 @@ export default function HomePage() {
             ease: "easeInOut",
           }}
         />
-        
+
         <motion.div
           className="absolute -bottom-40 -right-40 w-80 h-80 bg-[#15539C]/20 rounded-full blur-3xl"
           animate={{
@@ -66,7 +66,7 @@ export default function HomePage() {
       {/* Navbar */}
       <nav className="relative z-50 fixed top-0 w-full backdrop-blur-md bg-white/5 border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <motion.div 
+          <motion.div
             className="flex items-center gap-3"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -106,8 +106,8 @@ export default function HomePage() {
             className="max-w-4xl mx-auto"
           >
             {/* Badge */}
-            <motion.div 
-              variants={fadeInUp} 
+            <motion.div
+              variants={fadeInUp}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#F49E2C]/20 border border-[#F49E2C]/50 mb-6"
             >
               <span className="relative flex h-2 w-2">
@@ -266,6 +266,9 @@ export default function HomePage() {
             <span className="font-semibold text-white/80">DECOM System</span>
           </div>
           <p>© 2026 Departamento de Comunicaciones IPUC</p>
+          <p className="text-[9px] text-white/5 hover:text-white/20 transition-colors cursor-default select-none absolute bottom-4 left-1/2 -translate-x-1/2 md:static md:translate-x-0">
+            Software by Juan Aguilar
+          </p>
         </div>
       </footer>
     </div>

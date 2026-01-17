@@ -3,10 +3,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import {
-  IconClipboardList,
-  IconClock,
-  IconLoader,
-  IconCheck,
   IconChartBar
 } from '@tabler/icons-react'
 
@@ -25,100 +21,6 @@ interface Stats {
     color_badge: string
     count: number
   }>
-}
-
-interface StatCardProps {
-  title: string
-  value: number
-  icon: React.ReactNode
-  color: 'purple' | 'orange' | 'blue' | 'green'
-  delay?: number
-}
-
-function StatCard({ title, value, icon, color, delay = 0 }: StatCardProps) {
-  const styles = {
-    purple: {
-      card_light: 'bg-gradient-to-br from-white to-purple-50/80 hover:to-purple-100/50 border-purple-200/60',
-      text_light: 'text-purple-700',
-      icon_light: 'bg-purple-100 text-purple-600 shadow-sm shadow-purple-200',
-      glow_light: 'from-purple-500/10',
-
-      // Keep dark mode as is
-      dark_border: 'dark:border-white/5',
-      dark_text: 'dark:text-purple-400',
-      dark_icon: 'dark:bg-purple-500/10',
-      glow_dark: 'dark:from-purple-500/20'
-    },
-    orange: {
-      card_light: 'bg-gradient-to-br from-white to-orange-50/80 hover:to-orange-100/50 border-orange-200/60',
-      text_light: 'text-orange-700',
-      icon_light: 'bg-orange-100 text-orange-600 shadow-sm shadow-orange-200',
-      glow_light: 'from-orange-500/10',
-
-      dark_border: 'dark:border-white/5',
-      dark_text: 'dark:text-orange-400',
-      dark_icon: 'dark:bg-orange-500/10',
-      glow_dark: 'dark:from-orange-500/20'
-    },
-    blue: {
-      card_light: 'bg-gradient-to-br from-white to-blue-50/80 hover:to-blue-100/50 border-blue-200/60',
-      text_light: 'text-blue-700',
-      icon_light: 'bg-blue-100 text-blue-600 shadow-sm shadow-blue-200',
-      glow_light: 'from-blue-500/10',
-
-      dark_border: 'dark:border-white/5',
-      dark_text: 'dark:text-blue-400',
-      dark_icon: 'dark:bg-blue-500/10',
-      glow_dark: 'dark:from-blue-500/20'
-    },
-    green: {
-      card_light: 'bg-gradient-to-br from-white to-emerald-50/80 hover:to-emerald-100/50 border-emerald-200/60',
-      text_light: 'text-emerald-700',
-      icon_light: 'bg-emerald-100 text-emerald-600 shadow-sm shadow-emerald-200',
-      glow_light: 'from-emerald-500/10',
-
-      dark_border: 'dark:border-white/5',
-      dark_text: 'dark:text-emerald-400',
-      dark_icon: 'dark:bg-emerald-500/10',
-      glow_dark: 'dark:from-emerald-500/20'
-    },
-  }
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay }}
-      className={`
-        relative overflow-hidden rounded-2xl p-6 group transition-all duration-300
-        hover:shadow-xl hover:-translate-y-1 border
-        ${styles[color].card_light}
-        dark:bg-[#0F172A]/40 dark:backdrop-blur-xl ${styles[color].dark_border}
-        shadow-sm
-      `}
-    >
-      {/* Dynamic Background Glow */}
-      <div className={`absolute -right-20 -top-20 w-48 h-48 rounded-full bg-gradient-to-br ${styles[color].glow_light} ${styles[color].glow_dark} blur-3xl opacity-60 group-hover:opacity-80 transition-opacity duration-500`} />
-
-      <div className="relative z-10 flex flex-col h-full justify-between">
-        <div className="flex items-start justify-between mb-4">
-          <div className={`p-3 rounded-xl ${styles[color].icon_light} dark:bg-opacity-100 dark:border-white/5 dark:bg-transparent ${styles[color].dark_icon} transition-transform group-hover:scale-110 duration-300`}>
-            {icon}
-          </div>
-        </div>
-
-        <div>
-          {/* Value with colored text in light mode for vibrance */}
-          <h3 className={`text-5xl font-extrabold tracking-tight mb-1 tabular-nums ${styles[color].text_light} dark:text-white`}>
-            {value}
-          </h3>
-          <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            {title}
-          </p>
-        </div>
-      </div>
-    </motion.div>
-  )
 }
 
 export default function StatsGrid() {
@@ -145,55 +47,17 @@ export default function StatsGrid() {
 
   if (loading || !stats) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-44 bg-slate-100 dark:bg-white/5 rounded-2xl animate-pulse border border-slate-200 dark:border-white/5" />
-        ))}
-      </div>
+      <div className="h-64 bg-slate-100 dark:bg-white/5 rounded-2xl animate-pulse border border-slate-200 dark:border-white/5" />
     )
   }
 
-  const completedTotal = stats.byStatus.completed + stats.byStatus.approved
-
   return (
     <div className="space-y-8">
-      {/* KPI Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard
-          title="Total Solicitudes"
-          value={stats.total}
-          icon={<IconClipboardList className="w-6 h-6" />}
-          color="purple"
-          delay={0}
-        />
-        <StatCard
-          title="Pendientes"
-          value={stats.byStatus.pending}
-          icon={<IconClock className="w-6 h-6" />}
-          color="orange"
-          delay={0.1}
-        />
-        <StatCard
-          title="En Progreso"
-          value={stats.byStatus.in_progress}
-          icon={<IconLoader className="w-6 h-6" />}
-          color="blue"
-          delay={0.2}
-        />
-        <StatCard
-          title="Completados"
-          value={completedTotal}
-          icon={<IconCheck className="w-6 h-6" />}
-          color="green"
-          delay={0.3}
-        />
-      </div>
-
       {/* Committee Distribution Chart */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
         className="bg-white dark:bg-[#0F172A]/40 backdrop-blur-xl rounded-2xl p-6 md:p-8 border border-slate-200 dark:border-white/5 shadow-lg relative overflow-hidden"
       >
         {/* Light decoration */}
