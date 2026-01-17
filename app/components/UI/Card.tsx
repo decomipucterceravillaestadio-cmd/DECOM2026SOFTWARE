@@ -21,7 +21,7 @@ export const Card: React.FC<CardProps> = ({
   shadow = 'sm',
   rounded = 'lg'
 }) => {
-  const baseStyles = 'bg-white transition-all duration-200';
+  const baseStyles = 'bg-dashboard-card transition-all duration-300 text-dashboard-text-primary';
 
   const paddingStyles = {
     none: 'p-0',
@@ -46,8 +46,8 @@ export const Card: React.FC<CardProps> = ({
     full: 'rounded-full'
   };
 
-  const borderStyle = bordered ? 'border border-decom-border' : '';
-  const hoverStyles = hover || interactive ? 'hover:shadow-card-hover cursor-pointer' : '';
+  const borderStyle = bordered ? 'border border-dashboard-card-border' : '';
+  const hoverStyles = hover || interactive ? 'hover:shadow-card-hover hover:border-[#F49E2C]/30 cursor-pointer' : '';
 
   return (
     <div className={`${baseStyles} ${paddingStyles[padding]} ${shadowStyles[shadow]} ${roundedStyles[rounded]} ${borderStyle} ${hoverStyles} ${className}`}>

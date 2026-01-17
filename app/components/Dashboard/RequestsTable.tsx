@@ -82,7 +82,7 @@ export default function RequestsTable({ onSelectRequest, searchTerm = '' }: Requ
       approved: { label: 'Aprobado', class: 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20' },
       rejected: { label: 'Rechazado', class: 'bg-red-500/10 text-red-500 border-red-500/20' },
     }
-    const config = statusMap[status] || { label: status, class: 'bg-white/10 text-white/50 border-white/20' }
+    const config = statusMap[status] || { label: status, class: 'bg-dashboard-card-border/10 text-dashboard-text-muted border-dashboard-card-border/20' }
     return (
       <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold border ${config.class}`}>
         {config.label}
@@ -100,14 +100,14 @@ export default function RequestsTable({ onSelectRequest, searchTerm = '' }: Requ
   return (
     <div className="w-full">
       {/* Table Filters */}
-      <div className="flex items-center gap-2 p-4 border-b border-white/10">
+      <div className="flex items-center gap-2 p-4 border-b border-dashboard-card-border overflow-x-auto no-scrollbar">
         {tabs.map((tab) => (
           <button
             key={tab.value}
             onClick={() => setActiveStatus(tab.value)}
-            className={`px-4 py-2 rounded-lg text-[11px] font-bold tracking-wider transition-all ${activeStatus === tab.value
-                ? 'bg-[#F49E2C] text-[#16233B] shadow-lg shadow-[#F49E2C]/20'
-                : 'text-white/50 hover:text-white hover:bg-white/5'
+            className={`px-4 py-2 rounded-lg text-[11px] font-bold tracking-wider transition-all whitespace-nowrap ${activeStatus === tab.value
+              ? 'bg-[#F49E2C] text-[#16233B] shadow-lg shadow-[#F49E2C]/20'
+              : 'text-dashboard-text-muted hover:text-dashboard-text-primary hover:bg-dashboard-card-border/10'
               }`}
           >
             {tab.title}
@@ -118,27 +118,27 @@ export default function RequestsTable({ onSelectRequest, searchTerm = '' }: Requ
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-white/5">
-              <th className="px-6 py-4 text-[12px] font-bold text-white/30 uppercase tracking-wider">ID</th>
-              <th className="px-6 py-4 text-[12px] font-bold text-white/30 uppercase tracking-wider">Solicitud / Evento</th>
-              <th className="px-6 py-4 text-[12px] font-bold text-white/30 uppercase tracking-wider">Comité</th>
-              <th className="px-6 py-4 text-[12px] font-bold text-white/30 uppercase tracking-wider">Estado</th>
-              <th className="px-6 py-4 text-[12px] font-bold text-white/30 uppercase tracking-wider">Fecha</th>
-              <th className="px-6 py-4 text-[12px] font-bold text-white/30 uppercase tracking-wider text-right">Acciones</th>
+            <tr className="border-b border-dashboard-card-border/50">
+              <th className="px-6 py-4 text-[12px] font-bold text-dashboard-text-muted uppercase tracking-wider">ID</th>
+              <th className="px-6 py-4 text-[12px] font-bold text-dashboard-text-muted uppercase tracking-wider">Solicitud / Evento</th>
+              <th className="px-6 py-4 text-[12px] font-bold text-dashboard-text-muted uppercase tracking-wider">Comité</th>
+              <th className="px-6 py-4 text-[12px] font-bold text-dashboard-text-muted uppercase tracking-wider">Estado</th>
+              <th className="px-6 py-4 text-[12px] font-bold text-dashboard-text-muted uppercase tracking-wider">Fecha</th>
+              <th className="px-6 py-4 text-[12px] font-bold text-dashboard-text-muted uppercase tracking-wider text-right">Acciones</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-dashboard-card-border/30">
             {loading ? (
               [1, 2, 3, 4, 5].map((i) => (
                 <tr key={i} className="animate-pulse">
-                  <td colSpan={6} className="px-6 py-6 h-16 bg-white/5"></td>
+                  <td colSpan={6} className="px-6 py-6 h-16 bg-dashboard-card-border/5"></td>
                 </tr>
               ))
             ) : filteredRequests.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-6 py-20 text-center">
-                  <IconSearch className="w-10 h-10 mx-auto text-white/10 mb-4" />
-                  <p className="text-white/20 font-bold uppercase tracking-widest text-xs">No se encontraron solicitudes</p>
+                  <IconSearch className="w-10 h-10 mx-auto text-dashboard-text-muted/10 mb-4" />
+                  <p className="text-dashboard-text-muted/30 font-bold uppercase tracking-widest text-xs">No se encontraron solicitudes</p>
                 </td>
               </tr>
             ) : (
@@ -149,31 +149,31 @@ export default function RequestsTable({ onSelectRequest, searchTerm = '' }: Requ
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.03 }}
                   onClick={() => onSelectRequest(request.id)}
-                  className="group hover:bg-white/5 transition-colors cursor-pointer"
+                  className="group hover:bg-dashboard-card-border/5 transition-colors cursor-pointer"
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-[11px] font-mono font-bold text-white/30 group-hover:text-[#F49E2C]/50 transition-colors">#{request.id.slice(0, 8)}</span>
+                    <span className="text-[11px] font-mono font-bold text-dashboard-text-muted group-hover:text-[#F49E2C]/50 transition-colors">#{request.id.slice(0, 8)}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <p className="text-[14px] font-bold text-white group-hover:text-[#F49E2C] transition-colors">{request.event_name}</p>
+                    <p className="text-[14px] font-bold text-dashboard-text-primary group-hover:text-[#F49E2C] transition-colors">{request.event_name}</p>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-[12px] text-white/50">{request.committee.name}</span>
+                    <span className="text-[12px] text-dashboard-text-secondary">{request.committee.name}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {getStatusBadge(request.status)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-[12px] text-white/40 group-hover:text-white/60 transition-colors">
+                    <span className="text-[12px] text-dashboard-text-muted group-hover:text-dashboard-text-secondary transition-colors">
                       {format(new Date(request.event_date), 'dd/MM/yyyy', { locale: es })}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <button className="p-2 rounded-lg hover:bg-white/10 text-white/20 hover:text-white transition-all">
+                      <button className="p-2 rounded-lg hover:bg-dashboard-card-border/10 text-dashboard-text-muted hover:text-dashboard-text-primary transition-all">
                         <IconDots className="w-4 h-4" />
                       </button>
-                      <button className="p-2 rounded-lg bg-[#15539C]/10 text-[#15539C] group-hover:bg-[#15539C] group-hover:text-white transition-all border border-[#15539C]/20">
+                      <button className="p-2 rounded-lg bg-[#15539C]/10 text-[#15539C] group-hover:bg-[#15539C] group-hover:text-white transition-all border border-[#15539C]/20 shadow-sm">
                         <IconChevronRight className="w-4 h-4" />
                       </button>
                     </div>
@@ -186,14 +186,14 @@ export default function RequestsTable({ onSelectRequest, searchTerm = '' }: Requ
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between px-6 py-4 border-t border-white/10">
-        <p className="text-[12px] text-white/30">
-          Mostrando <span className="text-white/60 font-bold">{filteredRequests.length}</span> resultados
+      <div className="flex items-center justify-between px-6 py-4 border-t border-dashboard-card-border/30">
+        <p className="text-[12px] text-dashboard-text-muted">
+          Mostrando <span className="text-dashboard-text-secondary font-bold">{filteredRequests.length}</span> resultados
         </p>
         <div className="flex items-center gap-2">
           <button
             disabled={page === 1}
-            className="p-2 rounded-lg border border-white/10 text-white/30 hover:text-white hover:border-white/20 disabled:opacity-20 transition-all"
+            className="p-2 rounded-lg border border-dashboard-card-border/50 text-dashboard-text-muted hover:text-dashboard-text-primary hover:border-dashboard-card-border disabled:opacity-20 transition-all"
           >
             <IconChevronLeft className="w-4 h-4" />
           </button>
@@ -201,7 +201,7 @@ export default function RequestsTable({ onSelectRequest, searchTerm = '' }: Requ
             {[1, 2, 3].map(p => (
               <button
                 key={p}
-                className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${page === p ? 'bg-[#F49E2C] text-[#16233B]' : 'text-white/30 hover:bg-white/5 hover:text-white'
+                className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${page === p ? 'bg-[#F49E2C] text-[#16233B]' : 'text-dashboard-text-muted hover:bg-dashboard-card-border/10 hover:text-dashboard-text-primary'
                   }`}
               >
                 {p}
@@ -209,7 +209,7 @@ export default function RequestsTable({ onSelectRequest, searchTerm = '' }: Requ
             ))}
           </div>
           <button
-            className="p-2 rounded-lg border border-white/10 text-white/30 hover:text-white hover:border-white/20 transition-all"
+            className="p-2 rounded-lg border border-dashboard-card-border/50 text-dashboard-text-muted hover:text-dashboard-text-primary hover:border-dashboard-card-border transition-all"
           >
             <IconChevronRight className="w-4 h-4" />
           </button>

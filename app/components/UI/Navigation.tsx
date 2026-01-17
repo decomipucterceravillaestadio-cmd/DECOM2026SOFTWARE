@@ -3,9 +3,12 @@
  * Proporciona navegación consistente y mejora la experiencia de usuario
  */
 
+'use client'
+
 import React from 'react'
 import { useRouter } from 'next/navigation'
 import { IconArrowLeft, IconHome, IconChevronRight } from '@tabler/icons-react'
+import { cn } from '@/lib/utils'
 
 /**
  * Barra de navegación superior con botón de regreso
@@ -26,25 +29,25 @@ export const BackNavBar: React.FC<BackNavBarProps> = ({
   const router = useRouter()
 
   return (
-    <div className="sticky top-0 z-40 bg-white border-b border-gray-300 shadow-sm">
+    <div className="sticky top-0 z-40 bg-dashboard-header backdrop-blur-xl border-b border-dashboard-card-border shadow-sm">
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button
             onClick={onBack ? onBack : () => router.back()}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-[#15539C]"
+            className="p-2 rounded-xl hover:bg-dashboard-card border border-transparent hover:border-dashboard-card-border transition-all text-decom-secondary"
             title="Volver atrás"
           >
             <IconArrowLeft className="w-6 h-6" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-[#16233B]">{title}</h1>
-            {subtitle && <p className="text-sm text-gray-600">{subtitle}</p>}
+            <h1 className="text-xl md:text-2xl font-bold text-dashboard-text-primary">{title}</h1>
+            {subtitle && <p className="text-sm text-dashboard-text-secondary">{subtitle}</p>}
           </div>
         </div>
         {showHome && (
           <button
-            onClick={() => router.push('/')}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-[#15539C]"
+            onClick={() => router.push('/admin')}
+            className="p-2 rounded-xl hover:bg-dashboard-card border border-transparent hover:border-dashboard-card-border transition-all text-decom-secondary"
             title="Ir a inicio"
           >
             <IconHome className="w-6 h-6" />
@@ -81,20 +84,20 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, onNavigate }) => 
   }
 
   return (
-    <nav className="flex items-center gap-2 py-4 px-4 bg-[#F5F5F5] rounded-lg mb-6">
+    <nav className="flex items-center gap-2 py-3 px-4 bg-dashboard-card border border-dashboard-card-border rounded-xl mb-6 overflow-x-auto hide-scrollbar">
       {items.map((item, index) => (
         <React.Fragment key={index}>
           {index > 0 && (
-            <IconChevronRight className="w-4 h-4 text-gray-400" />
+            <IconChevronRight className="w-4 h-4 text-dashboard-text-muted shrink-0" />
           )}
           {item.active || !item.href ? (
-            <span className="text-sm font-semibold text-[#16233B]">
+            <span className="text-sm font-bold text-dashboard-text-primary whitespace-nowrap">
               {item.label}
             </span>
           ) : (
             <button
               onClick={() => handleNavigate(item.href!)}
-              className="text-sm font-medium text-[#15539C] hover:text-[#16233B] transition-colors"
+              className="text-sm font-medium text-dashboard-text-secondary hover:text-decom-secondary transition-colors whitespace-nowrap"
             >
               {item.label}
             </button>
@@ -126,7 +129,6 @@ export const QuickAction: React.FC<QuickActionProps> = ({
   className = ''
 }) => {
   const router = useRouter()
-  const Component = href ? 'a' : 'button'
 
   const handleClick = () => {
     if (onClick) onClick()
@@ -134,25 +136,27 @@ export const QuickAction: React.FC<QuickActionProps> = ({
   }
 
   return (
-    <Component
+    <button
       onClick={handleClick}
-      href={href}
-      className={`
-        p-4 rounded-lg bg-white border-2 border-gray-200 hover:border-[#15539C] 
-        transition-all duration-200 hover:shadow-md text-left cursor-pointer
-        ${className}
-      `}
+      className={cn(
+        "p-5 rounded-2xl bg-dashboard-card border border-dashboard-card-border hover:border-decom-secondary/50",
+        "transition-all duration-300 hover:shadow-xl hover:shadow-decom-secondary/5 text-left group overflow-hidden relative",
+        className
+      )}
     >
-      <div className="flex items-start gap-3">
-        <div className="text-[#15539C] mt-1">{icon}</div>
+      <div className="absolute top-0 right-0 p-8 bg-decom-secondary/5 rounded-full -mr-10 -mt-10 transition-transform group-hover:scale-110" />
+      <div className="flex items-start gap-4 relative z-10">
+        <div className="p-3 rounded-xl bg-dashboard-bg text-decom-secondary group-hover:bg-decom-secondary group-hover:text-white transition-all shadow-sm">
+          {icon}
+        </div>
         <div>
-          <h3 className="font-semibold text-[#16233B]">{title}</h3>
+          <h3 className="font-bold text-dashboard-text-primary group-hover:text-decom-secondary transition-colors">{title}</h3>
           {description && (
-            <p className="text-sm text-gray-600 mt-1">{description}</p>
+            <p className="text-sm text-dashboard-text-secondary mt-1 line-clamp-2">{description}</p>
           )}
         </div>
       </div>
-    </Component>
+    </button>
   )
 }
 
@@ -172,39 +176,48 @@ export const HelpSection: React.FC<HelpSectionProps> = ({
   tips,
   type = 'info'
 }) => {
-  const bgColors = {
-    info: 'bg-blue-50 border-l-4 border-l-[#15539C]',
-    warning: 'bg-orange-50 border-l-4 border-l-[#F49E2C]',
-    success: 'bg-green-50 border-l-4 border-l-[#4CAF50]'
+  const styles = {
+    info: 'bg-decom-info/5 border-decom-info/20 text-decom-info',
+    warning: 'bg-decom-warning/5 border-decom-warning/20 text-decom-warning',
+    success: 'bg-decom-success/5 border-decom-success/20 text-decom-success'
   }
 
-  const textColors = {
-    info: 'text-[#16233B]',
-    warning: 'text-orange-900',
-    success: 'text-green-900'
+  const iconColors = {
+    info: 'text-decom-info',
+    warning: 'text-decom-warning',
+    success: 'text-decom-success'
   }
 
   return (
-    <div className={`${bgColors[type]} rounded-lg p-4`}>
-      <h4 className={`font-semibold ${textColors[type]} mb-2`}>{title}</h4>
-      <p className={`text-sm ${textColors[type]} mb-3`}>{description}</p>
-      {tips && tips.length > 0 && (
-        <ul className={`text-sm space-y-1 ${textColors[type]}`}>
-          {tips.map((tip, index) => (
-            <li key={index} className="flex items-start gap-2">
-              <span className="font-bold">•</span>
-              <span>{tip}</span>
-            </li>
-          ))}
-        </ul>
-      )}
+    <div className={cn("rounded-2xl p-5 border shadow-sm", styles[type])}>
+      <div className="flex items-start gap-3">
+        <div className="mt-1">
+          <IconChevronRight className={cn("w-5 h-5", iconColors[type])} />
+        </div>
+        <div className="flex-1">
+          <h4 className="font-bold mb-1">{title}</h4>
+          <p className="text-sm opacity-90 mb-4">{description}</p>
+          {tips && tips.length > 0 && (
+            <ul className="text-sm space-y-2">
+              {tips.map((tip, index) => (
+                <li key={index} className="flex items-center gap-2 opacity-85">
+                  <div className={cn("w-1.5 h-1.5 rounded-full shrink-0", iconColors[type])} style={{ backgroundColor: 'currentColor' }} />
+                  <span>{tip}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
 
-export default {
+const Navigation = {
   BackNavBar,
   Breadcrumb,
   QuickAction,
   HelpSection
 }
+
+export default Navigation

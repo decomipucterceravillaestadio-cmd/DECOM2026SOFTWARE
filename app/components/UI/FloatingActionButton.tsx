@@ -17,11 +17,11 @@ export default function FloatingActionButton({
     <button
       onClick={onClick}
       className={cn(
-        "fixed bottom-6 right-6 z-50 bg-gradient-to-br from-[#15539C] to-[#16233B] text-white rounded-full size-14 shadow-xl flex items-center justify-center transition-all hover:scale-110 active:scale-95",
+        "fixed bottom-8 right-8 z-50 bg-gradient-to-br from-decom-secondary to-[#E88D1B] text-white rounded-2xl size-14 shadow-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-decom-secondary/30",
         className
       )}
     >
-      {icon}
+      <div className="size-6">{icon}</div>
     </button>
   )
 }

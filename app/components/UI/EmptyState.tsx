@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
+import React, { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { IconFolderOpen, IconPlus, IconSparkles } from '@tabler/icons-react'
 import { Button } from '@/app/components/UI/Button'
+import { cn } from '@/lib/utils'
 
 interface EmptyStateProps {
   title?: string
@@ -45,17 +46,18 @@ export default function EmptyState({
   const defaultIcon = (
     <motion.div
       animate={{
-        scale: isHovered ? 1.1 : 1,
-        rotate: isHovered ? 5 : 0
+        scale: isHovered ? 1.05 : 1,
+        rotate: isHovered ? 2 : 0
       }}
       transition={{ duration: 0.3 }}
       className="relative"
     >
       {/* Glow effect */}
-      <div className="absolute inset-0 bg-primary/5 rounded-full blur-2xl transform scale-150" />
+      <div className="absolute inset-0 bg-decom-secondary/10 rounded-full blur-3xl transform scale-150" />
 
-      <div className="relative bg-white rounded-full p-6 shadow-xl border border-gray-100">
-        <IconFolderOpen className="w-16 h-16 text-primary/60" />
+      <div className="relative bg-dashboard-card rounded-3xl p-8 shadow-2xl border border-dashboard-card-border overflow-hidden group">
+        <div className="absolute inset-0 bg-gradient-to-br from-decom-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        <IconFolderOpen className="w-20 h-20 text-decom-secondary relative z-10" />
       </div>
     </motion.div>
   )
@@ -66,10 +68,10 @@ export default function EmptyState({
         <div className="mb-6">
           {icon || defaultIcon}
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
-        <p className="text-gray-600 mb-6 max-w-md">{description}</p>
+        <h3 className="text-xl font-bold text-dashboard-text-primary mb-2">{title}</h3>
+        <p className="text-dashboard-text-secondary mb-8 max-w-md">{description}</p>
         {onAction && (
-          <Button onClick={onAction} className="inline-flex items-center gap-2">
+          <Button onClick={onAction} className="inline-flex items-center gap-2" variant="secondary">
             <IconPlus className="w-4 h-4" />
             {actionLabel}
           </Button>
@@ -84,10 +86,10 @@ export default function EmptyState({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="flex flex-col items-center justify-center py-16 px-4 text-center max-w-2xl mx-auto"
+        className="flex flex-col items-center justify-center py-20 px-4 text-center max-w-4xl mx-auto"
       >
         <div
-          className="mb-8 cursor-pointer"
+          className="mb-10 cursor-pointer"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
@@ -98,7 +100,7 @@ export default function EmptyState({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-3xl font-bold text-gray-900 mb-4"
+          className="text-4xl font-black text-dashboard-text-primary mb-5 tracking-tight"
         >
           {title}
         </motion.h2>
@@ -107,7 +109,7 @@ export default function EmptyState({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-lg text-gray-600 mb-8 max-w-lg"
+          className="text-xl text-dashboard-text-secondary mb-12 max-w-2xl leading-relaxed"
         >
           {description}
         </motion.p>
@@ -117,7 +119,7 @@ export default function EmptyState({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 w-full max-w-3xl"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 w-full"
         >
           {benefits.map((benefit, index) => (
             <motion.div
@@ -125,13 +127,13 @@ export default function EmptyState({
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, delay: 0.8 + index * 0.1 }}
-              className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+              className="bg-dashboard-card rounded-2xl p-6 shadow-sm border border-dashboard-card-border hover:shadow-xl hover:border-decom-secondary/30 hover:-translate-y-1 transition-all group"
             >
               <div className="flex flex-col items-center text-center">
-                <div className="bg-primary/10 rounded-full p-3 mb-3">
+                <div className="bg-decom-secondary/10 rounded-2xl p-4 mb-4 text-decom-secondary group-hover:bg-decom-secondary group-hover:text-white transition-all">
                   {benefit.icon}
                 </div>
-                <p className="text-sm font-medium text-gray-700">{benefit.text}</p>
+                <p className="text-sm font-bold text-dashboard-text-primary">{benefit.text}</p>
               </div>
             </motion.div>
           ))}
@@ -146,9 +148,10 @@ export default function EmptyState({
             <Button
               onClick={onAction}
               size="lg"
-              className="inline-flex items-center gap-3 px-8 py-4 text-lg font-semibold bg-gradient-to-r from-primary to-primary-light hover:from-primary/90 hover:to-primary-light/90 shadow-lg hover:shadow-xl transition-all duration-300"
+              variant="secondary"
+              className="px-10 py-5 text-lg font-bold shadow-2xl shadow-decom-secondary/30"
             >
-              <IconPlus className="w-5 h-5" />
+              <IconPlus className="w-6 h-6 mr-1" />
               {actionLabel}
             </Button>
           </motion.div>
@@ -163,10 +166,10 @@ export default function EmptyState({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="flex flex-col items-center justify-center py-12 px-4 text-center"
+      className="flex flex-col items-center justify-center py-16 px-4 text-center max-w-3xl mx-auto"
     >
       <div
-        className="mb-6"
+        className="mb-8"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -177,7 +180,7 @@ export default function EmptyState({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
-        className="text-2xl font-bold text-gray-900 mb-3"
+        className="text-3xl font-black text-dashboard-text-primary mb-4"
       >
         {title}
       </motion.h3>
@@ -186,31 +189,31 @@ export default function EmptyState({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.4 }}
-        className="text-gray-600 mb-8 max-w-md"
+        className="text-lg text-dashboard-text-secondary mb-10 max-w-md leading-relaxed"
       >
         {description}
       </motion.p>
 
-      {/* Benefits list */}
+      {/* Benefits card */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.6 }}
-        className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-8 w-full max-w-md"
+        className="bg-dashboard-card rounded-2xl p-8 shadow-sm border border-dashboard-card-border mb-10 w-full max-w-md"
       >
-        <div className="space-y-4">
+        <div className="space-y-5">
           {benefits.map((benefit, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4, delay: 0.8 + index * 0.1 }}
-              className="flex items-start gap-3"
+              className="flex items-center gap-4 group"
             >
-              <div className="flex-shrink-0 mt-0.5 bg-primary/10 rounded-full p-1">
+              <div className="flex-shrink-0 bg-decom-secondary/10 rounded-xl p-2.5 text-decom-secondary group-hover:bg-decom-secondary group-hover:text-white transition-all">
                 {benefit.icon}
               </div>
-              <p className="text-sm font-medium text-gray-700 text-left">{benefit.text}</p>
+              <p className="text-base font-bold text-dashboard-text-primary text-left">{benefit.text}</p>
             </motion.div>
           ))}
         </div>
@@ -224,9 +227,11 @@ export default function EmptyState({
         >
           <Button
             onClick={onAction}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-primary-light hover:from-primary/90 hover:to-primary-light/90 shadow-lg hover:shadow-xl transition-all duration-300"
+            variant="secondary"
+            size="lg"
+            className="px-8 py-4 font-bold shadow-xl shadow-decom-secondary/20"
           >
-            <IconPlus className="w-4 h-4" />
+            <IconPlus className="w-5 h-5 mr-1" />
             {actionLabel}
           </Button>
         </motion.div>

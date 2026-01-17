@@ -16,16 +16,16 @@ interface FilterChipsProps {
 
 export default function FilterChips({ filters, activeFilter, onFilterChange }: FilterChipsProps) {
   return (
-    <div className="flex gap-3 overflow-x-auto hide-scrollbar pr-4">
+    <div className="flex gap-3 overflow-x-auto hide-scrollbar pr-4 py-1">
       {filters.map((filter) => (
         <button
           key={filter.id}
           onClick={() => onFilterChange(filter.id)}
           className={cn(
-            "flex h-9 shrink-0 items-center justify-center px-4 rounded-full shadow-sm transition-all active:scale-95 whitespace-nowrap",
+            "flex h-10 shrink-0 items-center justify-center px-5 rounded-xl shadow-sm transition-all active:scale-95 whitespace-nowrap border",
             activeFilter === filter.id
-              ? "bg-[#F49E2C] text-white"
-              : "bg-white dark:bg-neutral-800 border border-[#15539C]/30 text-[#15539C] dark:text-[#15539C]"
+              ? "bg-decom-secondary text-white border-decom-secondary shadow-lg shadow-decom-secondary/20"
+              : "bg-dashboard-card border-dashboard-card-border text-dashboard-text-secondary hover:border-decom-secondary/50 hover:text-decom-secondary"
           )}
         >
           <span className={cn(
@@ -36,10 +36,10 @@ export default function FilterChips({ filters, activeFilter, onFilterChange }: F
           </span>
           {filter.count > 0 && (
             <span className={cn(
-              "ml-2 px-2 py-0.5 rounded-full text-xs font-bold",
+              "ml-2.5 px-2 py-0.5 rounded-lg text-[10px] font-black",
               activeFilter === filter.id
                 ? "bg-white/20 text-white"
-                : "bg-[#15539C]/10 text-[#15539C]"
+                : "bg-dashboard-bg text-dashboard-text-primary"
             )}>
               {filter.count}
             </span>

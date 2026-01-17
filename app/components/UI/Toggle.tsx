@@ -1,6 +1,6 @@
 'use client'
 
-import { forwardRef } from 'react'
+import React, { forwardRef } from 'react'
 
 interface ToggleProps {
   checked?: boolean
@@ -12,7 +12,7 @@ interface ToggleProps {
 const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
   ({ checked = false, onChange, disabled = false, className = '' }, ref) => {
     return (
-      <label className={`relative inline-flex items-center cursor-pointer ${className}`}>
+      <label className={`relative inline-flex items-center cursor-pointer transition-opacity duration-200 ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}>
         <input
           ref={ref}
           type="checkbox"
@@ -21,7 +21,7 @@ const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
           disabled={disabled}
           className="sr-only peer"
         />
-        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"></div>
+        <div className="w-11 h-6 bg-dashboard-card-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-decom-secondary transition-colors duration-200"></div>
       </label>
     )
   }

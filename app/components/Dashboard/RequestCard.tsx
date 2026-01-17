@@ -144,7 +144,7 @@ export default function RequestCard({ request, onClick }: RequestCardProps) {
   return (
     <article
       onClick={onClick}
-      className="group relative flex flex-col bg-white/5 backdrop-blur-md rounded-2xl shadow-xl overflow-hidden transition-all hover:scale-[1.02] hover:bg-white/10 cursor-pointer border border-white/10"
+      className="group relative flex flex-col bg-dashboard-card backdrop-blur-md rounded-2xl shadow-xl overflow-hidden transition-all hover:scale-[1.02] hover:bg-dashboard-card-border/10 cursor-pointer border border-dashboard-card-border"
     >
       {/* Barra lateral de color según estado */}
       <div className={cn("absolute left-0 top-0 bottom-0 w-[4px]", statusConfig.barColor)} />
@@ -153,10 +153,10 @@ export default function RequestCard({ request, onClick }: RequestCardProps) {
         {/* Header con comité y prioridad */}
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-3">
-            <div className="size-9 rounded-xl bg-[#15539C]/20 flex items-center justify-center text-[#F49E2C] border border-[#F49E2C]/10 shadow-inner">
+            <div className="size-9 rounded-xl bg-decom-primary/10 flex items-center justify-center text-[#F49E2C] border border-[#F49E2C]/10 shadow-inner">
               {getCommitteeIcon(request.committee.name)}
             </div>
-            <span className="text-white font-black text-[10px] uppercase tracking-widest leading-none">
+            <span className="text-dashboard-text-primary font-black text-[10px] uppercase tracking-widest leading-none">
               {request.committee.name}
             </span>
           </div>
@@ -174,13 +174,13 @@ export default function RequestCard({ request, onClick }: RequestCardProps) {
 
         {/* Título del evento */}
         <div className="mb-5 pr-2">
-          <h3 className="text-white text-base md:text-lg font-bold leading-tight mb-3 line-clamp-2 group-hover:text-[#F49E2C] transition-colors">
+          <h3 className="text-dashboard-text-primary text-base md:text-lg font-bold leading-tight mb-3 line-clamp-2 group-hover:text-[#F49E2C] transition-colors">
             {request.event_name}
           </h3>
 
           {/* Fecha y días restantes */}
           <div className="flex items-center gap-2 flex-wrap">
-            <div className="flex items-center gap-1.5 text-white/50 bg-white/5 px-2.5 py-1 rounded-lg border border-white/5">
+            <div className="flex items-center gap-1.5 text-dashboard-text-muted bg-dashboard-bg px-2.5 py-1 rounded-lg border border-dashboard-card-border">
               <IconCalendar className="w-3.5 h-3.5 text-[#F49E2C]" />
               <span className="text-[11px] font-bold">
                 {format(eventDate, 'd MMM yyyy', { locale: es })}
@@ -188,10 +188,10 @@ export default function RequestCard({ request, onClick }: RequestCardProps) {
             </div>
 
             <div className={cn(
-              "flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[10px] font-bold uppercase tracking-wider",
+              "flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[10px] font-bold uppercase tracking-wider transition-colors",
               daysDiff <= 3 && daysDiff >= 0
                 ? "bg-[#F49E2C]/20 text-[#F49E2C] border-[#F49E2C]/30 shadow-[0_0_10px_rgba(244,158,44,0.1)]"
-                : "bg-white/5 text-white/40 border-white/5"
+                : "bg-dashboard-bg text-dashboard-text-muted border-dashboard-card-border"
             )}>
               <IconClock className="w-3.5 h-3.5" />
               <span>{getDaysText()}</span>
@@ -200,7 +200,7 @@ export default function RequestCard({ request, onClick }: RequestCardProps) {
         </div>
 
         {/* Separator */}
-        <div className="h-px w-full bg-white/5 mb-4" />
+        <div className="h-px w-full bg-dashboard-card-border/30 mb-4 transition-colors" />
 
         {/* Footer con estado, tipo de material y acción */}
         <div className="flex items-center justify-between">
@@ -216,7 +216,7 @@ export default function RequestCard({ request, onClick }: RequestCardProps) {
 
             {/* Icono de tipo de material */}
             <div
-              className="size-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 group-hover:text-[#F49E2C] transition-colors shadow-inner"
+              className="size-8 rounded-xl bg-dashboard-bg border border-dashboard-card-border flex items-center justify-center text-dashboard-text-muted group-hover:text-[#F49E2C] transition-colors shadow-inner"
               title={`Tipo: ${request.material_type}`}
             >
               {getMaterialIcon(request.material_type)}

@@ -5,9 +5,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/app/components/UI/Button";
 import { Card } from "@/app/components/UI/Card";
+import { IconMail, IconLock, IconEye, IconEyeOff, IconAlertCircle } from "@tabler/icons-react";
+import { cn } from "@/lib/utils";
 
 // Validation schema
 const loginSchema = z.object({
@@ -63,246 +65,185 @@ export function LoginForm({ onSubmit, isLoading: externalLoading = false, error:
   const formError = errors.root?.message || externalError;
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[#16233B] via-[#15539C] to-[#1a2847]">
-      {/* Animated Background Beams Effect */}
-      <div className="absolute inset-0 overflow-hidden">
-        {/* Beam decorative elements */}
+    <div className="min-h-screen relative overflow-hidden bg-[#16233B] flex items-center justify-center font-sans">
+      {/* Background with dynamic elements */}
+      <div className="absolute inset-0 z-0">
+        {/* Animated Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#16233B] via-[#1a2847] to-[#15539C]" />
+
+        {/* Floating shapes */}
         <motion.div
-          className="absolute -top-40 -left-40 w-80 h-80 bg-[#F49E2C]/10 rounded-full blur-3xl"
+          className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-[#F49E2C]/10 rounded-full blur-[120px]"
           animate={{
-            x: [0, 40, 0],
-            y: [0, 40, 0],
+            x: [0, 50, 0],
+            y: [0, 30, 0],
           }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
-          className="absolute -bottom-40 -right-40 w-80 h-80 bg-[#15539C]/20 rounded-full blur-3xl"
+          className="absolute -bottom-[10%] -right-[10%] w-[50%] h-[50%] bg-[#15539C]/20 rounded-full blur-[150px]"
           animate={{
             x: [0, -40, 0],
-            y: [0, -40, 0],
+            y: [0, -50, 0],
           }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
         />
 
-        {/* Grid background pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.05)_1px,transparent_1px)] bg-[size:50px_50px] opacity-10" />
+        {/* Technical Grid Pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
       </div>
 
-      {/* Content */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-8">
-        <div className="w-full max-w-sm space-y-6">
-          {/* Logo Section with animation */}
-          <motion.div
-            className="flex justify-center pt-4"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-          >
-            <div className="relative">
-              {/* Decorative animated border */}
-              <motion.div
-                className="absolute -inset-2 bg-gradient-to-r from-[#F49E2C] via-[#F49E2C]/50 to-transparent rounded-full opacity-30 blur-lg"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+      {/* Main Content Container */}
+      <div className="relative z-10 w-full max-w-lg px-6 py-12 flex flex-col items-center">
+        {/* Logo Section */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8, y: -20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.8, type: "spring" }}
+          className="mb-10 text-center"
+        >
+          <div className="relative inline-block group">
+            <div className="absolute -inset-4 bg-gradient-to-r from-decom-secondary/50 via-decom-secondary/20 to-transparent rounded-full opacity-20 blur-2xl group-hover:opacity-40 transition-opacity duration-500" />
+            <div className="relative bg-white p-4 rounded-[2rem] shadow-2xl border-4 border-decom-secondary/20 transform rotate-3 hover:rotate-0 transition-transform duration-500">
+              <Image
+                src="/favicon.png"
+                alt="Logo IPUC"
+                width={80}
+                height={80}
+                className="object-contain"
+                priority
               />
-
-              {/* Logo Circle */}
-              <div className="relative bg-gradient-to-br from-[#15539C] to-[#16233B] w-24 h-24 rounded-full flex items-center justify-center shadow-2xl border-2 border-[#F49E2C] overflow-hidden backdrop-blur-sm">
-                <Image
-                  src="/favicon.png"
-                  alt="Logo IPUC Villa Estadio"
-                  width={80}
-                  height={80}
-                  className="object-contain p-2"
-                  priority
-                />
-              </div>
             </div>
-          </motion.div>
+          </div>
 
-          {/* Title Section with staggered animation */}
-          <motion.div
-            className="text-center space-y-2"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-white to-[#F49E2C] bg-clip-text text-transparent drop-shadow-lg">
-              Sistema DECOM
+          <div className="mt-8 space-y-1">
+            <h1 className="text-5xl font-black text-white tracking-tighter">
+              DECOM<span className="text-decom-secondary">.</span>
             </h1>
-            <p className="text-[#F49E2C] text-base font-semibold drop-shadow">
-              IPUC Villa Estado - Gestión de Comunicaciones
+            <p className="text-white/60 text-sm font-bold uppercase tracking-[0.3em]">
+              IPUC Villa Estadio
             </p>
-          </motion.div>
+          </div>
+        </motion.div>
 
-          {/* Error Message */}
-          {formError && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-            >
-              <Card className="border-red-200 bg-red-50 p-4">
-                <div className="flex items-center gap-2 text-red-700">
-                  <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
-                  <span className="text-sm font-medium">{formError}</span>
-                </div>
-              </Card>
-            </motion.div>
-          )}
+        {/* Login Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="w-full"
+        >
+          <div className="bg-white/95 backdrop-blur-xl p-8 md:p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 relative overflow-hidden">
+            {/* Top accent bar */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-decom-primary via-decom-secondary to-decom-secondary" />
 
-          {/* Form Card with hover effect */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            whileHover={{ y: -5, transition: { duration: 0.2 } }}
-          >
-            <Card padding="lg" className="bg-white/95 backdrop-blur-md shadow-2xl border-t-4 border-[#F49E2C] overflow-hidden relative">
-              {/* Subtle gradient overlay */}
-              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#F49E2C]/50 to-transparent" />
-              
-              <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-5">
-                {/* Email Field */}
+            {/* Error Message */}
+            <AnimatePresence mode="wait">
+              {formError && (
                 <motion.div
-                  className="space-y-2"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: 0.5 }}
+                  initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                  animate={{ opacity: 1, height: 'auto', marginBottom: 20 }}
+                  exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                  className="bg-red-50 border border-red-200 p-4 rounded-2xl flex items-center gap-3 overflow-hidden"
                 >
-                  <label htmlFor="email" className="block text-[#16233B] font-semibold text-sm">
-                    Correo electrónico
-                  </label>
-                  <div className="relative group">
-                    <input
-                      id="email"
-                      type="email"
-                      placeholder="correo@ejemplo.com"
-                      className={`w-full px-4 py-3 pl-10 rounded-lg bg-white text-[#16233B] placeholder-gray-400 border-2 ${errors.email ? "border-red-300" : "border-[#15539C]/30 group-focus-within:border-[#15539C]"
-                        } focus:outline-none focus:ring-2 focus:ring-[#15539C]/30 transition-all duration-300`}
-                      {...register("email")}
-                      disabled={isLoading}
-                    />
-                    <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#15539C] group-focus-within:scale-110 transition-all duration-300" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+                  <div className="bg-red-100 p-2 rounded-xl text-red-600">
+                    <IconAlertCircle className="w-5 h-5 font-bold" />
                   </div>
-                  {errors.email && (
-                    <motion.p
-                      className="text-red-600 text-sm"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      {errors.email.message}
-                    </motion.p>
-                  )}
+                  <span className="text-sm font-bold text-red-800">{formError}</span>
                 </motion.div>
+              )}
+            </AnimatePresence>
 
-                {/* Password Field */}
-                <motion.div
-                  className="space-y-2"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: 0.6 }}
-                >
-                  <label htmlFor="password" className="block text-[#16233B] font-semibold text-sm">
+            <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
+              {/* Email Field */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-decom-primary-light ml-1">
+                  Email Corporativo
+                </label>
+                <div className="relative group">
+                  <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-decom-secondary transition-colors duration-300">
+                    <IconMail className="w-5 h-5" />
+                  </div>
+                  <input
+                    {...register("email")}
+                    type="email"
+                    placeholder="email@ipucvillaestadio.com"
+                    className={cn(
+                      "w-full bg-gray-50 border-2 border-gray-100 rounded-2xl py-4 pl-14 pr-6 text-decom-primary font-bold placeholder-gray-400 transition-all duration-300 outline-none",
+                      "focus:bg-white focus:border-decom-secondary focus:ring-4 focus:ring-decom-secondary/10",
+                      errors.email && "border-red-200 bg-red-50/30"
+                    )}
+                    disabled={isLoading}
+                  />
+                </div>
+                {errors.email && <p className="text-[11px] font-bold text-red-500 ml-1">{errors.email.message}</p>}
+              </div>
+
+              {/* Password Field */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center ml-1">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-decom-primary-light">
                     Contraseña
                   </label>
-                  <div className="relative group">
-                    <input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
-                      className={`w-full px-4 py-3 pl-10 pr-12 rounded-lg bg-white text-[#16233B] placeholder-gray-400 border-2 ${errors.password ? "border-red-300" : "border-[#15539C]/30 group-focus-within:border-[#15539C]"
-                        } focus:outline-none focus:ring-2 focus:ring-[#15539C]/30 transition-all duration-300`}
-                      {...register("password")}
-                      disabled={isLoading}
-                    />
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg group-focus-within:scale-110 transition-transform duration-300">🔒</span>
-                    <motion.button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#16233B] hover:text-[#15539C] transition-colors disabled:opacity-50"
-                      disabled={isLoading}
-                      aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      {showPassword ? "🙈" : "👁️"}
-                    </motion.button>
+                  <button type="button" className="text-[10px] font-black uppercase tracking-widest text-decom-secondary hover:underline">
+                    ¿Olvidaste?
+                  </button>
+                </div>
+                <div className="relative group">
+                  <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-decom-secondary transition-colors duration-300">
+                    <IconLock className="w-5 h-5" />
                   </div>
-                  {errors.password && (
-                    <motion.p
-                      className="text-red-600 text-sm"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      {errors.password.message}
-                    </motion.p>
-                  )}
-                </motion.div>
-
-                {/* Submit Button */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.7 }}
-                  className="mt-6"
-                >
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                  <input
+                    {...register("password")}
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••••••"
+                    className={cn(
+                      "w-full bg-gray-50 border-2 border-gray-100 rounded-2xl py-4 pl-14 pr-14 text-decom-primary font-bold placeholder-gray-400 transition-all duration-300 outline-none",
+                      "focus:bg-white focus:border-decom-secondary focus:ring-4 focus:ring-decom-secondary/10",
+                      errors.password && "border-red-200 bg-red-50/30"
+                    )}
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-decom-secondary transition-colors"
                   >
-                    <Button
-                      type="submit"
-                      variant="primary"
-                      size="lg"
-                      fullWidth
-                      isLoading={isLoading}
-                      className="bg-gradient-to-r from-[#15539C] to-[#16233B] border-b-4 border-[#F49E2C] hover:from-[#15539C]/90 hover:to-[#16233B]/90 shadow-lg hover:shadow-xl transition-shadow duration-300"
-                    >
-                      {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
-                    </Button>
-                  </motion.div>
-                </motion.div>
-              </form>
-            </Card>
-          </motion.div>
+                    {showPassword ? <IconEyeOff className="w-5 h-5" /> : <IconEye className="w-5 h-5" />}
+                  </button>
+                </div>
+                {errors.password && <p className="text-[11px] font-bold text-red-500 ml-1">{errors.password.message}</p>}
+              </div>
 
-          {/* Forgot Password Link */}
-          <motion.div
-            className="text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-          >
-            <motion.a
-              href="#"
-              className="text-[#F49E2C] hover:text-white text-sm font-semibold transition-colors drop-shadow inline-block"
-              whileHover={{ x: 5 }}
-            >
-              ¿Olvidaste tu contraseña? →
-            </motion.a>
-          </motion.div>
+              {/* Submit Button */}
+              <div className="pt-4">
+                <Button
+                  type="submit"
+                  size="lg"
+                  fullWidth
+                  isLoading={isLoading}
+                  variant="secondary"
+                  className="py-6 rounded-2xl text-lg font-black shadow-2xl shadow-decom-secondary/30 relative group overflow-hidden"
+                >
+                  <span className="relative z-10">{isLoading ? "Verificando..." : "Ingresar al Portal"}</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-decom-secondary via-[#f6b052] to-decom-secondary translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
+                </Button>
+              </div>
+            </form>
+          </div>
+        </motion.div>
 
-          {/* Footer */}
-          <motion.footer
-            className="text-center text-white/80 text-xs pt-6 border-t border-white/10 drop-shadow"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.9 }}
-          >
-            <p>© 2026 IPUC Villa Estado - Iglesia Pentecostal Unida de Colombia</p>
-          </motion.footer>
-        </div>
+        {/* Footer info */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.8 }}
+          className="mt-12 text-center"
+        >
+          <p className="text-white/40 text-xs font-medium uppercase tracking-[0.2em]">
+            © 2026 DECOM Platform • IPUC Villa Estadio
+          </p>
+        </motion.div>
       </div>
     </div>
   );

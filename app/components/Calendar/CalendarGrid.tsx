@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React from 'react'
 import {
   startOfMonth,
   endOfMonth,
@@ -8,10 +8,9 @@ import {
   format,
   isSameDay,
   isToday,
-  addMonths,
-  subMonths
 } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { cn } from '@/lib/utils'
 
 interface CalendarEvent {
   id: string
@@ -60,22 +59,22 @@ export default function CalendarGrid({ selectedDate, events, onDaySelect, select
     if (dayEvents.length === 0) return null
 
     const statusColors: Record<string, string> = {
-      pending: 'bg-decom-secondary',
-      in_progress: 'bg-decom-primary-light',
-      completed: 'bg-decom-success',
-      approved: 'bg-decom-success',
-      rejected: 'bg-red-500',
+      pending: 'bg-decom-secondary shadow-[0_0_5px_rgba(244,158,44,0.5)]',
+      in_progress: 'bg-decom-primary-light shadow-[0_0_5px_rgba(21,83,156,0.5)]',
+      completed: 'bg-decom-success shadow-[0_0_5px_rgba(16,185,129,0.5)]',
+      approved: 'bg-decom-success shadow-[0_0_5px_rgba(16,185,129,0.5)]',
+      rejected: 'bg-decom-error shadow-[0_0_5px_rgba(239,68,68,0.5)]',
     }
 
     // Mostrar máximo 3 dots
     const uniqueStatuses = [...new Set(dayEvents.map(event => event.status))].slice(0, 3)
 
     return (
-      <div className="flex gap-1 mt-1 justify-center">
+      <div className="flex gap-1.5 mt-2 justify-center">
         {uniqueStatuses.map((status) => (
           <div
             key={status}
-            className={`w-[6px] h-[6px] rounded-full ${statusColors[status] || 'bg-gray-400'}`}
+            className={cn("w-1.5 h-1.5 rounded-full", statusColors[status] || 'bg-dashboard-text-muted')}
             title={status}
           />
         ))}
@@ -88,14 +87,14 @@ export default function CalendarGrid({ selectedDate, events, onDaySelect, select
   }
 
   return (
-    <div className="bg-white dark:bg-[#1e1e2d] rounded-xl shadow-md overflow-hidden overflow-x-auto">
+    <div className="bg-dashboard-card rounded-2xl shadow-xl border border-dashboard-card-border overflow-hidden">
       <div className="min-w-[340px]">
         {/* Header de días de la semana */}
-        <div className="grid grid-cols-7 bg-decom-primary-light border-b border-decom-primary-light/10">
+        <div className="grid grid-cols-7 bg-dashboard-bg/50 border-b border-dashboard-card-border">
           {['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'].map((day) => (
             <div
               key={day}
-              className="h-9 flex items-center justify-center text-white text-[11px] font-bold uppercase tracking-wider"
+              className="h-12 flex items-center justify-center text-dashboard-text-muted text-[11px] font-black uppercase tracking-[0.2em]"
             >
               {day}
             </div>
@@ -103,13 +102,13 @@ export default function CalendarGrid({ selectedDate, events, onDaySelect, select
         </div>
 
         {/* Grid de días */}
-        <div className="grid grid-cols-7 p-2 gap-y-2">
+        <div className="grid grid-cols-7 p-3 gap-2">
           {calendarDays.map((day, index) => {
             if (!day) {
               return (
                 <div
                   key={`empty-${index}`}
-                  className="h-14 flex flex-col items-center justify-start py-1 opacity-30"
+                  className="h-16 md:h-20 lg:h-24 flex flex-col items-center justify-start py-1 opacity-10"
                 />
               )
             }
@@ -122,35 +121,50 @@ export default function CalendarGrid({ selectedDate, events, onDaySelect, select
               <button
                 key={day.toString()}
                 onClick={() => onDaySelect(day, dayEvents)}
-                className={`
-                h-14 flex flex-col items-center justify-start py-1 relative group cursor-pointer rounded-lg
-                transition-all duration-200
-                ${isCurrentDay
-                    ? 'border-[2px] border-secondary bg-white dark:bg-transparent'
-                    : 'hover:bg-gray-100 dark:hover:bg-white/10 hover:scale-105'
-                  }
-                ${isSelected
-                    ? 'bg-secondary/10 dark:bg-secondary/20 ring-2 ring-inset ring-secondary/50'
-                    : ''
-                  }
-                ${dayEvents.length > 0 ? 'hover:shadow-md' : ''}
-              `}
+                className={cn(
+                  "h-16 md:h-20 lg:h-24 flex flex-col items-center justify-start py-3 relative group transition-all duration-300 rounded-xl overflow-hidden",
+                  "border border-transparent",
+                  isCurrentDay && !isSelected && "bg-decom-secondary/5 border-decom-secondary/20",
+                  isSelected && "bg-decom-secondary text-white shadow-xl shadow-decom-secondary/20",
+                  !isCurrentDay && !isSelected && "hover:bg-dashboard-bg hover:border-dashboard-card-border",
+                  dayEvents.length > 0 && "cursor-pointer"
+                )}
               >
+                {/* Background number effect */}
+                <span className={cn(
+                  "absolute bottom-0 right-1 text-4xl font-black opacity-[0.03] select-none",
+                  isSelected && "opacity-[0.1]"
+                )}>
+                  {format(day, 'd')}
+                </span>
+
                 <span
-                  className={`
-                  text-sm font-medium
-                  ${isCurrentDay || isSelected ? 'font-bold' : ''}
-                  text-decom-primary dark:text-white
-                  ${dayEvents.length > 0 ? 'group-hover:scale-110 transition-transform' : ''}
-                `}
+                  className={cn(
+                    "text-sm font-bold relative z-10",
+                    isCurrentDay && !isSelected && "text-decom-secondary",
+                    isSelected ? "text-white" : "text-dashboard-text-primary",
+                    dayEvents.length > 0 && !isSelected && "group-hover:scale-110 transition-transform"
+                  )}
                 >
                   {format(day, 'd')}
                 </span>
-                {getStatusDots(dayEvents)}
+
+                <div className="relative z-10 w-full">
+                  {getStatusDots(dayEvents)}
+                </div>
+
                 {dayEvents.length > 0 && (
-                  <span className="absolute top-1 right-1 text-[10px] font-bold text-decom-primary/60 dark:text-white/60">
+                  <div className={cn(
+                    "absolute top-2 right-2 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[9px] font-black z-20 shadow-sm",
+                    isSelected ? "bg-white text-decom-secondary" : "bg-dashboard-bg text-dashboard-text-primary border border-dashboard-card-border"
+                  )}>
                     {dayEvents.length}
-                  </span>
+                  </div>
+                )}
+
+                {/* Current day indicator dot */}
+                {isCurrentDay && !isSelected && (
+                  <div className="absolute top-1 left-1.5 w-1 h-1 bg-decom-secondary rounded-full" />
                 )}
               </button>
             )

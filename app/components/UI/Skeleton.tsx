@@ -16,7 +16,7 @@ export function Skeleton({
   className = "",
   ...props
 }: SkeletonProps) {
-  const baseStyles = 'bg-gradient-to-r from-decom-bg-light to-decom-bg-light/50';
+  const baseStyles = 'bg-dashboard-card-border/40';
 
   const variantStyles = {
     text: 'rounded-sm',
@@ -29,9 +29,6 @@ export function Skeleton({
     wave: 'animate-pulse-slow',
     none: ''
   };
-
-  const heightClass = typeof height === "number" ? `h-${height}` : `h-[${height}]`;
-  const widthClass = typeof width === "number" ? `w-${width}` : `w-[${width}]`;
 
   return (
     <div
@@ -67,12 +64,22 @@ export function SkeletonText({ lines = 1, className = "" }: { lines?: number; cl
 
 export function SkeletonCard({ className = "" }: { className?: string }) {
   return (
-    <div className={`space-y-3 ${className}`}>
-      <Skeleton height={20} width="75%" variant="text" />
-      <Skeleton height={16} width="100%" variant="text" />
-      <div className="flex gap-2">
-        <Skeleton height={24} width={80} />
-        <Skeleton height={24} width={100} />
+    <div className={`space-y-4 p-4 rounded-xl border border-dashboard-card-border bg-dashboard-card ${className}`}>
+      <div className="flex items-center gap-3">
+        <Skeleton height={40} width={40} variant="circular" />
+        <div className="flex-1 space-y-2">
+          <Skeleton height={14} width="40%" />
+          <Skeleton height={10} width="20%" />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Skeleton height={12} width="100%" />
+        <Skeleton height={12} width="90%" />
+        <Skeleton height={12} width="75%" />
+      </div>
+      <div className="flex gap-2 pt-2">
+        <Skeleton height={32} width={80} variant="rectangular" />
+        <Skeleton height={32} width={100} variant="rectangular" />
       </div>
     </div>
   );

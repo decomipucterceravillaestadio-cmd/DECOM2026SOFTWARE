@@ -2,65 +2,67 @@
 
 import React from 'react';
 import { UserRole, ROLE_LABELS, ROLE_LEVELS } from '@/app/types/auth';
+import { cn } from '@/lib/utils';
 
 export interface RoleBadgeProps {
   role: UserRole;
   size?: 'sm' | 'md' | 'lg';
   showLevel?: boolean;
+  className?: string;
 }
 
 /**
  * Componente para mostrar visualmente el rol de un usuario
  * con estilos diferenciados según el nivel jerárquico
  */
-export function RoleBadge({ role, size = 'md', showLevel = false }: RoleBadgeProps) {
+export function RoleBadge({ role, size = 'md', showLevel = false, className }: RoleBadgeProps) {
   // Colores basados en nivel jerárquico (de menor a mayor)
   const getRoleStyles = (role: UserRole) => {
     const level = ROLE_LEVELS[role];
-    
-    switch(level) {
+
+    switch (level) {
       case 5: // Admin
-        return 'bg-red-100 text-red-800 border-red-300 dark:bg-red-900 dark:text-red-200';
+        return 'bg-red-500/10 text-red-500 border-red-500/20';
       case 4: // Presidente
-        return 'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900 dark:text-purple-200';
+        return 'bg-purple-500/10 text-purple-500 border-purple-500/20';
       case 3: // Tesorero
-        return 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900 dark:text-blue-200';
+        return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
       case 2: // Secretario
-        return 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900 dark:text-green-200';
+        return 'bg-green-500/10 text-green-500 border-green-500/20';
       case 1: // Vocal
-        return 'bg-gray-100 text-gray-800 border-gray-300 dark:bg-gray-700 dark:text-gray-200';
+        return 'bg-orange-500/10 text-orange-500 border-orange-500/20';
       default: // comite_member, decom_admin (legacy)
-        return 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900 dark:text-yellow-200';
+        return 'bg-dashboard-text-secondary/10 text-dashboard-text-secondary border-dashboard-text-secondary/20';
     }
   };
-  
+
   const getSizeStyles = () => {
-    switch(size) {
+    switch (size) {
       case 'sm':
-        return 'text-xs px-2 py-0.5';
+        return 'text-[10px] px-2 py-0.5 uppercase tracking-wider font-black';
       case 'lg':
-        return 'text-base px-4 py-2';
+        return 'text-sm px-4 py-1.5 uppercase tracking-widest font-black';
       case 'md':
       default:
-        return 'text-sm px-3 py-1';
+        return 'text-[12px] px-3 py-1 uppercase tracking-widest font-black';
     }
   };
-  
+
   const level = ROLE_LEVELS[role];
   const label = ROLE_LABELS[role];
-  
+
   return (
-    <span 
-      className={`
-        inline-flex items-center gap-1.5 
-        rounded-full border font-medium
-        ${getRoleStyles(role)} 
-        ${getSizeStyles()}
-      `}
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full border transition-all duration-300",
+        getRoleStyles(role),
+        getSizeStyles(),
+        className
+      )}
       title={`Nivel de acceso: ${level}/5`}
     >
       {showLevel && (
-        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/50 text-xs font-bold">
+        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-white/20 text-[9px] font-black">
           {level}
         </span>
       )}
@@ -75,9 +77,9 @@ export function RoleBadge({ role, size = 'md', showLevel = false }: RoleBadgePro
  */
 export function RoleList() {
   const roles: UserRole[] = ['admin', 'presidente', 'tesorero', 'secretario', 'vocal'];
-  
+
   const getDescription = (role: UserRole): string => {
-    switch(role) {
+    switch (role) {
       case 'admin':
         return 'Acceso completo a todas las funcionalidades del sistema';
       case 'presidente':
@@ -92,19 +94,19 @@ export function RoleList() {
         return '';
     }
   };
-  
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {roles.map((role) => (
-        <div 
+        <div
           key={role}
-          className="flex items-start gap-3 rounded-lg border p-3 hover:bg-gray-50 dark:hover:bg-gray-800"
+          className="flex items-start gap-4 rounded-xl border border-dashboard-card-border p-4 bg-dashboard-card hover:border-decom-secondary/30 hover:shadow-lg transition-all"
         >
-          <div className="mt-1">
-            <RoleBadge role={role} showLevel />
+          <div className="mt-0.5 shrink-0">
+            <RoleBadge role={role} showLevel size="md" />
           </div>
           <div className="flex-1">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm font-medium text-dashboard-text-secondary">
               {getDescription(role)}
             </p>
           </div>
@@ -120,8 +122,8 @@ export function RoleList() {
  */
 export function useRoleIcon(role: UserRole): string {
   const level = ROLE_LEVELS[role];
-  
-  switch(level) {
+
+  switch (level) {
     case 5: return '👑'; // Admin
     case 4: return '🎖️'; // Presidente
     case 3: return '💼'; // Tesorero

@@ -5,55 +5,40 @@ import { useRouter } from 'next/navigation'
 import {
   IconArrowLeft,
   IconCheck,
-  IconX
+  IconDeviceFloppy,
+  IconUser,
+  IconMail,
+  IconPhone,
+  IconShieldCheck
 } from '@tabler/icons-react'
 import { Button } from '@/app/components/UI/Button'
 import { Input } from '@/app/components/UI/Input'
-
-interface UserProfile {
-  name: string
-  email: string
-  phone?: string
-  committee: string
-}
+import { DashboardLayout } from '@/app/components/Dashboard/DashboardLayout'
+import { useAuth } from '@/app/contexts/AuthContext'
+import { Card } from '@/app/components/UI/Card'
+import { motion } from 'framer-motion'
+import { FormField, FormSection } from '@/app/components/Forms/FormComponents'
 
 export default function EditProfilePage() {
   const router = useRouter()
-  const [user, setUser] = useState<UserProfile | null>(null)
+  const { user } = useAuth()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: ''
   })
-  const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   useEffect(() => {
-    // Simular carga de datos del usuario
-    const loadUserProfile = async () => {
-      try {
-        const mockUser: UserProfile = {
-          name: 'Juan David',
-          email: 'juan.david@ipuc.org.co',
-          phone: '+57 300 123 4567',
-          committee: 'Comité DECOM'
-        }
-        setUser(mockUser)
-        setFormData({
-          name: mockUser.name,
-          email: mockUser.email,
-          phone: mockUser.phone || ''
-        })
-      } catch (error) {
-        console.error('Error loading user profile:', error)
-      } finally {
-        setIsLoading(false)
-      }
+    if (user) {
+      setFormData({
+        name: user.full_name || '',
+        email: user.email || '',
+        phone: '' // In a real app, this would come from the user object
+      })
     }
-
-    loadUserProfile()
-  }, [])
+  }, [user])
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -98,130 +83,123 @@ export default function EditProfilePage() {
     }
   }
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="animate-pulse">
-          <div className="h-16 bg-gradient-to-r from-decom-primary to-decom-primary-light"></div>
-          <div className="p-4 space-y-4">
-            <div className="h-12 bg-gray-300 rounded"></div>
-            <div className="h-12 bg-gray-300 rounded"></div>
-            <div className="h-12 bg-gray-300 rounded"></div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="flex items-center p-4 pb-4 justify-between bg-gradient-to-r from-decom-primary to-decom-primary-light shadow-sm sticky top-0 z-10">
-        <button
-          onClick={() => router.back()}
-          className="text-white flex size-12 shrink-0 items-center justify-center cursor-pointer hover:bg-white/10 rounded-full transition-colors"
-        >
-          <IconArrowLeft className="w-6 h-6" />
-        </button>
-        <h2 className="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">
-          Editar Perfil
-        </h2>
-        <button
-          onClick={handleSave}
-          disabled={isSaving}
-          className="text-white flex size-12 shrink-0 items-center justify-center cursor-pointer hover:bg-white/10 rounded-full transition-colors disabled:opacity-50"
-        >
-          {isSaving ? (
-            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-          ) : (
-            <IconCheck className="w-6 h-6" />
-          )}
-        </button>
-      </div>
-
-      {/* Form */}
-      <div className="p-4 space-y-6">
-        {/* Avatar Section */}
-        <div className="flex flex-col items-center py-6">
-          <div className="relative mb-4">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-decom-primary-light to-decom-primary border-[3px] border-decom-secondary shadow-lg flex items-center justify-center">
-              <span className="text-white text-2xl font-bold tracking-wider">
-                {user?.name.split(' ').map(word => word.charAt(0)).join('').toUpperCase().slice(0, 2)}
-              </span>
-            </div>
-            <button className="absolute bottom-0 right-0 w-8 h-8 bg-decom-secondary rounded-full flex items-center justify-center shadow-lg">
-              <IconCheck className="w-4 h-4 text-white" />
-            </button>
-          </div>
-          <p className="text-sm text-gray-600 text-center">
-            Toca para cambiar la foto de perfil
-          </p>
-        </div>
-
-        {/* Form Fields */}
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Nombre completo
-            </label>
-            <Input
-              value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
-              placeholder="Ingresa tu nombre completo"
-              error={errors.name}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Correo electrónico
-            </label>
-            <Input
-              type="email"
-              value={formData.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
-              placeholder="Ingresa tu correo electrónico"
-              error={errors.email}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Teléfono (opcional)
-            </label>
-            <Input
-              value={formData.phone}
-              onChange={(e) => handleInputChange('phone', e.target.value)}
-              placeholder="Ingresa tu número de teléfono"
-            />
-          </div>
-
-          {/* Read-only field for committee */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Comité
-            </label>
-            <div className="bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-gray-700">
-              {user?.committee}
-            </div>
-            <p className="text-xs text-gray-500 mt-1">
-              El comité no se puede cambiar desde esta pantalla
-            </p>
-          </div>
-        </div>
-
-        {/* Save Button */}
-        <div className="pt-4">
-          <Button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="w-full"
-            size="lg"
+    <DashboardLayout title="Editar Perfil">
+      <div className="max-w-3xl mx-auto py-8">
+        <div className="flex items-center gap-4 mb-8">
+          <button
+            onClick={() => router.back()}
+            className="p-3 rounded-2xl bg-dashboard-card border border-dashboard-card-border hover:bg-dashboard-bg text-dashboard-text-secondary transition-all hover:scale-105"
           >
-            {isSaving ? 'Guardando...' : 'Guardar cambios'}
-          </Button>
+            <IconArrowLeft className="w-6 h-6" />
+          </button>
+          <div>
+            <h1 className="text-3xl font-black text-dashboard-text-primary tracking-tight">Editar Perfil</h1>
+            <p className="text-sm text-dashboard-text-secondary font-medium mt-1">Actualiza tu información personal y de contacto</p>
+          </div>
         </div>
+
+        <Card padding="lg" className="border-dashboard-card-border/50 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-20 bg-decom-secondary/5 rounded-full -mr-20 -mt-20 blur-3xl pointer-events-none" />
+
+          <div className="relative z-10 space-y-10">
+            {/* Avatar Section */}
+            <div className="flex flex-col items-center py-4">
+              <div className="relative group">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  className="w-32 h-32 rounded-3xl bg-gradient-to-br from-decom-primary-light to-decom-primary flex items-center justify-center font-black text-5xl text-white shadow-2xl border-4 border-white dark:border-dashboard-card relative overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent" />
+                  {user?.full_name?.charAt(0).toUpperCase() || 'U'}
+                </motion.div>
+                <div className="absolute -bottom-2 -right-2 bg-decom-secondary text-white p-2.5 rounded-2xl border-4 border-dashboard-card shadow-xl ring-2 ring-decom-secondary/20">
+                  <IconCheck className="w-5 h-5 font-black" />
+                </div>
+              </div>
+              <div className="mt-4 text-center">
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-dashboard-text-muted">Avatar del Sistema</p>
+                <button className="text-[11px] font-bold text-decom-secondary hover:underline mt-1">Cambiar Foto</button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-8">
+              <FormSection
+                title="Información Básica"
+                description="Estos datos son visibles para otros miembros del comité"
+                icon={<IconUser />}
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField label="Nombre Completo" error={errors.name} required>
+                    <Input
+                      value={formData.name}
+                      onChange={(e) => handleInputChange('name', e.target.value)}
+                      placeholder="Ej. Juan Pérez"
+                      className="rounded-2xl border-2 focus:ring-4"
+                    />
+                  </FormField>
+
+                  <FormField label="Correo Electrónico" error={errors.email} required>
+                    <Input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      placeholder="ejemplo@ipuc.com"
+                      className="rounded-2xl border-2 focus:ring-4"
+                    />
+                  </FormField>
+                </div>
+              </FormSection>
+
+              <FormSection
+                title="Contacto y Seguridad"
+                description="Información adicional para la gestión operativa"
+                icon={<IconShieldCheck />}
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField label="Teléfono de Contacto" hint="Opcional">
+                    <Input
+                      value={formData.phone}
+                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                      placeholder="+57 300 000 0000"
+                      className="rounded-2xl border-2 focus:ring-4"
+                    />
+                  </FormField>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-dashboard-text-primary ml-1 uppercase tracking-wider text-[11px]">Rol Actual</label>
+                    <div className="bg-dashboard-bg/50 border-2 border-dashboard-card-border rounded-2xl px-5 py-3.5 text-dashboard-text-secondary font-bold flex items-center justify-between group">
+                      <span>{user?.role === 'admin' ? 'Administrador del Sistema' : 'Miembro del Comité'}</span>
+                      <IconShieldCheck className="w-5 h-5 text-dashboard-text-muted group-hover:text-decom-secondary transition-colors" />
+                    </div>
+                  </div>
+                </div>
+              </FormSection>
+            </div>
+
+            <div className="pt-10 flex flex-col sm:flex-row gap-4">
+              <Button
+                onClick={handleSave}
+                isLoading={isSaving}
+                className="flex-[2] py-4 text-base font-black shadow-xl shadow-decom-secondary/20"
+                variant="secondary"
+                size="lg"
+                leftIcon={<IconDeviceFloppy className="w-5 h-5" />}
+              >
+                GUARDAR CAMBIOS
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => router.back()}
+                className="flex-1 py-4 text-base font-bold border-2"
+                size="lg"
+              >
+                CANCELAR
+              </Button>
+            </div>
+          </div>
+        </Card>
       </div>
-    </div>
+    </DashboardLayout>
   )
 }
