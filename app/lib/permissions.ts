@@ -40,7 +40,7 @@ const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   // ADMIN - Todos los permisos
   admin: Object.values(Permission),
   
-  // PRESIDENTE - Gestión de usuarios + todos los permisos de niveles inferiores
+  // PRESIDENTE - Gestión de usuarios + comités + todos los permisos de niveles inferiores
   presidente: [
     Permission.VIEW_USERS,
     Permission.CREATE_USERS,
@@ -52,6 +52,7 @@ const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.DELETE_REQUESTS,
     Permission.CHANGE_REQUEST_STATUS,
     Permission.VIEW_COMMITTEES,
+    Permission.EDIT_COMMITTEES,
     Permission.VIEW_CALENDAR,
     Permission.TOGGLE_REQUEST_VISIBILITY,
     Permission.VIEW_STATS,

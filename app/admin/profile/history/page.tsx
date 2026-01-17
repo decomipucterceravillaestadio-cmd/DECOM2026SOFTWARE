@@ -36,7 +36,7 @@ export default function RequestHistoryPage() {
           {
             id: '1',
             event_name: 'Concierto de Navidad 2024',
-            material_type: 'banner',
+            material_type: 'poster',
             status: 'entregada',
             created_at: '2024-11-15T10:30:00Z',
             event_date: '2024-12-20T19:00:00Z'
@@ -44,7 +44,7 @@ export default function RequestHistoryPage() {
           {
             id: '2',
             event_name: 'Retiro Juvenil',
-            material_type: 'flyer',
+            material_type: 'poster',
             status: 'en_diseño',
             created_at: '2024-11-20T14:15:00Z',
             event_date: '2024-12-15T09:00:00Z'
@@ -52,7 +52,7 @@ export default function RequestHistoryPage() {
           {
             id: '3',
             event_name: 'Campaña de Amor',
-            material_type: 'redes_sociales',
+            material_type: 'otro',
             status: 'lista',
             created_at: '2024-11-10T09:45:00Z',
             event_date: '2024-12-01T10:00:00Z'

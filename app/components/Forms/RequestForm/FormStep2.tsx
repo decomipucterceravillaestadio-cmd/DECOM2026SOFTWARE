@@ -5,7 +5,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
+import {
   IconPalette,
   IconPhone,
   IconBook,
@@ -15,7 +15,8 @@ import {
   IconPackage,
   IconQuote,
   IconArrowLeft,
-  IconCheck
+  IconCheck,
+  IconCamera
 } from '@tabler/icons-react'
 import { Button } from '../../UI/Button'
 import type { Step1Data } from './FormStep1'
@@ -31,7 +32,7 @@ import {
 // Esquema de validación para Step 2
 const step2Schema = z
   .object({
-    material_type: z.enum(['flyer', 'banner', 'video', 'redes_sociales', 'otro']),
+    material_type: z.enum(['poster', 'video', 'otro']),
     contact_whatsapp: z
       .string()
       .min(10, 'Número muy corto')
@@ -74,10 +75,8 @@ interface FormStep2Props {
 }
 
 const MATERIAL_TYPES = [
-  { id: 'flyer', label: 'Flyer', icon: <IconFileText size={28} />, description: 'Volante impreso' },
-  { id: 'banner', label: 'Banner', icon: <IconPalette size={28} />, description: 'Banner digital' },
+  { id: 'poster', label: 'Póster', icon: <IconCamera size={28} />, description: 'Foto publicitaria del evento' },
   { id: 'video', label: 'Video', icon: <IconVideo size={28} />, description: 'Contenido video' },
-  { id: 'redes_sociales', label: 'Redes', icon: <IconBrandInstagram size={28} />, description: 'Social media' },
   { id: 'otro', label: 'Otro', icon: <IconPackage size={28} />, description: 'Especificar' },
 ]
 
@@ -96,10 +95,11 @@ export function FormStep2({
     watch,
     control,
     formState: { errors },
+    setValue,
   } = useForm<Step2Data>({
     resolver: zodResolver(step2Schema),
     defaultValues: {
-      material_type: 'flyer',
+      material_type: 'poster',
       include_bible_verse: false,
     },
   })
@@ -141,14 +141,10 @@ export function FormStep2({
             options={MATERIAL_TYPES}
             value={selectedMaterialType}
             onChange={(value) => {
-              watch('material_type')
-              const form = document.querySelector('form')
-              if (form) {
-                const radioInput = form.querySelector(
-                  `input[value="${value}"]`
-                ) as HTMLInputElement
-                if (radioInput) radioInput.checked = true
-              }
+              setValue('material_type', value as Step2Data['material_type'], {
+                shouldValidate: true,
+                shouldDirty: true
+              })
             }}
             error={errors.material_type?.message}
           />
@@ -194,8 +190,8 @@ export function FormStep2({
         <motion.div
           layout
           className={`border-2 rounded-xl p-4 md:p-6 transition-all duration-300 ${includeBibleVerse
-              ? 'border-[#15539C] bg-gradient-to-br from-[#15539C]/5 to-transparent'
-              : 'border-dashed border-gray-300 bg-white hover:border-[#15539C]/40'
+            ? 'border-[#15539C] bg-gradient-to-br from-[#15539C]/5 to-transparent'
+            : 'border-dashed border-gray-300 bg-white hover:border-[#15539C]/40'
             }`}
         >
           <div className="space-y-4 md:space-y-5">

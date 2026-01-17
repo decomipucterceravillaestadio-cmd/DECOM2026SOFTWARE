@@ -9,13 +9,8 @@ export const COMMITTEES = [
 ];
 
 export const MATERIAL_TYPES = [
-  { value: "Flyer", emoji: "📄" },
-  { value: "Banner", emoji: "🎨" },
-  { value: "Video", emoji: "🎬" },
-  { value: "Redes Sociales", emoji: "📱" },
   { value: "Póster", emoji: "🖼️" },
-  { value: "Sitio Web", emoji: "🌐" },
-  { value: "Email", emoji: "📧" },
+  { value: "Video", emoji: "🎬" },
   { value: "Otro", emoji: "📦" },
 ];
 

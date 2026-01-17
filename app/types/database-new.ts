@@ -54,6 +54,9 @@ export type Database = {
           created_by_id: string
           created_at: string
           updated_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          deletion_reason: string | null
         }
         Insert: {
           id?: string
@@ -72,6 +75,9 @@ export type Database = {
           created_by_id: string
           created_at?: string
           updated_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          deletion_reason?: string | null
         }
         Update: {
           id?: string
@@ -90,6 +96,9 @@ export type Database = {
           created_by_id?: string
           created_at?: string
           updated_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          deletion_reason?: string | null
         }
         Relationships: [
           {

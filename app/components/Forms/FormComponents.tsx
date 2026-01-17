@@ -256,52 +256,65 @@ export function SelectButtonGroup({
             <motion.button
               key={option.id}
               onClick={() => onChange(option.id)}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.98 }}
               className={cn(
-                "relative p-5 rounded-2xl border-2 transition-all duration-300 flex flex-col items-center justify-center gap-2.5 min-h-[110px]",
+                "relative p-6 rounded-2xl border transition-all duration-300 flex flex-col items-center justify-center gap-3 min-h-[140px] group overflow-hidden",
                 isSelected
-                  ? "border-decom-secondary bg-gradient-to-br from-decom-primary-light to-decom-primary text-white shadow-2xl shadow-decom-primary/30 ring-2 ring-decom-secondary/50"
-                  : "border-dashboard-card-border bg-dashboard-card text-dashboard-text-primary hover:border-decom-secondary/50 hover:bg-dashboard-bg shadow-sm"
+                  ? "border-decom-secondary bg-gradient-to-br from-decom-primary to-[#0f172a] text-white shadow-xl shadow-decom-primary/20 ring-1 ring-decom-secondary/50"
+                  : "border-gray-200 bg-white text-gray-700 hover:border-decom-secondary/30 hover:shadow-lg hover:shadow-decom-primary/5 hover:bg-gray-50"
               )}
             >
+              {isSelected && (
+                <motion.div
+                  layoutId="active-bg"
+                  className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-20"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                />
+              )}
+
               {option.icon && (
                 <div className={cn(
-                  "text-3xl filter transition-transform duration-300",
-                  isSelected ? "scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]" : "drop-shadow-sm group-hover:scale-110"
+                  "text-4xl transition-all duration-300 mb-1",
+                  isSelected ? "scale-110 drop-shadow-md text-decom-secondary" : "text-gray-400 group-hover:text-decom-primary group-hover:scale-110"
                 )}>
                   {typeof option.icon === 'string' ? option.icon : option.icon}
                 </div>
               )}
-              <span className={cn(
-                "text-[11px] font-black uppercase tracking-widest text-center leading-tight",
-                isSelected ? "text-white" : "text-dashboard-text-secondary"
-              )}>
-                {option.label}
-              </span>
+
+              <div className="flex flex-col items-center gap-1 z-10 relative">
+                <span className={cn(
+                  "text-xs font-black uppercase tracking-widest text-center leading-tight transition-colors",
+                  isSelected ? "text-white" : "text-gray-600 group-hover:text-decom-primary"
+                )}>
+                  {option.label}
+                </span>
+
+                {option.description && (
+                  <span className={cn(
+                    "text-[10px] leading-tight hidden md:block mt-1 font-medium text-center line-clamp-2 max-w-[120px]",
+                    isSelected ? "text-white/70" : "text-gray-400 group-hover:text-gray-500"
+                  )}>
+                    {option.description}
+                  </span>
+                )}
+              </div>
 
               <AnimatePresence>
                 {isSelected && (
                   <motion.div
-                    className="absolute -top-2 -right-2 bg-decom-secondary text-white rounded-xl p-1 shadow-lg ring-2 ring-white dark:ring-dashboard-bg"
-                    initial={{ scale: 0, rotate: -45 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    exit={{ scale: 0, rotate: 45 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+                    className="absolute top-3 right-3 bg-decom-secondary text-white rounded-full p-1 shadow-lg"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 25 }}
                   >
-                    <IconCheck className="w-4 h-4" />
+                    <IconCheck className="w-3.5 h-3.5" strokeWidth={3} />
                   </motion.div>
                 )}
               </AnimatePresence>
-
-              {option.description && (
-                <span className={cn(
-                  "text-[10px] leading-tight hidden md:block mt-1 font-medium",
-                  isSelected ? "text-white/80" : "text-dashboard-text-muted"
-                )}>
-                  {option.description}
-                </span>
-              )}
             </motion.button>
           )
         })}

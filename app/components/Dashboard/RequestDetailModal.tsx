@@ -24,6 +24,7 @@ import {
 import { generateWhatsAppLink } from '@/app/lib/utils/whatsapp'
 import { useAuth, useHasPermission } from '@/app/contexts/AuthContext'
 import { Permission } from '@/app/lib/permissions'
+import DeleteConfirmationModal from '@/app/components/UI/DeleteConfirmationModal'
 
 interface RequestDetail {
   id: string
@@ -110,6 +111,7 @@ export default function RequestDetailModal({
   const [changeReason, setChangeReason] = useState('')
   const [visibleInPublicCalendar, setVisibleInPublicCalendar] = useState(true)
   const [deleting, setDeleting] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
 
   useEffect(() => {
     if (!requestId) {
@@ -163,19 +165,21 @@ export default function RequestDetailModal({
     }
   }
 
-  const handleDelete = async () => {
+  const handleDeleteClick = () => {
+    setShowDeleteModal(true)
+  }
+
+  const handleConfirmDelete = async (password: string, reason: string) => {
     if (!request) return
-
-    const confirmed = confirm(
-      `¿Estás seguro de que quieres eliminar la solicitud "${request.event_name}"?\n\nEsta acción no se puede deshacer y eliminará permanentemente la solicitud.`
-    )
-
-    if (!confirmed) return
 
     setDeleting(true)
     try {
       const response = await fetch(`/api/admin/requests/${request.id}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ password, reason })
       })
 
       if (response.ok) {
@@ -190,6 +194,7 @@ export default function RequestDetailModal({
       alert('Error al eliminar la solicitud. Inténtalo de nuevo.')
     } finally {
       setDeleting(false)
+      setShowDeleteModal(false)
     }
   }
 
@@ -496,7 +501,7 @@ export default function RequestDetailModal({
                         </div>
 
                         <Button
-                          onClick={handleDelete}
+                          onClick={handleDeleteClick}
                           disabled={deleting}
                           fullWidth
                           variant="outline"
@@ -573,6 +578,14 @@ export default function RequestDetailModal({
           )}
         </div>
       </div>
+
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleConfirmDelete}
+        itemName={request?.event_name || 'Solicitud'}
+        isDeleting={deleting}
+      />
     </div>
   )
 }

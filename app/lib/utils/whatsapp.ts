@@ -26,15 +26,15 @@ export function generateWhatsAppLink(
     cleanNumber = `57${cleanNumber}`
   }
 
-  const message = `Hola, actualización sobre tu solicitud DECOM:
+  const message = `Dios le bendiga grandemente! Actualización sobre tu solicitud DECOM:
 
-📅 *Evento:* ${data.eventName}
-👥 *Comité:* ${data.committeeName}
-📆 *Fecha:* ${data.eventDate}
-📹 *Material:* ${data.materialType}
-📊 *Estado actual:* ${data.statusLabel}
+*Evento:* ${data.eventName}
+*Comité:* ${data.committeeName}
+*Fecha:* ${data.eventDate}
+*Material:* ${data.materialType}
+*Estado actual:* ${data.statusLabel}
 
-¡Estamos pendientes! 🙏`
+¡Estamos pendientes!`
 
   return `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`
 }

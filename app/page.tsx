@@ -78,6 +78,7 @@ export default function HomePage() {
                 width={32}
                 height={32}
                 className="object-contain p-1"
+                priority
               />
             </div>
             <span className="font-bold text-base md:text-xl tracking-tight text-white">DECOM IPUC VILLA ESTADIO</span>

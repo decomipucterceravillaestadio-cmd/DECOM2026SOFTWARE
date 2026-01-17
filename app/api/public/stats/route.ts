@@ -1,9 +1,16 @@
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import type { Database } from '../../../types/database'
+import { getCachedData, setCachedData } from '../../../lib/cache'
 
 export async function GET() {
   try {
+    const cacheKey = 'public-stats'
+    const cached = await getCachedData(cacheKey)
+    if (cached) {
+      return NextResponse.json(cached)
+    }
+
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
@@ -62,6 +69,9 @@ export async function GET() {
       in_progress: inProgressRequests.count || 0,
       upcoming_events: upcomingEvents.data || []
     }
+
+    // Cache for 5 minutes
+    await setCachedData(cacheKey, stats, 300)
 
     return NextResponse.json(stats)
 

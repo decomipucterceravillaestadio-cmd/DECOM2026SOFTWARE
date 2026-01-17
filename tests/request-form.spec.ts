@@ -7,7 +7,7 @@ test.describe('Formulario de Solicitudes', () => {
     // Paso 1: Información básica
     await page.fill('input[name="event_name"]', 'Congreso de Jóvenes 2026')
     await page.fill('input[name="event_date"]', '2026-02-15')
-    await page.selectOption('select[name="material_type"]', 'boletines')
+    await page.selectOption('select[name="material_type"]', 'poster')
     await page.fill('input[name="quantity"]', '500')
     await page.selectOption('select[name="committee_id"]', { index: 1 })
     

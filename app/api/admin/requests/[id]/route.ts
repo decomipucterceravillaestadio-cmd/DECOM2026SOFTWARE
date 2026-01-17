@@ -21,7 +21,7 @@ export async function GET(
   try {
     const { id } = await params
     const supabase = await createServerClient()
-    
+
     // Verificar autenticación
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -82,10 +82,10 @@ export async function PATCH(
   try {
     const { id } = await params
     console.log('📌 Request ID:', id)
-    
+
     const supabase = await createServerClient()
     console.log('✅ Server client created')
-    
+
     let adminClient
     try {
       adminClient = createAdminClient()
@@ -97,7 +97,7 @@ export async function PATCH(
         { status: 500 }
       )
     }
-    
+
     // Verificar autenticación
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -191,7 +191,7 @@ export async function PATCH(
     }
 
     console.log('✨ Request update complete')
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       message: 'Solicitud actualizada correctamente'
     })
@@ -209,6 +209,8 @@ export async function PATCH(
  * DELETE /api/admin/requests/[id]
  * Elimina una solicitud específica
  */
+// DELETE /api/admin/requests/[id]
+// Archiva (Soft Delete) una solicitud específica tras verificar contraseña
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -217,80 +219,78 @@ export async function DELETE(
     const { id } = await params
     const supabase = await createServerClient()
 
-    // Verificar autenticación
+    // 1. Verificar sesión actual
     const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
+    if (authError || !user || !user.email) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
 
-    // Verificar permisos - obtener rol del usuario
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('role')
-      .eq('auth_user_id', user.id)
-      .single()
+    // 2. Obtener datos del cuerpo (contraseña y motivo)
+    const body = await request.json().catch(() => ({}))
+    const { password, reason } = body
 
-    if (userError || !userData) {
-      return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 403 })
+    if (!password || !reason) {
+      return NextResponse.json(
+        { error: 'Se requiere contraseña y motivo para eliminar' },
+        { status: 400 }
+      )
     }
 
-    // Verificar si tiene permisos para eliminar solicitudes
-    const userRole = userData.role
-    const hasPermission = userRole === 'admin' || userRole === 'presidente'
+    // 3. Verificar contraseña re-autenticando
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: user.email,
+      password: password
+    })
 
-    if (!hasPermission) {
+    if (signInError) {
       return NextResponse.json(
-        { error: 'No tienes permisos para eliminar solicitudes' },
+        { error: 'Contraseña incorrecta. No se pudo verificar tu identidad.' },
         { status: 403 }
       )
     }
 
-    // Verificar que la solicitud existe
-    const { data: existingRequest, error: checkError } = await supabase
-      .from('requests')
-      .select('id, event_name')
-      .eq('id', id)
-      .single()
+    // 4. Ejecutar Soft Delete (Update)
+    // Usamos adminClient para asegurar que podemos escribir independientemente de RLS estricto
+    // (ya verificamos la contraseña y autenticación arriba)
+    const adminClient = createAdminClient()
 
-    if (checkError || !existingRequest) {
+    const { error: updateError } = await adminClient
+      .from('requests')
+      .update({
+        deleted_at: new Date().toISOString(),
+        deleted_by: user.id,
+        deletion_reason: reason
+      })
+      .eq('id', id)
+
+    if (updateError) {
+      console.error('Error soft-deleting request:', updateError)
       return NextResponse.json(
-        { error: 'Solicitud no encontrada' },
-        { status: 404 }
+        { error: 'Error al archivar la solicitud', details: updateError.message },
+        { status: 500 }
       )
     }
 
-    // Eliminar el historial de la solicitud primero (por restricciones de clave foránea)
-    const { error: historyDeleteError } = await supabase
+    // 5. Registrar en historial
+    const { error: historyError } = await adminClient
       .from('request_history')
-      .delete()
-      .eq('request_id', id)
+      .insert({
+        request_id: id,
+        old_status: 'Activo',
+        new_status: 'Eliminado',
+        changed_by: user.id,
+        change_reason: `ELIMINADO: ${reason}`,
+        changed_at: new Date().toISOString()
+      })
 
-    if (historyDeleteError) {
-      console.error('Error deleting request history:', historyDeleteError)
-      return NextResponse.json(
-        { error: 'Error al eliminar el historial de la solicitud' },
-        { status: 500 }
-      )
+    if (historyError) {
+      console.error('Error creating deletion history:', historyError)
+      // No fallamos la request completa si solo falla el historial, pero lo logueamos
     }
 
-    // Eliminar la solicitud
-    const { error: deleteError } = await supabase
-      .from('requests')
-      .delete()
-      .eq('id', id)
-
-    if (deleteError) {
-      console.error('Error deleting request:', deleteError)
-      return NextResponse.json(
-        { error: 'Error al eliminar la solicitud' },
-        { status: 500 }
-      )
-    }
-
-    console.log(`🗑️ Request "${existingRequest.event_name}" deleted successfully`)
     return NextResponse.json({
       success: true,
-      message: 'Solicitud eliminada correctamente'
+      message: 'Solicitud archivada correctamente'
     })
 
   } catch (error) {
