@@ -9,6 +9,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { createBrowserClient } from '@supabase/ssr'
 import type { AuthUser, UserRole } from '@/app/types/auth'
 import { hasPermission, getRoleLevel, canAccessRoute, Permission } from '@/app/lib/permissions'
+import { ensureUserExists } from '@/app/lib/supabase/ensure-user'
 import type { Database } from '@/app/types/database'
 
 interface AuthContextType {
@@ -37,11 +38,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Cargar usuario desde la sesión
   const loadUser = useCallback(async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
       
-      console.log('🔐 AuthContext loadUser:', { hasSession: !!session })
+      console.log('🔐 AuthContext loadUser:', { 
+        hasSession: !!session,
+        userId: session?.user?.id,
+        sessionError 
+      })
+      
+      if (sessionError) {
+        console.error('❌ Session error:', sessionError.message)
+        setUser(null)
+        setLoading(false)
+        return
+      }
       
       if (session?.user) {
+        // Asegurarse de que el usuario existe en la tabla
+        const { success: ensureSuccess } = await ensureUserExists(
+          supabase,
+          session.user.id,
+          session.user.email || ''
+        )
+
+        if (!ensureSuccess) {
+          console.error('⚠️ Could not ensure user exists, continuing anyway...')
+        }
+
         // Obtener datos completos del usuario
         const { data: userData, error } = await supabase
           .from('users')
@@ -49,13 +72,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .eq('auth_user_id', session.user.id)
           .single()
 
-        console.log('👤 User data from DB:', { userData, error })
+        console.log('👤 User data from DB:', { 
+          hasData: !!userData,
+          errorCode: error?.code,
+          errorMessage: error?.message,
+          errorDetails: error?.details,
+          userId: session.user.id
+        })
 
         if (userData && !error) {
           setUser(userData as unknown as AuthUser)
-          console.log('✅ User set:', userData)
+          console.log('✅ User set successfully:', { email: userData.email, role: userData.role })
         } else {
-          console.error('❌ Error loading user data:', error)
+          if (error) {
+            console.error('❌ Error loading user data:', {
+              code: error.code,
+              message: error.message,
+              details: error.details,
+              hint: error.hint,
+              fullError: JSON.stringify(error)
+            })
+            
+            // Si el error es PGRST116 (no row found), el usuario no existe aún
+            if (error.code === 'PGRST116') {
+              console.warn('⚠️ User not found in database - this may be expected on first login')
+            }
+          } else {
+            console.error('❌ User data is null but no error returned')
+          }
           setUser(null)
         }
       } else {
@@ -63,7 +107,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(null)
       }
     } catch (error) {
-      console.error('💥 Error loading user:', error)
+      console.error('💥 Error loading user:', {
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      })
       setUser(null)
     } finally {
       setLoading(false)

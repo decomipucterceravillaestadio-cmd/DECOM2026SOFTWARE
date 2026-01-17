@@ -15,7 +15,10 @@ export async function POST(request: NextRequest) {
   try {
     // Parse y validar el body
     const body = await request.json()
+    console.log('📝 Login request for email:', body.email)
+    
     const validatedData = loginSchema.parse(body)
+    console.log('✅ Validation passed')
 
     // Obtener cookieStore
     const cookieStore = await cookies()
@@ -40,6 +43,7 @@ export async function POST(request: NextRequest) {
     )
 
     // Autenticar con Supabase Auth
+    console.log('🔐 Attempting Supabase auth...')
     const { data: authData, error: authError } =
       await supabase.auth.signInWithPassword({
         email: validatedData.email,
@@ -47,40 +51,55 @@ export async function POST(request: NextRequest) {
       })
 
     if (authError) {
-      console.error('Auth error:', authError.message)
+      console.error('❌ Auth error:', { 
+        code: authError.status,
+        message: authError.message 
+      })
       return NextResponse.json(
         {
           success: false,
-          error: 'Credenciales inválidas',
+          message: 'Credenciales inválidas',
         },
         { status: 401 }
       )
     }
 
     if (!authData.user) {
+      console.error('❌ No user returned from auth')
       return NextResponse.json(
         {
           success: false,
-          error: 'Error al obtener datos del usuario',
+          message: 'Error al obtener datos del usuario',
         },
         { status: 401 }
       )
     }
+
+    console.log('✅ Auth successful, user ID:', authData.user.id)
 
     // Crear cliente admin para operaciones en public.users (bypasea RLS)
     const supabaseAdmin = createAdminClient()
 
     // Verificar que el usuario existe en tabla `users` y tiene rol decom_admin
     // Buscar por auth_user_id, no por id (id es el UUID de public.users, auth_user_id es el de auth.users)
+    console.log('🔍 Looking for user in database...')
     let { data: userData, error: userError } = await (supabaseAdmin as any)
       .from('users')
       .select('*')
       .eq('auth_user_id', authData.user.id)
       .single()
 
+    if (userError) {
+      console.log('⚠️ User not found in database, will create one')
+    } else {
+      console.log('✅ User found:', { email: userData?.email, role: userData?.role })
+    }
+
     // Si no existe, crear el usuario en public.users (para desarrollo/testing)
     if (userError || !userData) {
       const userEmail = authData.user.email || validatedData.email;
+      console.log('📝 Creating new user:', userEmail)
+      
       const { data: newUser, error: createError } = await (supabaseAdmin as any)
         .from('users')
         .insert({
@@ -94,27 +113,29 @@ export async function POST(request: NextRequest) {
         .single()
 
       if (createError || !newUser) {
-        console.error('Error creating user:', createError)
+        console.error('❌ Error creating user:', createError)
         await supabase.auth.signOut()
         return NextResponse.json(
           {
             success: false,
-            error: 'Error al procesar el usuario',
+            message: 'Error al procesar el usuario',
           },
           { status: 500 }
         )
       }
 
+      console.log('✅ User created successfully')
       userData = newUser
     }
 
     // Verificar que el usuario está activo
     if (!userData.is_active) {
+      console.error('❌ User is inactive')
       await supabase.auth.signOut()
       return NextResponse.json(
         {
           success: false,
-          error: 'Usuario desactivado. Contacta al administrador',
+          message: 'Usuario desactivado. Contacta al administrador',
         },
         { status: 403 }
       )
@@ -123,15 +144,18 @@ export async function POST(request: NextRequest) {
     // Verificar que tiene un rol válido
     const validRoles = ['admin', 'presidente', 'tesorero', 'secretario', 'vocal', 'decom_admin', 'comite_member']
     if (!validRoles.includes(userData.role)) {
+      console.error('❌ Invalid role:', userData.role)
       await supabase.auth.signOut()
       return NextResponse.json(
         {
           success: false,
-          error: 'Usuario no tiene un rol válido en el sistema',
+          message: 'Usuario no tiene un rol válido en el sistema',
         },
         { status: 403 }
       )
     }
+
+    console.log('✅ All validations passed, login successful')
 
     // IMPORTANTE: Retornar respuesta simple - las cookies ya están en cookieStore
     return NextResponse.json({
@@ -160,10 +184,14 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('Error en POST /api/auth/login:', error)
+    
+    // Retornar más detalles en desarrollo
+    const isDevelopment = process.env.NODE_ENV === 'development'
     return NextResponse.json(
       {
         success: false,
-        error: 'Error interno del servidor',
+        message: 'Error interno del servidor',
+        error: isDevelopment && error instanceof Error ? error.message : undefined,
       },
       { status: 500 }
     )

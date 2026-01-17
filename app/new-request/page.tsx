@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { FormStep1, FormStep2, type Step1Data, type Step2Data } from '../components/Forms/RequestForm'
 import { Layout } from '../components/Layout'
 import { Card } from '../components/UI/Card'
-import { IconAlertCircle } from '@tabler/icons-react'
+import { IconAlertCircle, IconRocket } from '@tabler/icons-react'
 
 export default function NewRequestPage() {
   const router = useRouter()
@@ -91,53 +91,25 @@ export default function NewRequestPage() {
 
   return (
     <Layout title={step === 1 ? 'Nueva Solicitud' : 'Detalles del Material'}>
-      <div className="min-h-screen bg-gradient-to-b from-[#16233B] via-[#15539C] to-[#1a2847] relative overflow-hidden py-8 px-4">
-        {/* Animated Background Beams */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <motion.div
-            className="absolute -top-40 -left-40 w-80 h-80 bg-[#F49E2C]/15 rounded-full blur-3xl"
-            animate={{
-              x: [0, 60, 0],
-              y: [0, 60, 0],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-          
-          <motion.div
-            className="absolute -bottom-40 -right-40 w-80 h-80 bg-[#15539C]/20 rounded-full blur-3xl"
-            animate={{
-              x: [0, -60, 0],
-              y: [0, -60, 0],
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.03)_1px,transparent_1px)] bg-[size:50px_50px] opacity-20" />
-        </div>
-
+      <div className="relative py-8">
         {/* Content */}
         <div className="relative z-10 max-w-2xl mx-auto">
           {/* Header */}
           <motion.div
-            className="text-center mb-8"
+            className="text-center mb-10"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+            <div className="inline-flex items-center justify-center p-3 mb-4 rounded-2xl bg-dashboard-card border border-dashboard-card-border shadow-xl">
+              <IconRocket className="w-8 h-8 text-decom-secondary" />
+            </div>
+            <h1 className="text-3xl md:text-5xl font-black text-dashboard-text-primary mb-2 tracking-tight uppercase">
               {step === 1 ? 'Nueva Solicitud' : 'Confirmar Detalles'}
             </h1>
-            <p className="text-white/90 text-sm md:text-base font-medium">
-              {step === 1 
-                ? 'Solicita material gráfico para tu evento'
+            <p className="text-dashboard-text-secondary text-sm md:text-base font-medium">
+              {step === 1
+                ? 'Comienza el proceso creativo para tu próximo evento'
                 : 'Revisa y completa la información de tu solicitud'
               }
             </p>
@@ -148,22 +120,31 @@ export default function NewRequestPage() {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-6 p-4 rounded-xl bg-red-500/20 border border-red-400/50 backdrop-blur-sm flex items-start gap-3"
+              className="mb-8 p-5 rounded-2xl bg-decom-error/10 border border-decom-error/20 backdrop-blur-md flex items-start gap-4 shadow-xl shadow-decom-error/5"
             >
-              <IconAlertCircle className="w-5 h-5 text-red-50 flex-shrink-0 mt-0.5" />
-              <p className="text-red-50 text-sm font-semibold">{error}</p>
+              <div className="p-2 bg-decom-error/20 rounded-xl">
+                <IconAlertCircle className="w-6 h-6 text-decom-error flex-shrink-0" />
+              </div>
+              <div>
+                <h4 className="text-sm font-black text-decom-error uppercase tracking-wider">Error en la solicitud</h4>
+                <p className="text-dashboard-text-secondary text-sm font-medium mt-1">{error}</p>
+              </div>
             </motion.div>
           )}
 
           {/* Form Container */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="bg-white rounded-2xl shadow-2xl p-6 md:p-8 border border-gray-200 relative overflow-hidden"
+            className="bg-dashboard-card rounded-3xl shadow-2xl p-6 md:p-10 border border-dashboard-card-border/50 relative overflow-hidden backdrop-blur-sm"
           >
-            {/* Subtle gradient overlay */}
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#F49E2C]/50 to-transparent" />
+            {/* Decorative gradients */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-decom-primary/5 blur-[100px] -z-10 rounded-full" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-decom-secondary/5 blur-[100px] -z-10 rounded-full" />
+
+            {/* Top accent line */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-decom-secondary to-transparent" />
 
             {step === 1 ? (
               <FormStep1 onNext={handleStep1Next} initialData={step1Data || undefined} />

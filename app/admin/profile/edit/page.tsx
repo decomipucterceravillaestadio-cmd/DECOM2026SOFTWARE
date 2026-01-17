@@ -62,19 +62,29 @@ export default function EditProfilePage() {
   }
 
   const handleSave = async () => {
-    if (!validateForm()) return
+    if (!validateForm() || !user) return
 
     setIsSaving(true)
     try {
-      // Simular guardado
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const { createClient } = await import('@/app/lib/supabase/client')
+      const supabase = createClient()
 
-      // En una implementación real, aquí iría la llamada a la API
-      console.log('Saving profile:', formData)
+      const { error } = await supabase
+        .from('users')
+        .update({
+          full_name: formData.name,
+          email: formData.email,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id)
 
+      if (error) throw error
+
+      await refreshUser()
       router.push('/admin/profile')
     } catch (error) {
       console.error('Error saving profile:', error)
+      alert('Error al guardar los cambios: ' + (error instanceof Error ? error.message : 'Error desconocido'))
     } finally {
       setIsSaving(false)
     }

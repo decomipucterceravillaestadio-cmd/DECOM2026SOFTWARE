@@ -16,9 +16,11 @@ import {
   IconQuote,
   IconArrowLeft,
   IconCheck,
-  IconCamera
+  IconCamera,
+  IconAlertCircle
 } from '@tabler/icons-react'
 import { Button } from '../../UI/Button'
+import { cn } from '@/lib/utils'
 import type { Step1Data } from './FormStep1'
 import {
   ProgressIndicator,
@@ -168,19 +170,19 @@ export function FormStep2({
             error={errors.contact_whatsapp?.message}
             hint="+57 3XX XXX XXXX"
           >
-            <div className="flex gap-0 rounded-xl overflow-hidden border-2 border-gray-300 focus-within:border-[#15539C] focus-within:ring-2 focus-within:ring-[#15539C]/20 transition-all">
-              <div className="flex items-center px-3 md:px-4 bg-gradient-to-r from-gray-100 to-gray-50 border-r border-gray-300">
-                <span className="font-bold text-gray-900 text-sm md:text-base">🇨🇴 +57</span>
+            <div className="flex gap-0 rounded-xl overflow-hidden border-2 border-dashboard-card-border focus-within:border-decom-secondary focus-within:ring-4 focus-within:ring-decom-secondary/10 transition-all">
+              <div className="flex items-center px-3 md:px-4 bg-dashboard-bg border-r border-dashboard-card-border">
+                <span className="font-bold text-dashboard-text-primary text-sm md:text-base">🇨🇴 +57</span>
               </div>
               <input
                 type="tel"
                 placeholder="300 123 4567"
                 maxLength={10}
                 {...register('contact_whatsapp')}
-                className="flex-1 px-3 md:px-4 py-3 text-base text-gray-900 placeholder-gray-500 border-0 focus:outline-none w-full font-medium"
+                className="flex-1 px-3 md:px-4 py-3 text-base text-dashboard-text-primary placeholder-dashboard-text-muted/50 border-0 focus:outline-none bg-dashboard-card w-full font-medium"
               />
             </div>
-            <p className="text-xs text-gray-700 font-semibold mt-1.5 md:mt-2">
+            <p className="text-xs text-dashboard-text-muted font-black uppercase tracking-wider mt-2.5 ml-1">
               Te notificaremos el estado de tu solicitud por WhatsApp
             </p>
           </FormField>
@@ -189,32 +191,35 @@ export function FormStep2({
         {/* Bible Verse Optional Section */}
         <motion.div
           layout
-          className={`border-2 rounded-xl p-4 md:p-6 transition-all duration-300 ${includeBibleVerse
-            ? 'border-[#15539C] bg-gradient-to-br from-[#15539C]/5 to-transparent'
-            : 'border-dashed border-gray-300 bg-white hover:border-[#15539C]/40'
-            }`}
+          className={cn(
+            "border-2 rounded-2xl p-5 md:p-8 transition-all duration-300 relative overflow-hidden",
+            includeBibleVerse
+              ? "border-decom-primary bg-decom-primary/5 shadow-xl shadow-decom-primary/5"
+              : "border-dashed border-dashboard-card-border bg-dashboard-card/30 hover:border-decom-primary/40"
+          )}
         >
-          <div className="space-y-4 md:space-y-5">
+          {includeBibleVerse && (
+            <div className="absolute top-0 right-0 w-32 h-32 bg-decom-primary/10 blur-3xl -mr-16 -mt-16" />
+          )}
+
+          <div className="space-y-6 relative z-10">
             {/* Toggle */}
             <label className="flex items-center justify-between cursor-pointer group select-none">
-              <div className="flex items-center gap-3">
-                <motion.div
-                  className="relative flex-shrink-0"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
+              <div className="flex items-center gap-4">
+                <div className="relative flex-shrink-0">
                   <input
                     type="checkbox"
                     {...register('include_bible_verse')}
                     className="peer sr-only"
                   />
-                  <div className="w-10 h-6 md:w-12 md:h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#15539C]/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] md:after:top-[3px] after:left-[2px] md:after:left-[3px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all after:duration-300 peer-checked:bg-[#15539C] shadow-inner"></div>
-                </motion.div>
-                <div className="flex-1 min-w-0">
-                  <span className="font-bold text-gray-900 flex flex-wrap items-center gap-1 md:gap-2 text-sm md:text-base">
-                    <IconBook size={20} className="flex-shrink-0" /> Incluir Cita Bíblica
+                  <div className="w-12 h-6 bg-dashboard-bg border border-dashboard-card-border rounded-full peer peer-checked:bg-decom-primary transition-all duration-300 shadow-inner" />
+                  <div className="absolute left-1 top-1 w-4 h-4 bg-dashboard-text-muted rounded-full peer-checked:translate-x-6 peer-checked:bg-white transition-all duration-300 shadow-sm" />
+                </div>
+                <div className="flex-1">
+                  <span className="font-black text-dashboard-text-primary flex items-center gap-2 text-sm md:text-base uppercase tracking-tight">
+                    <IconBook size={20} className="text-decom-primary" /> Incluir Cita Bíblica
                   </span>
-                  <p className="text-[10px] md:text-xs text-gray-700 font-medium mt-0.5">
+                  <p className="text-[10px] md:text-xs text-dashboard-text-secondary font-medium mt-0.5">
                     Opcional • Agrega un toque espiritual a tu material
                   </p>
                 </div>
@@ -229,7 +234,7 @@ export function FormStep2({
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.3, ease: 'easeInOut' }}
-                  className="space-y-3 pt-3 md:pt-4 border-t border-[#15539C]/20"
+                  className="space-y-4 pt-6 border-t border-decom-primary/10"
                 >
                   <FormField
                     label="Texto de la Cita Bíblica"
@@ -254,22 +259,12 @@ export function FormStep2({
         <AnimatePresence>
           {error && (
             <motion.div
-              className="p-3 md:p-4 bg-red-50 border-l-4 border-red-500 rounded-lg text-red-700 text-sm font-medium flex items-start gap-3"
+              className="p-4 bg-decom-error/10 border-l-4 border-decom-error rounded-r-xl text-decom-error text-sm font-bold flex items-start gap-3 shadow-lg shadow-decom-error/5"
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -10 }}
             >
-              <svg
-                className="w-5 h-5 flex-shrink-0 mt-0.5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <IconAlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
               {error}
             </motion.div>
           )}

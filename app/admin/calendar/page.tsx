@@ -88,51 +88,54 @@ export default function AdminCalendarPage() {
 
   return (
     <DashboardLayout title="Calendario">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2 sm:mb-0">
         <div className="space-y-1">
-          <nav className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#F49E2C]">
+          <nav className="hidden sm:flex items-center gap-2 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-[#F49E2C]">
             <span onClick={() => router.push('/admin')} className="hover:underline cursor-pointer">Dashboard</span>
             <span className="text-dashboard-card-border">/</span>
             <span className="text-dashboard-text-muted font-medium tracking-normal capitalize">Calendario</span>
           </nav>
-          <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-dashboard-text-primary tracking-tight transition-colors duration-300">Programación Mensual</h1>
-            <div className="flex items-center bg-dashboard-card rounded-xl p-1 border border-dashboard-card-border shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <h1 className="text-xl md:text-2xl font-bold text-dashboard-text-primary tracking-tight transition-colors duration-300">Programación Mensual</h1>
+            <div className="flex items-center bg-dashboard-card rounded-xl p-0.5 sm:p-1 border border-dashboard-card-border shadow-sm w-fit">
               <button
                 onClick={handlePreviousMonth}
-                className="w-8 h-8 flex items-center justify-center text-dashboard-text-secondary hover:bg-[#F49E2C]/20 hover:text-[#F49E2C] rounded-lg transition-all"
+                className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-dashboard-text-secondary hover:bg-[#F49E2C]/20 hover:text-[#F49E2C] rounded-lg transition-all"
               >
-                <IconChevronLeft className="w-4 h-4" />
+                <IconChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
-              <div className="px-4 min-w-[140px] text-center">
-                <span className="text-dashboard-text-primary font-bold text-xs capitalize tracking-wider">
+              <div className="px-2 sm:px-4 min-w-[100px] sm:min-w-[140px] text-center">
+                <span className="text-dashboard-text-primary font-bold text-[10px] sm:text-xs capitalize tracking-wider">
                   {format(currentDate, 'MMMM yyyy', { locale: es })}
                 </span>
               </div>
               <button
                 onClick={handleNextMonth}
-                className="w-8 h-8 flex items-center justify-center text-dashboard-text-secondary hover:bg-[#F49E2C]/20 hover:text-[#F49E2C] rounded-lg transition-all"
+                className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-dashboard-text-secondary hover:bg-[#F49E2C]/20 hover:text-[#F49E2C] rounded-lg transition-all"
               >
-                <IconChevronRight className="w-4 h-4" />
+                <IconChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             </div>
           </div>
         </div>
         <button
           onClick={() => router.push('/new-request')}
-          className="px-5 py-2.5 bg-[#F49E2C] text-[#16233B] rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-[#F49E2C]/20 shrink-0"
+          className="px-4 py-2 sm:px-5 sm:py-2.5 bg-[#F49E2C] text-[#16233B] rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-[#F49E2C]/20 shrink-0"
         >
-          <IconPlus className="w-5 h-5" />
-          NUEVO EVENTO
+          <IconPlus className="w-4 h-4 sm:w-5 sm:h-5" />
+          <span className="block">NUEVO EVENTO</span>
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full min-h-[600px]">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-auto lg:h-full lg:min-h-[600px]">
         {/* Calendar Grid Section */}
         <div className="lg:col-span-8 bg-dashboard-card backdrop-blur-md rounded-2xl border border-dashboard-card-border overflow-hidden shadow-2xl flex flex-col transition-all duration-300">
           <div className="grid grid-cols-7 border-b border-dashboard-card-border bg-dashboard-bg/50">
-            {['DOM', 'LUN', 'MAR', 'MIE', 'JUE', 'VIE', 'SAB'].map(day => (
-              <div key={day} className="py-3 text-center text-[10px] font-black text-dashboard-text-muted tracking-widest">{day}</div>
+            {['D', 'L', 'M', 'M', 'J', 'V', 'S'].map((day, i) => (
+              <div key={i} className="py-2 sm:py-3 text-center text-[9px] sm:text-[10px] font-black text-dashboard-text-muted tracking-widest uppercase">
+                <span className="sm:hidden">{day}</span>
+                <span className="hidden sm:inline">{['DOM', 'LUN', 'MAR', 'MIE', 'JUE', 'VIE', 'SAB'][i]}</span>
+              </div>
             ))}
           </div>
 
@@ -151,26 +154,40 @@ export default function AdminCalendarPage() {
                     setSelectedDayEvents(dayEvents)
                   }}
                   className={cn(
-                    "min-h-[100px] p-2 border-r border-b border-dashboard-card-border cursor-pointer transition-all hover:bg-dashboard-card-border/10 group relative",
+                    "min-h-[60px] sm:min-h-[100px] p-1 sm:p-2 border-r border-b border-dashboard-card-border cursor-pointer transition-all hover:bg-dashboard-card-border/10 group relative flex flex-col items-center sm:items-start",
                     !isCurrentMonth && "opacity-20 bg-dashboard-bg",
                     isSelected && "bg-decom-primary/10 ring-1 ring-inset ring-[#F49E2C]/30"
                   )}
                 >
                   <span className={cn(
-                    "text-xs font-bold",
-                    isToday ? "bg-[#F49E2C] text-[#16233B] px-2 py-1 rounded-md shadow-sm" : "text-dashboard-text-muted"
+                    "text-[10px] sm:text-xs font-bold",
+                    isToday ? "bg-[#F49E2C] text-[#16233B] px-1 sm:px-2 py-0.5 sm:py-1 rounded-md shadow-sm" : "text-dashboard-text-muted"
                   )}>
                     {format(day, 'd')}
                   </span>
 
-                  <div className="mt-2 space-y-1">
+                  <div className="mt-1 sm:mt-2 space-y-1 w-full flex flex-col items-center sm:items-stretch">
+                    {/* Desktop Event Names */}
                     {dayEvents.slice(0, 3).map(event => (
-                      <div key={event.id} className="text-[10px] bg-decom-primary/20 border border-decom-primary/10 rounded-md p-1 truncate text-dashboard-text-primary font-medium transition-colors">
+                      <div key={event.id} className="hidden sm:block text-[10px] bg-decom-primary/20 border border-decom-primary/10 rounded-md p-1 truncate text-dashboard-text-primary font-medium transition-colors">
                         {event.event_name}
                       </div>
                     ))}
+
+                    {/* Mobile Event Dots */}
+                    {dayEvents.length > 0 && (
+                      <div className="sm:hidden flex flex-wrap gap-0.5 justify-center mt-1">
+                        {dayEvents.slice(0, 3).map(event => (
+                          <div key={event.id} className="w-1 h-1 rounded-full bg-[#F49E2C]" />
+                        ))}
+                        {dayEvents.length > 3 && (
+                          <div className="w-1 h-1 rounded-full bg-dashboard-text-muted" />
+                        )}
+                      </div>
+                    )}
+
                     {dayEvents.length > 3 && (
-                      <div className="text-[9px] text-[#F49E2C] font-black pl-1 italic">+{dayEvents.length - 3} más</div>
+                      <div className="hidden sm:block text-[9px] text-[#F49E2C] font-black pl-1 italic">+{dayEvents.length - 3} más</div>
                     )}
                   </div>
                 </div>
@@ -180,13 +197,13 @@ export default function AdminCalendarPage() {
         </div>
 
         {/* Day Details Section */}
-        <div className="lg:col-span-4 space-y-4 flex flex-col h-full">
+        <div className="lg:col-span-4 space-y-4 flex flex-col h-auto lg:h-full">
           <div className="bg-dashboard-card backdrop-blur-md rounded-2xl border border-dashboard-card-border p-6 flex-1 flex flex-col shadow-xl transition-all duration-300">
-            <div className="mb-6">
-              <h3 className="text-sm font-black text-[#F49E2C] uppercase tracking-[0.2em] mb-1 transition-all">
+            <div className="mb-4 sm:mb-6">
+              <h3 className="text-[11px] sm:text-sm font-black text-[#F49E2C] uppercase tracking-[0.15em] sm:tracking-[0.2em] mb-1 transition-all">
                 {selectedDay ? format(selectedDay, "eeee, d 'de' MMMM", { locale: es }) : 'Selecciona un día'}
               </h3>
-              <div className="h-1 w-12 bg-[#F49E2C] rounded-full" />
+              <div className="h-1 w-10 sm:w-12 bg-[#F49E2C] rounded-full" />
             </div>
 
             <div className="flex-1 overflow-y-auto space-y-3 pr-1 max-h-[400px] lg:max-h-none">

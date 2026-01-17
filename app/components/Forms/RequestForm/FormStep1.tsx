@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { 
+import {
   IconClipboardList,
   IconTag,
   IconFileText,
@@ -225,11 +225,11 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
                   onFocus={handleInputFocus}
                   onBlur={handleInputBlur}
                   placeholder="Busca y selecciona tu comité..."
-                  className="w-full px-3 md:px-4 py-3 text-base border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#15539C]/20 focus:border-[#15539C] bg-white text-gray-900 transition-all hover:border-gray-400 font-medium"
+                  className="w-full px-3 md:px-4 py-3 text-base border-2 border-dashboard-card-border rounded-xl focus:outline-none focus:ring-4 focus:ring-decom-secondary/10 focus:border-decom-secondary bg-dashboard-card text-dashboard-text-primary transition-all hover:border-dashboard-text-muted/30 font-medium"
                 />
                 {isDropdownOpen && filteredCommittees.length > 0 && (
-                  <div 
-                    className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-xl shadow-lg max-h-60 overflow-y-auto"
+                  <div
+                    className="absolute z-50 w-full mt-2 bg-dashboard-card border border-dashboard-card-border rounded-xl shadow-2xl max-h-60 overflow-y-auto backdrop-blur-md"
                     onMouseDown={(e) => e.preventDefault()}
                   >
                     {filteredCommittees.map((committee) => (
@@ -237,7 +237,7 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
                         key={committee.id}
                         type="button"
                         onClick={() => handleSelectCommittee(committee)}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-900 border-b border-gray-100 last:border-b-0"
+                        className="w-full text-left px-4 py-3 hover:bg-dashboard-bg/80 cursor-pointer text-dashboard-text-primary border-b border-dashboard-card-border last:border-b-0 transition-colors"
                       >
                         {committee.name}
                       </button>
@@ -329,7 +329,7 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
           >
-            <p className="text-xs md:text-sm font-semibold text-gray-600 uppercase tracking-widest">
+            <p className="text-xs md:text-sm font-black text-dashboard-text-muted uppercase tracking-widest">
               Cronograma Sugerido
             </p>
             <div className="space-y-2 md:space-y-3">
@@ -350,15 +350,15 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
               />
 
               <motion.div
-                className="p-3 md:p-4 bg-blue-50 border-l-4 border-blue-600 rounded-lg"
+                className="p-4 bg-decom-primary/5 border-l-4 border-decom-primary rounded-r-xl"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                <p className="text-xs md:text-sm text-blue-900 font-semibold flex items-start gap-2">
-                  <IconInfoCircle size={20} className="flex-shrink-0" />
+                <p className="text-sm text-dashboard-text-secondary font-medium flex items-start gap-3">
+                  <IconInfoCircle size={20} className="text-decom-primary flex-shrink-0 mt-0.5" />
                   <span>
-                    Tienes <strong>{daysRemaining} días</strong> para preparar tu
+                    Tienes <strong className="text-dashboard-text-primary">{daysRemaining} días</strong> para preparar tu
                     solicitud. Cuanta más información proporciones, mejor será el
                     resultado.
                   </span>

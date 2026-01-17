@@ -25,6 +25,8 @@ export const metadata: Metadata = {
   description: "Sistema de gestión de solicitudes de material publicitario para iglesia",
   icons: {
     icon: '/favicon.png',
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
   },
 };
 

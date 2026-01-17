@@ -74,25 +74,24 @@ interface RequestDetailModalProps {
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'Pendiente': return 'bg-yellow-100 text-yellow-700 border-yellow-200'
-    case 'En planificación': return 'bg-blue-100 text-blue-700 border-blue-200'
-    case 'En diseño': return 'bg-purple-100 text-purple-700 border-purple-200'
-    case 'Lista para entrega': return 'bg-green-100 text-green-700 border-green-200'
-    case 'Entregada': return 'bg-gray-100 text-gray-700 border-gray-200'
-    default: return 'bg-gray-100 text-gray-700 border-gray-200'
+    case 'Pendiente': return 'bg-yellow-100/10 text-yellow-600 border-yellow-200/20'
+    case 'En planificación': return 'bg-blue-100/10 text-blue-600 border-blue-200/20'
+    case 'En diseño': return 'bg-purple-100/10 text-purple-600 border-purple-200/20'
+    case 'Lista para entrega': return 'bg-green-100/10 text-green-600 border-green-200/20'
+    case 'Entregada': return 'bg-dashboard-card-border/20 text-dashboard-text-secondary border-dashboard-card-border/30'
+    default: return 'bg-dashboard-card-border/20 text-dashboard-text-secondary border-dashboard-card-border/30'
   }
 }
 
 const getStatusLabel = (status: string) => {
-  // Los valores ya vienen en español de la base de datos
   return status
 }
 
 const getPriorityColor = (priority: number | null) => {
-  if (!priority) return 'bg-gray-100 text-gray-600'
-  if (priority >= 8) return 'bg-red-100 text-red-700 font-bold'
-  if (priority >= 5) return 'bg-orange-100 text-orange-700 font-bold'
-  return 'bg-green-100 text-green-700 font-bold'
+  if (!priority) return 'bg-dashboard-card border border-dashboard-card-border text-dashboard-text-muted'
+  if (priority >= 8) return 'bg-red-500/10 text-red-500 border border-red-500/20 font-black'
+  if (priority >= 5) return 'bg-orange-500/10 text-orange-500 border border-orange-500/20 font-black'
+  return 'bg-green-500/10 text-green-500 border border-green-500/20 font-black'
 }
 
 export default function RequestDetailModal({
@@ -201,23 +200,22 @@ export default function RequestDetailModal({
   if (!requestId) return null
 
   // Contenedor diferente según si está embebido o es modal
-  const Container = embedded ? 'div' : 'div'
   const containerClasses = embedded
-    ? "bg-white dark:bg-neutral-900 rounded-2xl shadow-xl w-full flex flex-col border border-neutral-200 dark:border-neutral-800"
-    : "fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+    ? "bg-dashboard-card rounded-2xl shadow-xl w-full flex flex-col border border-dashboard-card-border"
+    : "fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4"
 
   const contentClasses = embedded
     ? "w-full"
-    : "bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-neutral-200 dark:border-neutral-800"
+    : "bg-dashboard-card rounded-3xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-dashboard-card-border"
 
   return (
     <div className={containerClasses}>
       <div className={contentClasses}>
 
         {/* Header */}
-        <div className="bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 px-6 py-4 flex items-center justify-between shrink-0">
+        <div className="bg-dashboard-card border-b border-dashboard-card-border px-6 py-4 flex items-center justify-between shrink-0 transition-colors duration-300">
           <div className="flex items-center gap-3">
-            <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+            <h2 className="text-xl font-black text-dashboard-text-primary tracking-tight uppercase">
               Detalle de Solicitud
             </h2>
             {request && (
@@ -229,9 +227,9 @@ export default function RequestDetailModal({
           {!embedded && (
             <button
               onClick={onClose}
-              className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors text-neutral-500 hover:text-neutral-700"
+              className="p-2.5 hover:bg-dashboard-bg rounded-xl transition-all text-dashboard-text-muted hover:text-decom-secondary border border-transparent hover:border-dashboard-card-border group"
             >
-              <IconX className="w-5 h-5" />
+              <IconX className="w-5 h-5 group-hover:rotate-90 transition-transform" />
             </button>
           )}
         </div>
@@ -300,12 +298,15 @@ export default function RequestDetailModal({
                 <div className="lg:col-span-2 space-y-6 md:space-y-8">
                   {/* Event Details */}
                   <section>
-                    <h3 className="flex items-center gap-2 text-lg font-bold text-neutral-900 dark:text-neutral-100 mb-4">
-                      <IconInfoCircle className="w-5 h-5 text-blue-600" />
-                      Información del Solicitud
+                    <h3 className="flex items-center gap-2 text-lg font-black text-dashboard-text-primary mb-5 uppercase tracking-tight">
+                      <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
+                        <IconInfoCircle className="w-5 h-5" />
+                      </div>
+                      Información de Solicitud
                     </h3>
 
-                    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 shadow-sm space-y-6">
+                    <div className="bg-dashboard-card/50 backdrop-blur-sm border border-dashboard-card-border/50 rounded-2xl p-6 md:p-8 shadow-sm space-y-8 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 blur-3xl -mr-16 -mt-16" />
                       <div>
                         <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest block mb-1.5">
                           Nombre del Evento
@@ -339,39 +340,42 @@ export default function RequestDetailModal({
 
                   {/* History Timeline - Collapsible or scrollable container could be better, for now list */}
                   <section>
-                    <h3 className="flex items-center gap-2 text-lg font-bold text-neutral-900 dark:text-neutral-100 mb-4">
-                      <IconHistory className="w-5 h-5 text-purple-600" />
+                    <h3 className="flex items-center gap-2 text-lg font-black text-dashboard-text-primary mb-5 uppercase tracking-tight">
+                      <div className="p-2 rounded-lg bg-purple-500/10 text-purple-500">
+                        <IconHistory className="w-5 h-5" />
+                      </div>
                       Historial de Cambios
                     </h3>
 
-                    <div className="relative border-l-2 border-neutral-200 dark:border-neutral-800 ml-3 pl-6 space-y-6 py-2">
+                    <div className="relative border-l-2 border-dashboard-card-border ml-5 pl-8 space-y-8 py-2">
                       {request.history.length === 0 ? (
-                        <p className="text-sm text-neutral-500 italic">No hay historial disponible.</p>
+                        <p className="text-sm text-dashboard-text-muted italic">No hay historial disponible.</p>
                       ) : (
                         request.history.map((entry) => (
                           <div key={entry.id} className="relative">
-                            <div className="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-white dark:bg-neutral-900 border-2 border-purple-500" />
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
-                              <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                            <div className="absolute -left-[41px] top-1 w-6 h-6 rounded-full bg-dashboard-card border-2 border-purple-500 shadow-lg shadow-purple-500/20" />
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
+                              <span className="text-sm font-black text-dashboard-text-primary uppercase tracking-tight">
                                 {entry.old_status ? (
                                   <>
-                                    {getStatusLabel(entry.old_status)} <span className="text-neutral-400 mx-1">→</span> {getStatusLabel(entry.new_status)}
+                                    {getStatusLabel(entry.old_status)} <span className="text-dashboard-text-muted mx-1">→</span> {getStatusLabel(entry.new_status)}
                                   </>
                                 ) : (
-                                  <span>Solicitud Creada</span>
+                                  <span className="text-decom-secondary">Solicitud Creada</span>
                                 )}
                               </span>
-                              <span className="text-xs text-neutral-500">
+                              <span className="text-[10px] font-black text-dashboard-text-muted uppercase tracking-[0.15em] bg-dashboard-bg px-2 py-1 rounded-lg border border-dashboard-card-border">
                                 {format(new Date(entry.changed_at), 'dd/MM/yyyy HH:mm', { locale: es })}
                               </span>
                             </div>
-                            <p className="text-xs text-neutral-600 dark:text-neutral-400">
-                              Por: <span className="font-medium">{entry.changed_by_user?.full_name || 'Sistema'}</span>
+                            <p className="text-xs text-dashboard-text-secondary font-medium">
+                              Por: <span className="text-dashboard-text-primary font-bold">{entry.changed_by_user?.full_name || 'Sistema'}</span>
                             </p>
                             {entry.change_reason && (
-                              <p className="mt-2 text-sm text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 p-3 rounded-lg">
+                              <div className="mt-3 text-sm text-dashboard-text-secondary bg-dashboard-bg/50 backdrop-blur-sm p-4 rounded-xl border border-dashboard-card-border/50 relative overflow-hidden">
+                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-purple-500/30" />
                                 {entry.change_reason}
-                              </p>
+                              </div>
                             )}
                           </div>
                         ))
@@ -385,21 +389,25 @@ export default function RequestDetailModal({
 
                   {/* Actions Card */}
                   {canChangeStatus && (
-                    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 shadow-sm">
-                      <h3 className="font-bold text-neutral-900 dark:text-neutral-100 mb-4 flex items-center gap-2">
-                        <IconSend className="w-5 h-5 text-indigo-600" />
-                        Gestionar Estado
+                    <div className="bg-dashboard-card/50 backdrop-blur-sm border border-dashboard-card-border/50 rounded-2xl p-6 shadow-xl relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-decom-primary/5 blur-3xl -mr-16 -mt-16 group-hover:bg-decom-primary/10 transition-colors" />
+
+                      <h3 className="font-black text-dashboard-text-primary mb-6 flex items-center gap-3 uppercase tracking-tight">
+                        <div className="p-2 rounded-lg bg-decom-primary/10 text-decom-primary">
+                          <IconSend className="w-5 h-5" />
+                        </div>
+                        Gestionar Solicitud
                       </h3>
 
-                      <div className="space-y-4">
-                        <div>
-                          <label className="text-xs font-semibold text-neutral-500 mb-1.5 block">
-                            Actualizar a
+                      <div className="space-y-5 relative z-10">
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-dashboard-text-muted uppercase tracking-[0.2em] ml-1">
+                            Estado actual del proceso
                           </label>
                           <select
                             value={newStatus}
                             onChange={(e) => setNewStatus(e.target.value)}
-                            className="w-full px-3 py-2.5 text-base border border-neutral-300 dark:border-neutral-700 rounded-xl bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
+                            className="w-full px-4 py-3 text-sm border-2 border-dashboard-card-border rounded-xl bg-dashboard-bg text-dashboard-text-primary focus:ring-4 focus:ring-decom-secondary/10 focus:border-decom-secondary outline-none transition-all font-bold"
                           >
                             <option value="Pendiente">Pendiente</option>
                             <option value="En planificación">En planificación</option>
@@ -409,29 +417,33 @@ export default function RequestDetailModal({
                           </select>
                         </div>
 
-                        <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-800">
-                          <input
-                            type="checkbox"
-                            id="visibleInPublicCalendar"
-                            checked={visibleInPublicCalendar}
-                            onChange={(e) => setVisibleInPublicCalendar(e.target.checked)}
-                            className="w-4 h-4 text-indigo-600 border-neutral-300 rounded focus:ring-2 focus:ring-indigo-500/20"
-                          />
-                          <label htmlFor="visibleInPublicCalendar" className="text-sm font-medium text-neutral-700 dark:text-neutral-300 cursor-pointer">
+                        <div className="flex items-center gap-3 p-4 bg-dashboard-bg/80 rounded-xl border border-dashboard-card-border group/toggle cursor-pointer hover:border-decom-secondary/30 transition-all">
+                          <div className="relative flex-shrink-0">
+                            <input
+                              type="checkbox"
+                              id="visibleInPublicCalendar"
+                              checked={visibleInPublicCalendar}
+                              onChange={(e) => setVisibleInPublicCalendar(e.target.checked)}
+                              className="peer sr-only"
+                            />
+                            <div className="w-10 h-5 bg-dashboard-card border border-dashboard-card-border rounded-full peer peer-checked:bg-decom-secondary transition-all" />
+                            <div className="absolute left-1 top-1 w-3 h-3 bg-dashboard-text-muted rounded-full peer-checked:translate-x-5 peer-checked:bg-white transition-all" />
+                          </div>
+                          <label htmlFor="visibleInPublicCalendar" className="text-xs font-bold text-dashboard-text-secondary cursor-pointer select-none">
                             Visible en calendario público
                           </label>
                         </div>
 
-                        <div>
-                          <label className="text-xs font-semibold text-neutral-500 mb-1.5 block">
-                            Observaciones
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-dashboard-text-muted uppercase tracking-[0.2em] ml-1">
+                            Observaciones de actualización
                           </label>
                           <textarea
                             value={changeReason}
                             onChange={(e) => setChangeReason(e.target.value)}
                             rows={3}
-                            className="w-full px-3 py-2.5 text-base border border-neutral-300 dark:border-neutral-700 rounded-xl bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all resize-none"
-                            placeholder="Motivo del cambio..."
+                            className="w-full px-4 py-3 text-sm border-2 border-dashboard-card-border rounded-xl bg-dashboard-bg text-dashboard-text-primary focus:ring-4 focus:ring-decom-secondary/10 focus:border-decom-secondary outline-none transition-all resize-none font-medium placeholder-dashboard-text-muted/40"
+                            placeholder="Describe brevemente el porqué del cambio..."
                           />
                         </div>
 
@@ -439,22 +451,24 @@ export default function RequestDetailModal({
                           onClick={handleUpdateStatus}
                           disabled={updating || (newStatus === request.status && visibleInPublicCalendar === request.visible_in_public_calendar)}
                           fullWidth
-                          className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                          className="bg-gradient-to-r from-decom-primary to-decom-secondary hover:shadow-lg shadow-decom-primary/20 py-4"
                         >
                           {updating ? 'Actualizando...' : 'Guardar Cambios'}
                         </Button>
                       </div>
 
-                      <div className="mt-6 pt-6 border-t border-neutral-100 dark:border-neutral-800 space-y-4">
-                        <h4 className="font-bold text-sm text-neutral-900 dark:text-neutral-100">
-                          Comunicación
+                      <div className="mt-6 pt-6 border-t border-dashboard-card-border/50 space-y-4">
+                        <h4 className="text-[10px] font-black text-dashboard-text-muted uppercase tracking-[0.2em]">
+                          Comunicación Directa
                         </h4>
-                        <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/10 rounded-xl border border-green-100 dark:border-green-800">
+                        <div className="flex items-center justify-between p-4 bg-green-500/5 rounded-xl border border-green-500/10 group/whatsapp">
                           <div className="flex items-center gap-3">
-                            <IconBrandWhatsapp className="w-5 h-5 text-green-600" />
+                            <div className="p-2 rounded-lg bg-green-500/10 text-green-500 group-hover/whatsapp:scale-110 transition-transform">
+                              <IconBrandWhatsapp className="w-5 h-5" />
+                            </div>
                             <div className="flex flex-col">
-                              <span className="text-xs font-bold text-green-800 dark:text-green-300">WhatsApp</span>
-                              <span className="text-xs text-green-700 dark:text-green-400 font-mono truncate max-w-[120px]">
+                              <span className="text-[10px] font-black text-green-600 uppercase tracking-wider">WhatsApp</span>
+                              <span className="text-sm text-dashboard-text-primary font-bold font-mono">
                                 {request.contact_whatsapp}
                               </span>
                             </div>
@@ -468,9 +482,9 @@ export default function RequestDetailModal({
                               statusLabel: getStatusLabel(request.status),
                               materialType: request.material_type
                             }), '_blank')}
-                            className="bg-green-600 hover:bg-green-700 text-white text-xs px-3 h-8"
+                            className="bg-green-600 hover:bg-green-700 text-white text-xs px-4 rounded-lg h-9 shadow-lg shadow-green-600/20"
                           >
-                            Ir al Chat
+                            Chat
                           </Button>
                         </div>
                       </div>
@@ -479,25 +493,21 @@ export default function RequestDetailModal({
 
                   {/* Delete Request Card */}
                   {canDeleteRequests && (
-                    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 shadow-sm">
-                      <h3 className="font-bold text-neutral-900 dark:text-neutral-100 mb-4 flex items-center gap-2">
-                        <IconTrash className="w-5 h-5 text-red-500" />
-                        Eliminar Solicitud
+                    <div className="bg-dashboard-card/30 border border-decom-error/20 rounded-2xl p-6 shadow-sm overflow-hidden relative group transition-all hover:bg-decom-error/5">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-decom-error/5 blur-3xl -mr-12 -mt-12" />
+
+                      <h3 className="font-black text-dashboard-text-primary mb-5 flex items-center gap-3 uppercase tracking-tight relative z-10">
+                        <div className="p-2 rounded-lg bg-decom-error/10 text-decom-error">
+                          <IconTrash className="w-5 h-5" />
+                        </div>
+                        Zona de Peligro
                       </h3>
 
-                      <div className="space-y-4">
-                        <div className="p-4 bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-100 dark:border-red-800">
-                          <div className="flex items-start gap-3">
-                            <IconInfoCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
-                            <div className="flex-1">
-                              <h4 className="text-sm font-semibold text-red-800 dark:text-red-300 mb-1">
-                                Acción Irreversible
-                              </h4>
-                              <p className="text-sm text-red-700 dark:text-red-400">
-                                Eliminar esta solicitud la removerá permanentemente del sistema. Esta acción no se puede deshacer.
-                              </p>
-                            </div>
-                          </div>
+                      <div className="space-y-4 relative z-10">
+                        <div className="p-4 bg-decom-error/5 rounded-xl border border-decom-error/10">
+                          <p className="text-xs text-decom-error font-medium leading-relaxed">
+                            Eliminar esta solicitud la removerá permanentemente del sistema. Esta acción no se puede deshacer.
+                          </p>
                         </div>
 
                         <Button
@@ -505,17 +515,17 @@ export default function RequestDetailModal({
                           disabled={deleting}
                           fullWidth
                           variant="outline"
-                          className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/10"
+                          className="border-decom-error/50 text-decom-error hover:bg-decom-error hover:text-white dark:hover:bg-decom-error py-3"
                         >
                           {deleting ? (
                             <div className="flex items-center justify-center gap-2">
-                              <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                               Eliminando...
                             </div>
                           ) : (
                             <div className="flex items-center justify-center gap-2">
                               <IconTrash className="w-4 h-4" />
-                              Eliminar Solicitud
+                              ELIMINAR SOLICITUD
                             </div>
                           )}
                         </Button>
@@ -524,36 +534,38 @@ export default function RequestDetailModal({
                   )}
 
                   {/* Timeline Dates Card */}
-                  <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 shadow-sm">
-                    <h3 className="font-bold text-neutral-900 dark:text-neutral-100 mb-4 flex items-center gap-2">
-                      <IconTimeline className="w-5 h-5 text-orange-500" />
+                  <div className="bg-dashboard-card/50 backdrop-blur-sm border border-dashboard-card-border/50 rounded-2xl p-6 shadow-sm overflow-hidden relative">
+                    <h3 className="font-black text-dashboard-text-primary mb-6 flex items-center gap-3 uppercase tracking-tight">
+                      <div className="p-2 rounded-lg bg-orange-500/10 text-orange-500">
+                        <IconTimeline className="w-5 h-5" />
+                      </div>
                       Fechas Clave
                     </h3>
 
-                    <div className="space-y-4 relative">
+                    <div className="space-y-5 relative">
                       {/* Vertical line connecting dots */}
-                      <div className="absolute left-[7px] top-2 bottom-2 w-0.5 bg-neutral-100 dark:bg-neutral-800" />
+                      <div className="absolute left-[7px] top-2 bottom-2 w-0.5 bg-dashboard-card-border/50" />
 
-                      <div className="relative pl-6">
-                        <div className="absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-neutral-900 bg-blue-500 shadow-sm z-10" />
-                        <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wider block mb-0.5">Inicio Planificación</span>
-                        <span className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
+                      <div className="relative pl-8">
+                        <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full border-2 border-dashboard-card bg-blue-500 shadow-lg shadow-blue-500/30 z-10" />
+                        <span className="text-[10px] font-black text-dashboard-text-muted uppercase tracking-[0.2em] block mb-1">Inicio Planificación</span>
+                        <span className="text-sm font-bold text-dashboard-text-primary">
                           {request.planning_start_date ? format(new Date(request.planning_start_date), 'dd MMM yyyy', { locale: es }) : 'Por definir'}
                         </span>
                       </div>
 
-                      <div className="relative pl-6">
-                        <div className="absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-neutral-900 bg-orange-500 shadow-sm z-10" />
-                        <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wider block mb-0.5">Entrega Material</span>
-                        <span className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
+                      <div className="relative pl-8">
+                        <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full border-2 border-dashboard-card bg-decom-secondary shadow-lg shadow-decom-secondary/30 z-10" />
+                        <span className="text-[10px] font-black text-dashboard-text-muted uppercase tracking-[0.2em] block mb-1">Entrega Material</span>
+                        <span className="text-sm font-bold text-dashboard-text-primary">
                           {request.delivery_date ? format(new Date(request.delivery_date), 'dd MMM yyyy', { locale: es }) : 'Por definir'}
                         </span>
                       </div>
 
-                      <div className="relative pl-6">
-                        <div className="absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-neutral-900 bg-red-500 shadow-sm z-10" />
-                        <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wider block mb-0.5">Día del Evento</span>
-                        <span className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
+                      <div className="relative pl-8">
+                        <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full border-2 border-dashboard-card bg-red-500 shadow-lg shadow-red-500/30 z-10" />
+                        <span className="text-[10px] font-black text-dashboard-text-muted uppercase tracking-[0.2em] block mb-1">Día del Evento</span>
+                        <span className="text-sm font-bold text-dashboard-text-primary">
                           {format(new Date(request.event_date), 'dd MMM yyyy', { locale: es })}
                         </span>
                       </div>

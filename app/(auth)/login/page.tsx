@@ -14,6 +14,8 @@ export default function LoginPage() {
     setError(null)
 
     try {
+      console.log('🔐 Iniciando login con email:', email)
+      
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -23,14 +25,18 @@ export default function LoginPage() {
         credentials: 'include', // IMPORTANTE: incluir cookies en la petición
       })
 
+      console.log('📡 Response status:', response.status)
+
       if (!response.ok) {
         let errorMessage = 'Error al iniciar sesión'
         
         try {
           const data = await response.json()
-          errorMessage = data.message || errorMessage
-        } catch {
+          console.log('📦 Error response data:', data)
+          errorMessage = data.message || data.error || errorMessage
+        } catch (parseError) {
           // Si no se puede parsear JSON, usar mensaje basado en status
+          console.log('⚠️ Could not parse error response:', parseError)
           switch (response.status) {
             case 400:
               errorMessage = 'Datos de entrada inválidos'
@@ -56,7 +62,7 @@ export default function LoginPage() {
       }
 
       const data = await response.json()
-      console.log('Login exitoso:', data)
+      console.log('✅ Login exitoso:', data)
 
       // Esperar un momento para que las cookies se establezcan
       await new Promise(resolve => setTimeout(resolve, 100))
@@ -68,16 +74,20 @@ export default function LoginPage() {
       
       if (err instanceof TypeError && err.message.includes('fetch')) {
         message = 'Error de conexión. Verifica tu conexión a internet e inténtalo de nuevo'
+        console.error('🌐 Connection error:', err)
       } else if (err instanceof Error) {
         message = err.message
+        console.error('❌ Auth error:', { message: err.message, stack: err.stack })
       } else if (typeof err === 'string') {
         message = err
+        console.error('❌ String error:', err)
       } else if (err && typeof err === 'object' && 'message' in err) {
         message = String(err.message)
+        console.error('❌ Object error:', err)
       }
       
       setError(message)
-      console.error('Login error:', err)
+      console.error('Final login error:', { message, originalError: err })
     } finally {
       setIsLoading(false)
     }

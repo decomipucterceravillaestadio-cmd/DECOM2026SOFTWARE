@@ -44,12 +44,6 @@ export default function ProfilePage() {
       onClick: () => router.push('/admin/profile/change-password')
     },
     {
-      id: 'request-history',
-      icon: <IconHistory className="w-5 h-5" />,
-      label: 'Historial de solicitudes',
-      onClick: () => router.push('/admin/profile/history')
-    },
-    {
       id: 'about-decom',
       icon: <IconBuilding className="w-5 h-5" />,
       label: 'Acerca de DECOM',

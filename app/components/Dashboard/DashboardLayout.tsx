@@ -225,7 +225,10 @@ export function DashboardLayout({
 
                         <div className="h-6 w-[1px] bg-dashboard-card-border mx-1 hidden sm:block" />
 
-                        <div className="flex items-center gap-3 p-1 pl-2 rounded-xl hover:bg-white/5 transition-all cursor-pointer group">
+                        <div
+                            onClick={() => router.push('/admin/profile')}
+                            className="flex items-center gap-3 p-1 pl-2 rounded-xl hover:bg-white/5 transition-all cursor-pointer group"
+                        >
                             <div className="hidden sm:text-right">
                                 <p className="text-xs font-bold text-dashboard-text-primary leading-tight group-hover:text-[#F49E2C] transition-colors">{user?.full_name}</p>
                                 <p className="text-[10px] text-[#F49E2C]/70 font-bold uppercase tracking-wider">{user?.role}</p>

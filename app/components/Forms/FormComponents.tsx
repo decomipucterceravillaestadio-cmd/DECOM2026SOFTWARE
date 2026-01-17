@@ -262,7 +262,7 @@ export function SelectButtonGroup({
                 "relative p-6 rounded-2xl border transition-all duration-300 flex flex-col items-center justify-center gap-3 min-h-[140px] group overflow-hidden",
                 isSelected
                   ? "border-decom-secondary bg-gradient-to-br from-decom-primary to-[#0f172a] text-white shadow-xl shadow-decom-primary/20 ring-1 ring-decom-secondary/50"
-                  : "border-gray-200 bg-white text-gray-700 hover:border-decom-secondary/30 hover:shadow-lg hover:shadow-decom-primary/5 hover:bg-gray-50"
+                  : "border-dashboard-card-border bg-dashboard-card text-dashboard-text-secondary hover:border-decom-secondary/30 hover:shadow-lg hover:shadow-decom-primary/5 hover:bg-dashboard-bg/50"
               )}
             >
               {isSelected && (
@@ -278,7 +278,7 @@ export function SelectButtonGroup({
               {option.icon && (
                 <div className={cn(
                   "text-4xl transition-all duration-300 mb-1",
-                  isSelected ? "scale-110 drop-shadow-md text-decom-secondary" : "text-gray-400 group-hover:text-decom-primary group-hover:scale-110"
+                  isSelected ? "scale-110 drop-shadow-md text-decom-secondary" : "text-dashboard-text-muted group-hover:text-decom-primary group-hover:scale-110"
                 )}>
                   {typeof option.icon === 'string' ? option.icon : option.icon}
                 </div>
@@ -287,7 +287,7 @@ export function SelectButtonGroup({
               <div className="flex flex-col items-center gap-1 z-10 relative">
                 <span className={cn(
                   "text-xs font-black uppercase tracking-widest text-center leading-tight transition-colors",
-                  isSelected ? "text-white" : "text-gray-600 group-hover:text-decom-primary"
+                  isSelected ? "text-white" : "text-dashboard-text-primary group-hover:text-decom-primary"
                 )}>
                   {option.label}
                 </span>
@@ -295,7 +295,7 @@ export function SelectButtonGroup({
                 {option.description && (
                   <span className={cn(
                     "text-[10px] leading-tight hidden md:block mt-1 font-medium text-center line-clamp-2 max-w-[120px]",
-                    isSelected ? "text-white/70" : "text-gray-400 group-hover:text-gray-500"
+                    isSelected ? "text-white/70" : "text-dashboard-text-muted group-hover:text-dashboard-text-secondary"
                   )}>
                     {option.description}
                   </span>

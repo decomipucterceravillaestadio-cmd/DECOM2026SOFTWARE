@@ -47,7 +47,7 @@ export default function RequestDetailPage() {
         </div>
 
         {/* Modal de detalle - modo embebido sin overlay */}
-        <div className="bg-dashboard-card backdrop-blur-md rounded-2xl border border-dashboard-card-border shadow-2xl overflow-hidden min-h-[600px] transition-all duration-300">
+        <div className="relative">
           <RequestDetailModal
             requestId={params.id as string}
             onClose={handleClose}

@@ -56,6 +56,29 @@ export default function AdminUsersPage() {
     }
   }
 
+  const handleDeleteUser = async (userId: string, userName: string) => {
+    if (!window.confirm(`¿Estás seguro de que deseas desactivar al usuario ${userName}?`)) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/admin/users/${userId}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        setUsers(users.map(u => u.id === userId ? { ...u, is_active: false } : u))
+        alert('Usuario desactivado exitosamente')
+      } else {
+        const data = await response.json()
+        alert(data.error || 'Error al desactivar usuario')
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error)
+      alert('Error al procesar la solicitud')
+    }
+  }
+
   useEffect(() => {
     if (canViewUsers) loadUsers()
   }, [canViewUsers])
@@ -167,10 +190,16 @@ export default function AdminUsersPage() {
                     </td>
                     <td className="px-6 py-5 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button className="p-2.5 rounded-xl hover:bg-decom-secondary/10 text-dashboard-text-muted hover:text-decom-secondary transition-all group/btn shadow-sm hover:shadow-md border border-transparent hover:border-decom-secondary/20">
+                        <button
+                          onClick={() => router.push(`/admin/users/${user.id}/edit`)}
+                          className="p-2.5 rounded-xl hover:bg-decom-secondary/10 text-dashboard-text-muted hover:text-decom-secondary transition-all group/btn shadow-sm hover:shadow-md border border-transparent hover:border-decom-secondary/20"
+                        >
                           <IconEdit className="w-5 h-5 transition-transform group-hover/btn:scale-110" />
                         </button>
-                        <button className="p-2.5 rounded-xl hover:bg-decom-error/10 text-dashboard-text-muted hover:text-decom-error transition-all group/btn shadow-sm hover:shadow-md border border-transparent hover:border-decom-error/20">
+                        <button
+                          onClick={() => handleDeleteUser(user.id, user.full_name || user.email)}
+                          className="p-2.5 rounded-xl hover:bg-decom-error/10 text-dashboard-text-muted hover:text-decom-error transition-all group/btn shadow-sm hover:shadow-md border border-transparent hover:border-decom-error/20"
+                        >
                           <IconTrash className="w-5 h-5 transition-transform group-hover/btn:scale-110" />
                         </button>
                       </div>
