@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { parseLocalDate } from '@/app/lib/dateUtils'
 import {
   IconChevronRight,
   IconSearch,
@@ -166,7 +167,7 @@ export default function RequestsTable({ onSelectRequest, searchTerm = '' }: Requ
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="text-[12px] text-dashboard-text-muted group-hover:text-dashboard-text-secondary transition-colors">
-                      {format(new Date(request.event_date), 'dd/MM/yyyy', { locale: es })}
+                      {format(parseLocalDate(request.event_date), 'dd/MM/yyyy', { locale: es })}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">

@@ -8,7 +8,7 @@ import { Badge } from "@/app/components/UI/Badge";
 import { Button } from "@/app/components/UI/Button";
 import { Skeleton } from "@/app/components/UI/Skeleton";
 import { EmptyState } from "@/app/components/UI";
-import { formatDate, daysUntilEvent } from "@/app/lib/dateUtils";
+import { formatDate, daysUntilEvent, parseLocalDate } from "@/app/lib/dateUtils";
 import { MATERIAL_TYPES, REQUEST_STATUSES } from "@/app/lib/constants";
 import type { Request } from "@/app/types/index";
 
@@ -80,7 +80,7 @@ export function RequestList({
   const sortedRequests = [...filteredRequests].sort((a, b) => {
     switch (sortBy) {
       case "event_date":
-        return new Date(a.event_date).getTime() - new Date(b.event_date).getTime();
+        return parseLocalDate(a.event_date).getTime() - parseLocalDate(b.event_date).getTime();
       case "priority_score":
         return (b.priority_score || 0) - (a.priority_score || 0);
       case "created_at":
@@ -224,7 +224,7 @@ export function RequestList({
           />
         ) : (
           paginatedRequests.map((request) => {
-            const daysRemaining = daysUntilEvent(new Date(request.event_date));
+            const daysRemaining = daysUntilEvent(parseLocalDate(request.event_date));
             const isUrgent = daysRemaining <= 7;
             const isOverdue = daysRemaining < 0;
 
@@ -252,7 +252,7 @@ export function RequestList({
                     <div className="flex items-center gap-1">
                       <span className="text-lg">📅</span>
                       <span className="text-decom-text-dark">
-                        {formatDate(new Date(request.event_date), "short")}
+                        {formatDate(parseLocalDate(request.event_date), "short")}
                       </span>
                     </div>
                     <div className="flex items-center gap-1">

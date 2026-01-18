@@ -1,5 +1,37 @@
-import { isToday, isTomorrow, differenceInDays, format, addDays } from "date-fns";
+import { isToday, isTomorrow, differenceInDays, format, addDays, parseISO, startOfDay } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 import { es } from "date-fns/locale";
+
+/**
+ * Obtiene la fecha actual en zona horaria de Colombia (America/Bogota)
+ * @returns Date object con fecha/hora actual de Colombia
+ */
+export function getCurrentDateColombia(): Date {
+  return toZonedTime(new Date(), 'America/Bogota');
+}
+
+/**
+ * Obtiene solo la fecha (sin hora) actual en Colombia
+ * @returns Date object con fecha de Colombia a las 00:00:00
+ */
+export function getTodayColombia(): Date {
+  return startOfDay(getCurrentDateColombia());
+}
+
+/**
+ * Parsea una fecha en formato ISO string (YYYY-MM-DD o YYYY-MM-DDTHH:mm:ss)
+ * como fecha local, evitando problemas de zona horaria.
+ * 
+ * @param dateString - Fecha en formato string ISO
+ * @returns Date object parseado correctamente
+ */
+export function parseLocalDate(dateString: string): Date {
+  // Si es solo fecha (YYYY-MM-DD), añadir hora local para evitar conversión UTC
+  if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    return parseISO(dateString + 'T00:00:00');
+  }
+  return parseISO(dateString);
+}
 
 export function addDaysUtil(date: Date, days: number): Date {
   return addDays(date, days);

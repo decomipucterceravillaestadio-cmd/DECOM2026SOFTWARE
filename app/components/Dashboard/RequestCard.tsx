@@ -2,6 +2,7 @@
 
 import { format, differenceInDays } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { parseLocalDate } from '@/app/lib/dateUtils'
 import { cn } from '@/lib/utils'
 import {
   IconVideo,
@@ -104,12 +105,31 @@ const getMaterialIcon = (type: string) => {
     'design': IconBrush,
     'audio': IconDeviceSpeaker,
     'streaming': IconBroadcast,
-    'social': IconShare
+    'social': IconShare,
+    'flyer': IconBrush,
+    'afiche': IconBrush,
+    'banner': IconBrush,
+    'tarjeta': IconBrush,
+    'presentacion': IconVideoPlus,
+    'otro': IconBrush
   }
 
   const key = type.toLowerCase()
   const Icon = icons[key as keyof typeof icons] || IconBrush
   return <Icon className="w-3.5 h-3.5" />
+}
+
+const getMaterialLabel = (type: string) => {
+  const labels: Record<string, string> = {
+    'flyer': 'Flyer',
+    'afiche': 'Afiche',
+    'banner': 'Banner',
+    'tarjeta': 'Tarjeta',
+    'presentacion': 'Presentación',
+    'video': 'Video',
+    'otro': 'Otro'
+  }
+  return labels[type.toLowerCase()] || type
 }
 
 const getCommitteeIcon = (name: string) => {
@@ -130,7 +150,7 @@ const getCommitteeIcon = (name: string) => {
 export default function RequestCard({ request, onClick }: RequestCardProps) {
   const statusConfig = getStatusConfig(request.status)
   const priorityConfig = getPriorityConfig(request.priority_score)
-  const eventDate = new Date(request.event_date)
+  const eventDate = parseLocalDate(request.event_date)
   const today = new Date()
   const daysDiff = differenceInDays(eventDate, today)
 
@@ -204,7 +224,7 @@ export default function RequestCard({ request, onClick }: RequestCardProps) {
 
         {/* Footer con estado, tipo de material y acción */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 flex-wrap">
             {/* Badge de estado */}
             <span className={cn(
               "inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm",
@@ -214,13 +234,11 @@ export default function RequestCard({ request, onClick }: RequestCardProps) {
               {statusConfig.label}
             </span>
 
-            {/* Icono de tipo de material */}
-            <div
-              className="size-8 rounded-xl bg-dashboard-bg border border-dashboard-card-border flex items-center justify-center text-dashboard-text-muted group-hover:text-[#F49E2C] transition-colors shadow-inner"
-              title={`Tipo: ${request.material_type}`}
-            >
+            {/* Badge de tipo de material con icono y texto */}
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-dashboard-bg border border-dashboard-card-border text-dashboard-text-secondary group-hover:border-[#F49E2C]/30 group-hover:text-[#F49E2C] transition-all shadow-sm">
               {getMaterialIcon(request.material_type)}
-            </div>
+              <span className="uppercase tracking-wider">{getMaterialLabel(request.material_type)}</span>
+            </span>
           </div>
 
           {/* Botón ver detalle */}

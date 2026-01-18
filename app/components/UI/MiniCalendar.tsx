@@ -12,6 +12,7 @@ import {
   subMonths
 } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { parseLocalDate } from '@/app/lib/dateUtils'
 import { IconChevronLeft, IconChevronRight, IconCalendar } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 
@@ -52,7 +53,7 @@ export default function MiniCalendar({
 
   // Función para obtener el conteo de eventos de un día
   const getEventCount = (date: Date) => {
-    return events.filter(event => isSameDay(new Date(event.event_date), date)).length
+    return events.filter(event => isSameDay(parseLocalDate(event.event_date), date)).length
   }
 
   const navigateMonth = (direction: 'prev' | 'next') => {

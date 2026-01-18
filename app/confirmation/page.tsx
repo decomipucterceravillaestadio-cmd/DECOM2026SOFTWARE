@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
+import { parseLocalDate } from '@/app/lib/dateUtils'
 import { Button } from '../components/UI/Button'
 import { Card } from '../components/UI/Card'
 import { Layout } from '../components/Layout'
@@ -251,7 +252,7 @@ function ConfirmationContent() {
                   </div>
                   <div className="text-right">
                     <span className="text-xs font-bold text-[#16233B] dark:text-blue-300 block">
-                      {new Date(event.event_date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
+                      {parseLocalDate(event.event_date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
                     </span>
                   </div>
                 </div>

@@ -12,7 +12,16 @@ export const createRequestSchema = z
     committee_id: z.string().uuid('ID de comité inválido').optional(),
     event_name: z.string().min(5, 'Mínimo 5 caracteres').max(200),
     event_info: z.string().min(5, 'Mínimo 5 caracteres').max(500),
-    event_date: z.string(),
+    event_date: z.string().refine(
+      (date) => {
+        const selectedDate = new Date(date + 'T00:00:00')
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        selectedDate.setHours(0, 0, 0, 0)
+        return selectedDate >= today
+      },
+      'La fecha del evento debe ser hoy o una fecha futura'
+    ),
     event_time: z.string().regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Formato de hora inválido (HH:MM)'),
     material_type: z.enum(['flyer', 'banner', 'video', 'redes_sociales', 'otro']),
     contact_whatsapp: z

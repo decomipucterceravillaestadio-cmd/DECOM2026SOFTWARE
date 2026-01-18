@@ -44,7 +44,16 @@ const step1Schema = z.object({
     .string()
     .min(5, 'Mínimo 5 caracteres')
     .max(500, 'Máximo 500 caracteres'),
-  event_date: z.string(),
+  event_date: z.string().refine(
+    (date) => {
+      const selectedDate = new Date(date + 'T00:00:00')
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      selectedDate.setHours(0, 0, 0, 0)
+      return selectedDate >= today
+    },
+    'La fecha debe ser hoy o una fecha futura'
+  ),
   event_time: z.string().regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Formato de hora inválido (HH:MM)'),
 })
 
@@ -69,6 +78,10 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
   const [searchTerm, setSearchTerm] = useState('')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [selectedCommittee, setSelectedCommittee] = useState<Committee | null>(null)
+
+  // Obtener fecha mínima (hoy)
+  const today = new Date()
+  const minDate = today.toISOString().split('T')[0]
 
   // Calcular fechas derivadas
   const eventDateValue = initialData?.event_date
@@ -300,6 +313,7 @@ export function FormStep1({ onNext, initialData }: FormStep1Props) {
               icon={<IconCalendarEvent size={20} />}
               {...register('event_date')}
               isValid={!errors.event_date}
+              min={minDate}
             />
           </FormField>
 

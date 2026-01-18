@@ -26,6 +26,7 @@ export default function LoginPage() {
       })
 
       console.log('📡 Response status:', response.status)
+      console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()))
 
       if (!response.ok) {
         let errorMessage = 'Error al iniciar sesión'
@@ -37,6 +38,8 @@ export default function LoginPage() {
         } catch (parseError) {
           // Si no se puede parsear JSON, usar mensaje basado en status
           console.log('⚠️ Could not parse error response:', parseError)
+          const text = await response.text()
+          console.log('⚠️ Raw response text:', text)
           switch (response.status) {
             case 400:
               errorMessage = 'Datos de entrada inválidos'
@@ -70,6 +73,9 @@ export default function LoginPage() {
       // Forzar navegación completa (no usar router.push)
       window.location.href = '/admin'
     } catch (err) {
+      console.log('❌ Catch block entered with error type:', typeof err)
+      console.log('❌ Error object:', err)
+      
       let message = 'Error desconocido al iniciar sesión'
       
       if (err instanceof TypeError && err.message.includes('fetch')) {
@@ -77,17 +83,20 @@ export default function LoginPage() {
         console.error('🌐 Connection error:', err)
       } else if (err instanceof Error) {
         message = err.message
-        console.error('❌ Auth error:', { message: err.message, stack: err.stack })
+        console.error('❌ Auth error:', { message: err.message, stack: err.stack, name: err.name })
       } else if (typeof err === 'string') {
         message = err
         console.error('❌ String error:', err)
       } else if (err && typeof err === 'object' && 'message' in err) {
         message = String(err.message)
         console.error('❌ Object error:', err)
+      } else {
+        console.error('❌ Unknown error type:', err)
+        message = 'Error desconocido. Revisa la consola para más detalles.'
       }
       
       setError(message)
-      console.error('Final login error:', { message, originalError: err })
+      console.error('Final login error:', { message, originalError: err, errorType: typeof err })
     } finally {
       setIsLoading(false)
     }

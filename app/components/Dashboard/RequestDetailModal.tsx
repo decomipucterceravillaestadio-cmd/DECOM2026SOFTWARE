@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { parseLocalDate } from '@/app/lib/dateUtils'
 import { Badge } from '@/app/components/UI/Badge'
 import { Button } from '@/app/components/UI/Button'
 import {
@@ -19,12 +20,14 @@ import {
   IconFlag,
   IconPalette,
   IconSend,
-  IconTrash
+  IconTrash,
+  IconEdit
 } from '@tabler/icons-react'
 import { generateWhatsAppLink } from '@/app/lib/utils/whatsapp'
 import { useAuth, useHasPermission } from '@/app/contexts/AuthContext'
 import { Permission } from '@/app/lib/permissions'
 import DeleteConfirmationModal from '@/app/components/UI/DeleteConfirmationModal'
+import EditRequestModal from './EditRequestModal'
 
 interface RequestDetail {
   id: string
@@ -103,6 +106,7 @@ export default function RequestDetailModal({
   const { user } = useAuth()
   const canChangeStatus = useHasPermission(Permission.CHANGE_REQUEST_STATUS)
   const canDeleteRequests = useHasPermission(Permission.DELETE_REQUESTS)
+  const canEditRequests = useHasPermission(Permission.EDIT_REQUESTS)
   const [request, setRequest] = useState<RequestDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
@@ -111,6 +115,7 @@ export default function RequestDetailModal({
   const [visibleInPublicCalendar, setVisibleInPublicCalendar] = useState(true)
   const [deleting, setDeleting] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [isEditMode, setIsEditMode] = useState(false)
 
   useEffect(() => {
     if (!requestId) {
@@ -224,14 +229,25 @@ export default function RequestDetailModal({
               </span>
             )}
           </div>
-          {!embedded && (
-            <button
-              onClick={onClose}
-              className="p-2.5 hover:bg-dashboard-bg rounded-xl transition-all text-dashboard-text-muted hover:text-decom-secondary border border-transparent hover:border-dashboard-card-border group"
-            >
-              <IconX className="w-5 h-5 group-hover:rotate-90 transition-transform" />
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {canEditRequests && request && (
+              <button
+                onClick={() => setIsEditMode(true)}
+                className="flex items-center gap-2 px-4 py-2.5 bg-decom-primary hover:bg-decom-primary/90 text-white rounded-xl transition-all font-bold text-sm shadow-lg shadow-decom-primary/20 hover:shadow-xl hover:shadow-decom-primary/30"
+              >
+                <IconEdit className="w-4 h-4" />
+                Editar Solicitud
+              </button>
+            )}
+            {!embedded && (
+              <button
+                onClick={onClose}
+                className="p-2.5 hover:bg-dashboard-bg rounded-xl transition-all text-dashboard-text-muted hover:text-decom-secondary border border-transparent hover:border-dashboard-card-border group"
+              >
+                <IconX className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Content - Scrollable */}
@@ -256,7 +272,7 @@ export default function RequestDetailModal({
                     <span className="text-xs font-medium uppercase tracking-wider">Fecha Evento</span>
                   </div>
                   <p className="text-sm md:text-base font-bold text-neutral-900 dark:text-neutral-100">
-                    {format(new Date(request.event_date), 'dd MMM yyyy', { locale: es })}
+                    {format(parseLocalDate(request.event_date), 'dd MMM yyyy', { locale: es })}
                   </p>
                 </div>
 
@@ -478,7 +494,7 @@ export default function RequestDetailModal({
                             onClick={() => window.open(generateWhatsAppLink(request.contact_whatsapp, {
                               eventName: request.event_name,
                               committeeName: request.committee.name,
-                              eventDate: format(new Date(request.event_date), 'dd MMM yyyy', { locale: es }),
+                              eventDate: format(parseLocalDate(request.event_date), 'dd MMM yyyy', { locale: es }),
                               statusLabel: getStatusLabel(request.status),
                               materialType: request.material_type
                             }), '_blank')}
@@ -566,7 +582,7 @@ export default function RequestDetailModal({
                         <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full border-2 border-dashboard-card bg-red-500 shadow-lg shadow-red-500/30 z-10" />
                         <span className="text-[10px] font-black text-dashboard-text-muted uppercase tracking-[0.2em] block mb-1">Día del Evento</span>
                         <span className="text-sm font-bold text-dashboard-text-primary">
-                          {format(new Date(request.event_date), 'dd MMM yyyy', { locale: es })}
+                          {format(parseLocalDate(request.event_date), 'dd MMM yyyy', { locale: es })}
                         </span>
                       </div>
                     </div>
@@ -597,6 +613,33 @@ export default function RequestDetailModal({
         onConfirm={handleConfirmDelete}
         itemName={request?.event_name || 'Solicitud'}
         isDeleting={deleting}
+      />
+
+      <EditRequestModal
+        requestId={requestId}
+        isOpen={isEditMode}
+        onClose={() => setIsEditMode(false)}
+        onSuccess={() => {
+          setIsEditMode(false)
+          // Recargar los datos de la solicitud
+          if (requestId) {
+            const fetchRequest = async () => {
+              try {
+                const response = await fetch(`/api/admin/requests/${requestId}`)
+                if (response.ok) {
+                  const data = await response.json()
+                  setRequest(data)
+                  setNewStatus(data.status)
+                  setVisibleInPublicCalendar(data.visible_in_public_calendar ?? true)
+                }
+              } catch (error) {
+                console.error('Error fetching request:', error)
+              }
+            }
+            fetchRequest()
+          }
+          onUpdate()
+        }}
       />
     </div>
   )
