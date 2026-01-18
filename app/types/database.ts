@@ -330,6 +330,10 @@ export type Database = {
         Args: { email_param: string; password_param: string }
         Returns: boolean
       }
+      soft_delete_request: {
+        Args: { p_request_id: string; p_auth_user_id: string; p_reason: string }
+        Returns: { success: boolean; error: string | null; message: string | null }
+      }
     }
     Enums: {
       [_ in never]: never
