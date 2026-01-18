@@ -258,7 +258,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="relative z-10 py-12 border-t border-white/10 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-white/50">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-white/50" suppressHydrationWarning>
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-[#F49E2C]/20 border border-[#F49E2C]/50 flex items-center justify-center">
               <IconSparkles className="w-4 h-4 text-[#F49E2C]" />
@@ -266,7 +266,7 @@ export default function HomePage() {
             <span className="font-semibold text-white/80">DECOM System</span>
           </div>
           <p>© 2026 Departamento de Comunicaciones IPUC</p>
-          <p className="text-[9px] text-white/5 hover:text-white/20 transition-colors cursor-default select-none absolute bottom-4 left-1/2 -translate-x-1/2 md:static md:translate-x-0">
+          <p className="text-[9px] text-white/5 hover:text-white/20 transition-colors cursor-default select-none absolute bottom-4 left-1/2 -translate-x-1/2 md:static md:translate-x-0" suppressHydrationWarning>
             Software by Juan Aguilar
           </p>
         </div>

@@ -34,7 +34,7 @@ import {
 // Esquema de validación para Step 2
 const step2Schema = z
   .object({
-    material_type: z.enum(['poster', 'video', 'otro']),
+    material_type: z.enum(['flyer', 'banner', 'video', 'redes_sociales', 'otro']),
     contact_whatsapp: z
       .string()
       .min(10, 'Número muy corto')
@@ -77,9 +77,11 @@ interface FormStep2Props {
 }
 
 const MATERIAL_TYPES = [
-  { id: 'poster', label: 'Póster', icon: <IconCamera size={28} />, description: 'Foto publicitaria del evento' },
-  { id: 'video', label: 'Video', icon: <IconVideo size={28} />, description: 'Contenido video' },
-  { id: 'otro', label: 'Otro', icon: <IconPackage size={28} />, description: 'Especificar' },
+  { id: 'flyer', label: 'Flyer', icon: <IconFileText size={28} />, description: 'Volante publicitario' },
+  { id: 'banner', label: 'Banner', icon: <IconPalette size={28} />, description: 'Banner o póster' },
+  { id: 'video', label: 'Video', icon: <IconVideo size={28} />, description: 'Contenido audiovisual' },
+  { id: 'redes_sociales', label: 'Redes Sociales', icon: <IconBrandInstagram size={28} />, description: 'Contenido para redes' },
+  { id: 'otro', label: 'Otro', icon: <IconPackage size={28} />, description: 'Especificar tipo' },
 ]
 
 export function FormStep2({
@@ -101,7 +103,7 @@ export function FormStep2({
   } = useForm<Step2Data>({
     resolver: zodResolver(step2Schema),
     defaultValues: {
-      material_type: 'poster',
+      material_type: 'flyer',
       include_bible_verse: false,
     },
   })

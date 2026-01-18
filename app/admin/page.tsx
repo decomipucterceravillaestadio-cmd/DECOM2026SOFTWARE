@@ -27,6 +27,11 @@ export default function AdminDashboard() {
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
   const [searchTerm, setSearchTerm] = useState('')
+  const [formattedDate, setFormattedDate] = useState('')
+
+  useEffect(() => {
+    setFormattedDate(format(new Date(), "eeee, d 'de' MMMM", { locale: es }))
+  }, [])
 
   const handleRefresh = () => {
     setRefreshKey(prev => prev + 1)
@@ -69,7 +74,7 @@ export default function AdminDashboard() {
           <div className="flex flex-col items-start md:items-end gap-1">
             <p className="text-blue-200 text-sm font-medium uppercase tracking-wider">Hoy es</p>
             <p className="text-white text-xl font-bold capitalize">
-              {format(new Date(), "eeee, d 'de' MMMM", { locale: es })}
+              {formattedDate}
             </p>
           </div>
         </div>
