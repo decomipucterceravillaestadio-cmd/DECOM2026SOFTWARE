@@ -44,9 +44,7 @@ const step1Schema = z.object({
     .string()
     .min(5, 'Mínimo 5 caracteres')
     .max(500, 'Máximo 500 caracteres'),
-  event_date: z
-    .string()
-    .refine((date) => new Date(date) > new Date(), 'La fecha debe ser futura'),
+  event_date: z.string(),
   event_time: z.string().regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Formato de hora inválido (HH:MM)'),
 })
 
