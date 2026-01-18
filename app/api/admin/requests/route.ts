@@ -43,6 +43,7 @@ export async function GET(request: NextRequest) {
           color_badge
         )
       `, { count: 'exact' })
+      .is('deleted_at', null)
 
     // Aplicar filtros
     if (status && status !== 'all') {

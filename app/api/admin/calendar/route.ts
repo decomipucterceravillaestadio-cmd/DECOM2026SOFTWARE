@@ -63,6 +63,7 @@ export async function GET(request: NextRequest) {
           color_badge
         )
       `)
+      .is('deleted_at', null)
       .gte('event_date', format(startDate, 'yyyy-MM-dd'))
       .lte('event_date', format(endDate, 'yyyy-MM-dd'))
       .order('event_date', { ascending: true })

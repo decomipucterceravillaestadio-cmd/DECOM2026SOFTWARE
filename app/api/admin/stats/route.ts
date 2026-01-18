@@ -24,30 +24,35 @@ export async function GET() {
       // Total de solicitudes
       supabase
         .from('requests')
-        .select('*', { count: 'exact', head: true }),
+        .select('*', { count: 'exact', head: true })
+        .is('deleted_at', null),
       
       // Solicitudes pendientes
       supabase
         .from('requests')
         .select('*', { count: 'exact', head: true })
+        .is('deleted_at', null)
         .eq('status', 'pendiente'),
       
       // Solicitudes en progreso (en_planificacion + en_diseño)
       supabase
         .from('requests')
         .select('*', { count: 'exact', head: true })
+        .is('deleted_at', null)
         .in('status', ['en_planificacion', 'en_diseño']),
       
       // Solicitudes completadas (lista + entregada)
       supabase
         .from('requests')
         .select('*', { count: 'exact', head: true })
+        .is('deleted_at', null)
         .in('status', ['lista', 'entregada']),
       
       // Solicitudes aprobadas (usando lista como aprobada)
       supabase
         .from('requests')
         .select('*', { count: 'exact', head: true })
+        .is('deleted_at', null)
         .eq('status', 'lista'),
       
       // Solicitudes rechazadas (no hay estado de rechazado, así que 0)
@@ -64,6 +69,7 @@ export async function GET() {
             color_badge
           )
         `)
+        .is('deleted_at', null)
     ])
 
     // Procesar solicitudes por comité
