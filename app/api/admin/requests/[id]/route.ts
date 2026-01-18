@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/app/lib/supabase/server'
 import { createAdminClient } from '@/app/lib/supabase/admin'
+import { createClient } from '@supabase/supabase-js'
 import { Database } from '@/app/types/database'
 
 type Request = Database['public']['Tables']['requests']['Row']
@@ -210,7 +211,7 @@ export async function PATCH(
  * Elimina una solicitud específica
  */
 // DELETE /api/admin/requests/[id]
-// Archiva (Soft Delete) una solicitud específica tras verificar contraseña
+// Archiva (Soft Delete) una solicitud específica
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -221,76 +222,53 @@ export async function DELETE(
 
     // 1. Verificar sesión actual
     const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user || !user.email) {
+    if (authError || !user) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
 
-    // 2. Obtener datos del cuerpo (contraseña y motivo)
+    // 2. Obtener datos del cuerpo (motivo)
     const body = await request.json().catch(() => ({}))
-    const { password, reason } = body
+    const { reason } = body
 
-    if (!password || !reason) {
+    if (!reason) {
       return NextResponse.json(
-        { error: 'Se requiere contraseña y motivo para eliminar' },
+        { error: 'Se requiere motivo para eliminar' },
         { status: 400 }
       )
     }
 
-    // 3. Verificar contraseña re-autenticando
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: user.email,
-      password: password
-    })
-
-    if (signInError) {
-      return NextResponse.json(
-        { error: 'Contraseña incorrecta. No se pudo verificar tu identidad.' },
-        { status: 403 }
-      )
-    }
-
-    // 4. Ejecutar Soft Delete (Update)
-    // Usamos adminClient para asegurar que podemos escribir independientemente de RLS estricto
-    // (ya verificamos la contraseña y autenticación arriba)
+    // 3. Ejecutar Soft Delete usando función de base de datos con SECURITY DEFINER
+    // Esta función bypasea RLS a nivel de PostgreSQL
     const adminClient = createAdminClient()
-
-    const { error: updateError } = await adminClient
-      .from('requests')
-      .update({
-        deleted_at: new Date().toISOString(),
-        deleted_by: user.id,
-        deletion_reason: reason
+    
+    const { data, error: rpcError } = await adminClient
+      .rpc('soft_delete_request', {
+        p_request_id: id,
+        p_auth_user_id: user.id,
+        p_reason: reason
       })
-      .eq('id', id)
 
-    if (updateError) {
-      console.error('Error soft-deleting request:', updateError)
+    if (rpcError) {
+      console.error('Error calling soft_delete_request function:', rpcError)
       return NextResponse.json(
-        { error: 'Error al archivar la solicitud', details: updateError.message },
+        { error: 'Error al archivar la solicitud', details: rpcError.message },
         { status: 500 }
       )
     }
 
-    // 5. Registrar en historial
-    const { error: historyError } = await adminClient
-      .from('request_history')
-      .insert({
-        request_id: id,
-        old_status: 'Activo',
-        new_status: 'Eliminado',
-        changed_by: user.id,
-        change_reason: `ELIMINADO: ${reason}`,
-        changed_at: new Date().toISOString()
-      })
-
-    if (historyError) {
-      console.error('Error creating deletion history:', historyError)
-      // No fallamos la request completa si solo falla el historial, pero lo logueamos
+    // Verificar el resultado de la función
+    const result = data as { success: boolean; error?: string; message?: string }
+    
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error || 'Error al archivar la solicitud' },
+        { status: 400 }
+      )
     }
 
     return NextResponse.json({
       success: true,
-      message: 'Solicitud archivada correctamente'
+      message: result.message || 'Solicitud archivada correctamente'
     })
 
   } catch (error) {

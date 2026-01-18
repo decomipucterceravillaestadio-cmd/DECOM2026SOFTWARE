@@ -183,7 +183,7 @@ export default function RequestDetailModal({
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ password, reason })
+        body: JSON.stringify({ reason })
       })
 
       if (response.ok) {
