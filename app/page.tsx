@@ -111,18 +111,18 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-40 pb-20 lg:pt-52 lg:pb-32">
+      <section className="relative pt-16 pb-12 lg:pt-20 lg:pb-20">
         <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
           <motion.div
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
-            className="max-w-4xl mx-auto"
+            className="max-w-5xl mx-auto"
           >
             {/* Minimal Badge */}
             <motion.div
               variants={fadeInUp}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm"
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8 sm:mb-12 backdrop-blur-sm"
             >
               <div className="w-1.5 h-1.5 rounded-full bg-[#F49E2C] animate-pulse" />
               <span className="text-[10px] uppercase font-black tracking-[0.2em] text-[#F49E2C]/80">
@@ -133,7 +133,7 @@ export default function HomePage() {
             {/* Title with improved typography */}
             <motion.h1
               variants={fadeInUp}
-              className="text-[8.5vw] sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-[-0.05em] leading-[1] sm:leading-[0.9] mb-6 sm:mb-8 flex flex-col items-center justify-center w-full"
+              className="text-[9vw] sm:text-6xl md:text-7xl lg:text-8xl xl:text-[7.5rem] font-black tracking-[-0.05em] leading-[0.9] mb-8 sm:mb-10 flex flex-col items-center justify-center w-full max-w-6xl mx-auto"
             >
               <span className="text-white/95 text-center w-full block">
                 DEPARTAMENTO
@@ -146,7 +146,7 @@ export default function HomePage() {
             {/* Subtitle - More readable and elegant */}
             <motion.p
               variants={fadeInUp}
-              className="text-sm sm:text-lg md:text-xl text-white/50 mb-10 sm:mb-12 max-w-xl mx-auto font-medium leading-relaxed tracking-tight px-6 sm:px-0 text-center"
+              className="text-base sm:text-xl lg:text-2xl text-white/40 mb-12 sm:mb-20 max-w-2xl mx-auto font-medium leading-relaxed tracking-tight px-6 sm:px-0 text-center"
             >
               IPUC Villa Estadio-Bosconia
             </motion.p>
@@ -154,85 +154,26 @@ export default function HomePage() {
             {/* CTA Buttons - Premium feel */}
             <motion.div
               variants={fadeInUp}
-              className="flex flex-col sm:flex-row gap-5 justify-center items-center"
+              className="flex flex-col sm:flex-row gap-5 lg:gap-8 justify-center items-center"
             >
               <Link href="/new-request" className="w-full sm:w-auto">
-                <motion.div whileHover={{ y: -3 }} whileTap={{ scale: 0.98 }}>
-                  <Button className="w-full sm:w-auto h-14 px-10 text-base rounded-2xl bg-white text-[#0A0F1D] font-extrabold shadow-[0_10px_30px_rgba(255,255,255,0.15)] hover:bg-white/90 transition-all border-none">
-                    <IconSend className="mr-2 w-5 h-5" />
+                <motion.div whileHover={{ y: -5 }} whileTap={{ scale: 0.98 }}>
+                  <Button className="w-full sm:w-auto h-14 lg:h-16 px-10 lg:px-14 text-base lg:text-lg rounded-2xl bg-white text-[#0A0F1D] font-extrabold shadow-[0_10px_30px_rgba(255,255,255,0.15)] hover:bg-white/90 transition-all border-none">
+                    <IconSend className="mr-2 w-5 h-5 lg:w-6 lg:h-6" />
                     Nueva Solicitud
                   </Button>
                 </motion.div>
               </Link>
               <Link href="/calendar" className="w-full sm:w-auto">
-                <motion.div whileHover={{ y: -3 }} whileTap={{ scale: 0.98 }}>
-                  <Button className="w-full sm:w-auto h-14 px-10 text-base rounded-2xl border border-white/10 bg-white/5 text-white font-bold hover:bg-white/10 transition-all backdrop-blur-md">
-                    <IconCalendar className="mr-2 w-5 h-5" />
+                <motion.div whileHover={{ y: -5 }} whileTap={{ scale: 0.98 }}>
+                  <Button className="w-full sm:w-auto h-14 lg:h-16 px-10 lg:px-14 text-base lg:text-lg rounded-2xl border border-white/10 bg-white/5 text-white font-bold hover:bg-white/10 transition-all backdrop-blur-md">
+                    <IconCalendar className="mr-2 w-5 h-5 lg:w-6 lg:h-6" />
                     Explorar Agenda
                   </Button>
                 </motion.div>
               </Link>
             </motion.div>
           </motion.div>
-        </div>
-      </section>
-
-      {/* Features - Modern Cards */}
-      <section className="relative z-10 py-24 border-t border-white/5 bg-[#0A0F1D]/50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-            {/* Feature 1 */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="group p-8 rounded-3xl bg-white/[0.02] border border-white/10 hover:border-[#F49E2C]/30 hover:bg-white/[0.04] transition-all duration-500"
-            >
-              <div className="w-12 h-12 rounded-2xl bg-[#F49E2C]/10 flex items-center justify-center text-[#F49E2C] mb-6 group-hover:scale-110 transition-transform">
-                <IconDeviceLaptop stroke={1.5} />
-              </div>
-              <h3 className="text-xl font-bold mb-3 tracking-tight">Solicitudes UX</h3>
-              <p className="text-white/40 text-sm leading-relaxed font-medium">
-                Experiencia simplificada para enviar requerimientos en segundos, asegurando que nada se quede por fuera.
-              </p>
-            </motion.div>
-
-            {/* Feature 2 */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="group p-8 rounded-3xl bg-white/[0.02] border border-white/10 hover:border-[#F49E2C]/30 hover:bg-white/[0.04] transition-all duration-500"
-            >
-              <div className="w-12 h-12 rounded-2xl bg-[#15539C]/10 flex items-center justify-center text-[#15539C] mb-6 group-hover:scale-110 transition-transform">
-                <IconLayersIntersect stroke={1.5} />
-              </div>
-              <h3 className="text-xl font-bold mb-3 tracking-tight">Control Total</h3>
-              <p className="text-white/40 text-sm leading-relaxed font-medium">
-                Dashboard administrativo para orquestar cada pieza visual, fechas de entrega y estados en tiempo real.
-              </p>
-            </motion.div>
-
-            {/* Feature 3 */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="group p-8 rounded-3xl bg-white/[0.02] border border-white/10 hover:border-[#F49E2C]/30 hover:bg-white/[0.04] transition-all duration-500"
-            >
-              <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform">
-                <IconUsers stroke={1.5} />
-              </div>
-              <h3 className="text-xl font-bold mb-3 tracking-tight">Colaboración</h3>
-              <p className="text-white/40 text-sm leading-relaxed font-medium">
-                Unifica el trabajo creativo bajo estándares profesionales. Coherencia visual para toda la congregación.
-              </p>
-            </motion.div>
-
-          </div>
         </div>
       </section>
 
