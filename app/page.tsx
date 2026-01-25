@@ -189,7 +189,7 @@ export default function HomePage() {
                 <span className="font-bold text-xs uppercase tracking-widest text-white/90">DECOM OS</span>
               </div>
               <p className="text-[11px] font-bold text-white/20 uppercase tracking-[0.2em] text-center md:text-left">
-                Tecnología para el servicio del Reino
+                Tecnología para el servicio de Jesucristo
               </p>
             </div>
 
