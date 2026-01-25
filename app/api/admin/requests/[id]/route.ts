@@ -3,6 +3,7 @@ import { createServerClient } from '@/app/lib/supabase/server'
 import { createAdminClient } from '@/app/lib/supabase/admin'
 import { createClient } from '@supabase/supabase-js'
 import { Database } from '@/app/types/database'
+import { UserRole } from '@/app/types/auth'
 
 type Request = Database['public']['Tables']['requests']['Row']
 type RequestHistory = Database['public']['Tables']['request_history']['Row']
@@ -106,6 +107,26 @@ export async function PATCH(
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     }
     console.log('👤 User authenticated:', user.id)
+
+    // Obtener rol del usuario para verificar permisos
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('role')
+      .eq('auth_user_id', user.id)
+      .single()
+
+    if (userError || !userData) {
+      console.log('❌ User data error:', userError)
+      return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 })
+    }
+
+    // Verificar permisos
+    const { hasPermission, Permission } = await import('@/app/lib/permissions')
+    if (!hasPermission(userData.role as UserRole, Permission.CHANGE_REQUEST_STATUS)) {
+      console.log('❌ Permission denied for user:', userData.role)
+      return NextResponse.json({ error: 'No tienes permisos para cambiar el estado de solicitudes' }, { status: 403 })
+    }
+    console.log('✅ Permission granted for status change')
 
     // Obtener datos del body
     const body = await request.json()
